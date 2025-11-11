@@ -1,0 +1,13 @@
+name = "quicktest"
+main = "build/index.js"  # SvelteKit genera esto
+compatibility_date = "2025-10-31"  # Fecha actual
+
+[[d1_databases]]
+binding = "DB"
+database_name = "language"
+database_id = "16aae997-5d06-44ae-9678-d5a0d9ca9f68"
+
+[[kv_namespaces]]
+binding = "CODES"
+id = "e3c6d29fe5a745fda5d3b4da4ff0e10b"
+preview_id = "ddcac06b30024c70ba9032037ca25f10"

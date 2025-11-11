@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 100;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--transition);
+}
+
+:root {
+  --font-bold: "Lilita One", sans-serif;
+  --font-normal: "Markazi Text", serif;
+  --border-radius: 10px;
+  --transition: 0.3s;
+  --height-header: 60px;
+  --font-size: 1.5em;
+}
+
+@media(min-width: 600px) {
+  :root {
+    --font-size: 1.3em;
+  }
+}
+
+body {
+  background: var(--bg-body);
+  color: var(--color);
+}
+
