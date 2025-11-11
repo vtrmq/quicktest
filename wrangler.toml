@@ -1,9 +1,9 @@
 name = "quicktest"
-main = ".svelte-kit/cloudflare/_worker.js"  # SvelteKit genera esto --> build/index.js
+main = ".svelte-kit/cloudflare/_worker.js"  # SvelteKit genera esto --> build/index.js ++++ .svelte-kit/cloudflare/_worker.js
 compatibility_date = "2025-10-31"  # Fecha actual
 
 [assets]
-directory = ".svelte-kit/output/client"
+directory = ".svelte-kit/cloudflare"
 binding = "ASSETS"
 
 [[d1_databases]]
