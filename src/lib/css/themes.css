@@ -20,7 +20,7 @@
   --bg-body: #fff;
   --color: #000;
 
-  --bg-gradient-pc: linear-gradient(194deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+  --bg-gradient-pc: linear-gradient(to right top, #2367cb, #2a6bd0, #316fd6, #3774db, #3d78e1, #2e85ea, #1c92f3, #009ffa, #00b5ff, #00c8f9, #00d9ec, #1ee8db);
   --bg-gradient-movil: linear-gradient(to right top, #c00d8b, #ce1297, #dc17a3, #eb1caf, #f921bb);
 
   --color-link: #0667b5;

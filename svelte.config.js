@@ -26,13 +26,13 @@ const config = {
 export default config;
 */
 
-import adapter from '@sveltejs/adapter-cloudflare';
+import cloudflare from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 export default {
   preprocess: vitePreprocess(),
   kit: {
-    adapter: adapter({
+    adapter: cloudflare({
       // Configuración explícita para evitar el bug
       routes: {
         include: ['/*'],
