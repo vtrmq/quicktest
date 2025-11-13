@@ -1,6 +1,5 @@
 <script>
   let { children, href = '/admin', fn = ()=>{} } = $props()
-
   function onClick() {
     fn();
   }

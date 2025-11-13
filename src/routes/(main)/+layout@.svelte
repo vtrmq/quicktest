@@ -1,16 +1,13 @@
-<!--script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
-</script>
-<link rel="icon" href={favicon} />-->
-
 <script lang="ts">
   import type { LayoutData } from './$types';
   import { DASHBOARDS } from "$lib/utils";
-  import { Header, Main, BtnTheme, Footer, BoxNav, Link } from '$lib/components';
+  import { Header, Main, Footer, BoxNav, Link } from '$lib/components';
+  //import { onMount } from 'svelte';
 	let { data, children }: { data: LayoutData; children: any } = $props();
-
+  //let isVisible: boolean = $state(false);
   let root = $state(data.user?.profile);
 
+  //console.log(data.home)
   async function validatedLogin() {
     try {
       const response = await fetch('/api/validate-session', {
@@ -27,25 +24,27 @@
       console.log(error)
     }
   }
+  /*onMount(()=>{
+    if (data.home) {
+      isVisible = true;
+    }
+  })*/
 </script>
 
-{#if data.home}
-  <Header>
-    &nbsp;
-    <BoxNav>
-      {#if root === undefined}
-        <Link href="/login">Iniciar</Link>
-      {:else if root !== undefined}
-        <Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link>
-      {/if}
-      <!--a href="/register">Regístrate</a-->
-      <BtnTheme />
-    </BoxNav>
-  </Header>
+<Header>
+  &nbsp;
+  <BoxNav>
+    {#if root === undefined}
+      <Link href="/login">Iniciar</Link>
+    {:else if root !== undefined}
+      <Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link>
+    {/if}
+    <!--a href="/register">Regístrate</a-->
+  </BoxNav>
+</Header>
 
-  <Main>
-    {@render children()}
-  </Main>
+<Main>
+  {@render children()}
+</Main>
 
-  <Footer />
-{/if}
+<Footer />

@@ -2,22 +2,22 @@
   import type { ActionData } from './$types';
   import type { SubmitFunction } from '@sveltejs/kit';
   import { enhance } from '$app/forms';
-  import { Form, Title, Input, Button } from '$lib/components';
-	import mail from '$lib/assets/svg/mail.svg?raw';
-	import lock from '$lib/assets/svg/lock-keyhole.svg?raw';
+  import { DataFrame, Title, Input, Button } from '$lib/components';
+	//import mail from '$lib/assets/svg/mail.svg?raw';
+	//import lock from '$lib/assets/svg/lock-keyhole.svg?raw';
   let { form }: { form: ActionData } = $props();
   let btnLogin = $state<Button>();
-
+  /*
   $effect(() => {
     if (form) {
       console.log(form)
     }
   });
-
+  */
   const handleForm: SubmitFunction = () => {
-    //btnLogin?.load(true);
+    btnLogin?.load(true);
     return async ({ update }) => {
-      //btnLogin?.load(false);
+      btnLogin?.load(false);
       await update();
     };
   };
@@ -27,32 +27,22 @@
 <!-- vtrmq09@gmail.com admin123 -->
 
 <div class="wr-form-login">
-  <Form width="400px">
+  <DataFrame width="400px">
     <form method="POST" use:enhance={handleForm} novalidate>
       <Title>Iniciar sesión</Title>
       <div class="body-form">
         <Input 
-          style="linear" 
-          type="text" 
-          requested 
-          label="Correo electrónico" 
-          value={form?.data?.email ?? ''} 
-          error={form?.error} 
-          input={form?.input ?? ''} 
-          name="email" icon={mail} />
+          style="linear" type="text" requested label="Correo electrónico" 
+          value={form?.data?.email ?? 'vtrmq09@gmail.com'} error={form?.error} input={form?.input ?? ''} 
+          name="email" />
         <Input 
-          style="linear" 
-          type="password" 
-          requested 
-          label="Contraseña" 
-          value={form?.data?.password ?? ''} 
-          error={form?.error} 
-          input={form?.input ?? ''} 
-          name="password" icon={lock} />
+          style="linear" type="password" requested label="Contraseña" 
+          value={form?.data?.password ?? 'admin123'} error={form?.error} input={form?.input ?? ''} 
+          name="password" />
       </div>
       <Button bind:this={btnLogin}>Login</Button>
     </form>
-  </Form>
+  </DataFrame>
 </div>
 
 <style>

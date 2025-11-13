@@ -1,5 +1,4 @@
-export function validateEmail(email: string): 
-  { success: true } | { success: false; error: string } {
+export function validateEmail(email: string): { success: true | false; error?: string } {
 
   if (!email || email.trim() === '') {
     return { success: false, error: 'El correo electrónico es obligatorio' };

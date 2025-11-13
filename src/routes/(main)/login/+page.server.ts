@@ -4,15 +4,18 @@ import bcrypt from 'bcryptjs';
 import { validateEmail, validateString, MError, DASHBOARDS, SESSION_CONFIG, CLIENTAUTHINFO } from '$lib/utils';
 import { dbPlatform, queryFirstDB } from '$lib/server/db';
 import type { UserProfile } from "$lib/types"
+import { signSession } from '$lib/services/auth';
 
 type User = {
   id: number
+  user_id: number
   name: string
   surnames: string
   email: string
   phone: string
   password: string
   profile: UserProfile
+  photo: ''
 }
 
 export const actions: Actions = {
@@ -27,23 +30,24 @@ export const actions: Actions = {
 
       const emailResult = validateEmail(email);
       if (!emailResult.success) {
-        throw new MError(emailResult.error || 'Email inválido', 'email', 400);
+        throw new MError(emailResult.error 
+          || 'Email inválido', 'email', 400);
       }
 
       const passwordResult = validateString(password);
       if (!passwordResult.success) {
-        throw new MError('La contraseña es requerida', 'password', 400);
+        throw new MError('La contraseña es requerida', 'password');
       }
 
       // ====== VERIFICAR SERVICIOS ======
       const db = dbPlatform(platform);
       if (!db) {
-        throw new MError('DB: servicio no disponible', null, 400);
+        throw new MError('DB: servicio no disponible', null);
       }
 
       user = await queryFirstDB(db, 'SELECT * FROM users WHERE email = ?', email);
       if (!user) {
-        throw new MError('Correo electrónico incorrecto', 'email', 401);
+        throw new MError('Correo electrónico incorrecto', 'email');
       }
 
       // ====== VERIFICAR CONTRASEÑA ======
@@ -53,7 +57,7 @@ export const actions: Actions = {
       );
 
       if (!passwordMatch) {
-        throw new MError('Contraseña incorrecta', 'password', 401);
+        throw new MError('Contraseña incorrecta', 'password');
       }
 
       // Crear sesión
@@ -64,10 +68,14 @@ export const actions: Actions = {
         email: user.email,
         phone: user.phone,
         profile: user.profile,
+        photo: user.photo
       };
 
-      const clientAuthInfo = encodeURIComponent(JSON.stringify(sessionUser));
-      cookies.set(CLIENTAUTHINFO, clientAuthInfo, SESSION_CONFIG);
+      //const clientAuthInfo = encodeURIComponent(JSON.stringify(sessionUser));
+      //cookies.set(CLIENTAUTHINFO, clientAuthInfo, SESSION_CONFIG);
+
+      const signedSession = signSession(sessionUser);
+      cookies.set(CLIENTAUTHINFO, signedSession, SESSION_CONFIG);
 
     } catch (error) {
 

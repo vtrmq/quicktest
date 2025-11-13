@@ -47,17 +47,22 @@
   <div class="inputText">
     <div class="wr-input">
       {#if icon.length}
-        <div class="icon">{@html icon}</div>
+        <div class="icon" class:padding-left-icon-border={style === 'border'}>{@html icon}</div>
       {/if}
       <input 
         use:Type
         autocomplete="off" 
         class="input"
-        class:input-border={input !== name && style === 'border'} class:input-border-error={input === name && style === 'border'} 
-        class:input-linear={input !== name && style === 'linear'} class:input-linear-error={input === name && style === 'linear'} 
+        class:input-border={input !== name && style === 'border'} class:input-border-error={input === name && style === 'border' && icon.length === 0} 
+        class:input-linear={input !== name && style === 'linear'} class:input-linear-error={input === name && style === 'linear' && icon.length === 0} 
+        class:input-linear-error-icon={input === name && style === 'linear' && icon.length !== 0}
+        class:input-border-error-icon={input === name && style === 'border' && icon.length !== 0}
+        class:input-linear-error-x={input === name && style === 'linear' && icon.length !== 0}
+
         class:padding-right={type === 'password'}
         class:input-date={type === 'date'}
-        class:padding-left={icon.length}
+        class:padding-left={icon.length && style === 'linear'}
+        class:padding-left-border={icon.length && style === 'border'}
         bind:value={value} 
         {name} 
         onkeydown={keyup} 
@@ -106,6 +111,52 @@
 :global(.icon-form) {
   width: 30px;
   color: var(--color-icon-form);
+}
+.input-linear-error-icon.input-linear-error-x {
+  width: 100%;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  border-bottom: 1px solid var(--color-border-input-red);
+  padding: 0.3em 0.5em;
+  padding-left: 30px;
+}
+.input-linear-error-icon.input-linear-error-x:focus {
+  border-bottom: 1px solid var(--color-border-input-red);
+}
+.input-linear-error-icon {
+  padding: 0.3em 0.5em;
+  padding-left: 30px;
+  width: 100%;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  border-bottom: 1px solid var(--color-border-input);
+}
+
+.inputText:has(.input-linear-error-icon)>line,
+.inputText:has(.input-border-error-icon)>line {
+  background: var(--color-border-input-red);
+}
+
+.input-border-error-icon {
+  padding: 0.3em 0.5em;
+  padding-left: 40px;
+  width: 100%;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  border: 1px solid var(--color-border-input-red);
+  border-radius: var(--border-radius);
+}
+.input-border-error-icon:focus {
+  border: 1px solid var(--color-border-input-red);
+  box-shadow: 0px 0px 0px 4px #ffdfd5;
+}
+
+
+.icon.padding-left-icon-border {
+  left: 10px;
+}
+.input-border.padding-left-border {
+  padding-left: 40px;
 }
 .input-linear.padding-left {
   padding-left: 30px;
@@ -193,7 +244,7 @@
 .label {
   font-family: var(--font-normal);
   font-weight: 600;
-  font-size: 1.1em;
+  font-size: 1.3em;
   color: var(--color-label-input);
 }
 .input-linear {
@@ -218,24 +269,27 @@
   font-family: var(--font-normal);
   font-size: var(--font-size);
   border: 1px solid var(--color-border-input);
-  padding: 0.2em 0.5em;
+  padding: 0.3em 0.5em;
   border-radius: var(--border-radius);
 }
 .input-border:focus {
   border: 1px solid #6049eb;
   box-shadow: 0px 0px 0px 4px rgba(119, 112, 255, 0.2);
+  transition: var(--transition);
 }
 .input-border-error {
   width: 100%;
   font-family: var(--font-normal);
   font-size: var(--font-size);
   border: 1px solid var(--color-border-input-red);
-  padding: 0.2em 0.5em;
+  padding: 0.3em 0.5em;
   border-radius: var(--border-radius);
+  box-shadow: 0px 0px 0px 4px #ffdfd5;
 }
 .input-border-error:focus {
   border: 1px solid var(--color-border-input-red);
   box-shadow: 0px 0px 0px 4px #ffdfd5;
+  transition: var(--transition);
 }
 .input-border.padding-right, .input-linear.padding-right {
   padding-right: 40px;
@@ -249,7 +303,7 @@
 .msg-error {
   width: 100%;
   height: 20px;
-  font-size: 1em;
+  font-size: 1.2em;
   color: var(--red);
   font-family: var(--font-normal);
 }
@@ -319,7 +373,10 @@
 
 @media(min-width: 700px) {
   .label {
-    font-size: 1em;
+    font-size: 1.1em;
+  }
+  .msg-error {
+    font-size: 1.1em;
   }
 }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   let { children, type = 'submit', fn = ()=>{}  } = $props()
   let isLoad: boolean = $state(false);
+  let isDisabled: boolean = $state(false);
 
   function Type(node: HTMLButtonElement) {
     switch (type) {
@@ -11,7 +12,11 @@
   }
 
   export function load(_isLoad: boolean) {
-    isLoad = _isLoad
+    isLoad = _isLoad;
+  }
+
+  export function disabled(_isDisabled: boolean) {
+    isDisabled = _isDisabled;
   }
 
   function handleClick() {
@@ -21,7 +26,7 @@
   }
 </script>
 
-<button use:Type class="button" onclick={handleClick} disabled={isLoad}>
+<button use:Type class="button" onclick={handleClick} disabled={isLoad || isDisabled}>
   {#if !isLoad}
     {@render children()}
   {:else}
@@ -46,8 +51,7 @@
     width: 100%;
     height: 50px;
     border-radius: 70px;
-    font-family: var(--font-normal);
-    font-weight: 600;
+    font-family: var(--font-bold);
     font-size: 1.1em;
     background-color: #7cc54e;
     color: #fff;
@@ -59,6 +63,7 @@
   @media(min-width: 700px) {
     .button {
       height: 40px;
+      font-size: 1em;
     }
   }
 </style>

@@ -1,15 +1,23 @@
 <script>
-  let { children } = $props()
+  let { children, bg = false, fixed = false } = $props()
 </script>
-<header class="header">
+<header class="header" class:fixed={fixed} class:bg={bg}>
   {@render children()} 
 </header>
 
 <style>
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: var(--height-header);
-  }
+.fixed {
+  position: fixed;
+  width: 100%;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--height-header);
+  z-index: 1;
+}
+.header.bg {
+  background: var(--bg-header);
+}
 </style>

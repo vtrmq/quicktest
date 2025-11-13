@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-size: 18px;
   font-style: normal;
   font-weight: 100;
   outline: none;
@@ -12,7 +11,7 @@
 }
 
 :root {
-  --font-bold: "Lilita One", sans-serif;
+  --font-bold: "Patua One", sans-serif;
   --font-normal: "Markazi Text", serif;
   --border-radius: 10px;
   --transition: 0.3s;

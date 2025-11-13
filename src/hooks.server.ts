@@ -1,15 +1,24 @@
 import type { Handle } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import { CLIENTAUTHINFO } from "$lib/utils";
+import { verifySession } from "$lib/services/auth";
+import type { DataProfile } from "$lib/types";
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.user = null;
-  const clientAuthInfo = event.cookies.get(CLIENTAUTHINFO) ?? null;
-  if (clientAuthInfo) {
-    // Existe cookie client-auth-info
-    event.locals.user = JSON.parse(decodeURIComponent(clientAuthInfo));
+  const signedSession = event.cookies.get(CLIENTAUTHINFO) ?? null;
+  if (signedSession) {
+    try {
+      const userData = verifySession(signedSession);
+      if (userData) { 
+        event.locals.user = userData as DataProfile;
+      } else {
+        throw null;
+      }
+    } catch {
+      event.cookies.delete(CLIENTAUTHINFO, { path: '/' });
+      throw redirect(302, '/');
+    }
   }
-
-  //const rs = encodeURIComponent(JSON.stringify({id: 1, name: 'Victor', surnames: 'Márquez', profile: 'A'}));
-  //console.log(event.locals.user)
   return await resolve(event);
 }
