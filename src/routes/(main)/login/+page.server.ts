@@ -42,7 +42,7 @@ export const actions: Actions = {
       // ====== VERIFICAR SERVICIOS ======
       const db = dbPlatform(platform);
       if (!db) {
-        throw new MError('DB: servicio no disponible', null);
+        throw new MError('DB: servicio no disponible');
       }
 
       user = await queryFirstDB(db, 'SELECT * FROM users WHERE email = ?', email);
