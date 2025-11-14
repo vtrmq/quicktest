@@ -2,16 +2,27 @@ import type { Handle } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import { CLIENTAUTHINFO } from "$lib/utils";
 import { verifySession } from "$lib/services/auth";
-import type { DataProfile } from "$lib/types";
+//import type { DataProfile } from "$lib/types";
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.user = null;
   const signedSession = event.cookies.get(CLIENTAUTHINFO) ?? null;
   if (signedSession) {
     try {
-      const userData = verifySession(signedSession);
+      const userData = verifySession(signedSession) as App.Locals['user'];
       if (userData) { 
-        event.locals.user = userData as DataProfile;
+        event.locals.user = userData;
+        /*
+        event.locals.user = userData as {
+          id: number;
+          name?: string;
+          surnames?: string;
+          email?: string;
+          phone?: string;
+          profile?: string;
+          photo?: string;
+        };
+        */
       } else {
         throw null;
       }

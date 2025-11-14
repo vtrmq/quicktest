@@ -1,7 +1,9 @@
 export type DataProfile = {
-  name: string | undefined
-  surnames: string | undefined
-  email: string | undefined
-  photo: string | undefined
-  profile: string | undefined
+  id: number
+  name: string
+  surnames: string
+  email: string
+  phone: string
+  profile: string
+  photo?: string
 }

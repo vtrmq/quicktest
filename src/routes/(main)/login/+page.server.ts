@@ -73,6 +73,8 @@ export const actions: Actions = {
 
       //const clientAuthInfo = encodeURIComponent(JSON.stringify(sessionUser));
       //cookies.set(CLIENTAUTHINFO, clientAuthInfo, SESSION_CONFIG);
+      
+      console.log(sessionUser)
 
       const signedSession = signSession(sessionUser);
       cookies.set(CLIENTAUTHINFO, signedSession, SESSION_CONFIG);

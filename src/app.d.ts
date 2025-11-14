@@ -6,14 +6,20 @@ declare global {
 		interface Locals {
       user: {
         id: number
-        name: string
-        surnames: string
-        email: string
-        profile: 'A' | 'T' | 'S'
+        name?: string
+        surnames?: string
+        email?: string
         phone?: string
+        profile?: 'A' | 'T' | 'S'
         photo?: string
       } | null
     }
+
+    interface PageData {
+      user?: App.Locals['user']; // También actualiza PageData si lo usas
+    }
+
+
 		// interface PageData {}
 		// interface PageState {}
 		interface Platform {
