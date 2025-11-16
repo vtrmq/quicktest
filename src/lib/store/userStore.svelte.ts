@@ -17,4 +17,14 @@ export const userStore = {
   photo (_photo: string) {
     info.photo = _photo;
   },
+  info (data: any) {
+    info.name = data.name;
+    info.surnames = data.surnames;
+    info.phone = data.phone;
+    return info;
+  },
+  email (mail: string) {
+    info.email = mail;
+    return info;
+  }
 };

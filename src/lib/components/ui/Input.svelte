@@ -63,7 +63,8 @@
         class:input-date={type === 'date'}
         class:padding-left={icon.length && style === 'linear'}
         class:padding-left-border={icon.length && style === 'border'}
-        bind:value={value} 
+
+        bind:value 
         {name} 
         onkeydown={keyup} 
         spellcheck="false" 
@@ -117,14 +118,14 @@
   font-family: var(--font-normal);
   font-size: var(--font-size);
   border-bottom: 1px solid var(--color-border-input-red);
-  padding: 0.3em 0.5em;
+  padding: 0.4em 0.5em;
   padding-left: 30px;
 }
 .input-linear-error-icon.input-linear-error-x:focus {
   border-bottom: 1px solid var(--color-border-input-red);
 }
 .input-linear-error-icon {
-  padding: 0.3em 0.5em;
+  padding: 0.4em 0.5em;
   padding-left: 30px;
   width: 100%;
   font-family: var(--font-normal);
@@ -138,7 +139,7 @@
 }
 
 .input-border-error-icon {
-  padding: 0.3em 0.5em;
+  padding: 0.4em 0.5em;
   padding-left: 40px;
   width: 100%;
   font-family: var(--font-normal);
@@ -269,7 +270,7 @@
   font-family: var(--font-normal);
   font-size: var(--font-size);
   border: 1px solid var(--color-border-input);
-  padding: 0.3em 0.5em;
+  padding: 0.4em 0.5em;
   border-radius: var(--border-radius);
 }
 .input-border:focus {
@@ -282,7 +283,7 @@
   font-family: var(--font-normal);
   font-size: var(--font-size);
   border: 1px solid var(--color-border-input-red);
-  padding: 0.3em 0.5em;
+  padding: 0.4em 0.5em;
   border-radius: var(--border-radius);
   box-shadow: 0px 0px 0px 4px #ffdfd5;
 }
@@ -372,6 +373,11 @@
 }
 
 @media(min-width: 700px) {
+  /*
+  .input {
+    padding: 0.4em 0;
+  }
+  */
   .label {
     font-size: 1.1em;
   }

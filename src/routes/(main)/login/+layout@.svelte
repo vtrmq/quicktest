@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-  <title>Login</title>	
+  <title>Login - QuickTest</title>	
 </svelte:head>
 
 {#if isVisible}

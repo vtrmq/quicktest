@@ -21,3 +21,4 @@ export { default as LinkBtn } from './ui/LinkBtn.svelte';
 export { default as NoneData } from './ui/NoneData.svelte';
 export { default as LinkBack } from './ui/LinkBack.svelte';
 export { default as NavOptions } from './ui/NavOptions.svelte';
+export { default as Toast } from './ui/Toast.svelte';

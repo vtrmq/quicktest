@@ -29,7 +29,16 @@
       isVisible = true;
     }
   })*/
+
+
 </script>
+
+<svelte:head>
+  <style>
+  body { background-color: #fff; }
+  </style>
+  <title>QuickTest</title>
+</svelte:head>
 
 <Header>
   &nbsp;

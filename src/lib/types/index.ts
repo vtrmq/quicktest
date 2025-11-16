@@ -4,3 +4,7 @@ export * from './userRegister';
 export * from './validate';
 export * from './userProfile';
 export * from './menuOptions';
+export * from './userActionResponse';
+export * from './userActionEmail';
+export * from './userActionCode';
+export * from './userActionPassw';

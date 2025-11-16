@@ -1,4 +1,3 @@
-/*
 import crypto from 'node:crypto';
 import { SESSION_SECRET } from '$env/static/private';
 
@@ -11,8 +10,9 @@ export function signSession(data: object): string {
 
   return `${btoa(dataStr)}.${signature}`;
 }
-*/
 
+/*
 export function signSession(data: object) {
   return btoa(JSON.stringify(data)); // Base64 simple
 }
+*/

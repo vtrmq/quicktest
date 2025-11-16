@@ -1,6 +1,3 @@
-<svelte:head>
-  <title>QuickTest</title>
-</svelte:head>
 
 <div class="wr-title">
   <h1 class="title">QuickTest</h1>

@@ -6,6 +6,16 @@
 </header>
 
 <style>
+:global {
+  .link-logo {
+    display: flex;
+    margin-left: 30px;
+  }
+  .link-logo > img {
+    display: flex;
+    width: 120px;
+  }
+}
 .fixed {
   position: fixed;
   width: 100%;

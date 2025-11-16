@@ -45,16 +45,28 @@ export const emailTemplates = {
     `
   }),
 
-  passwordReset: (name: string, resetLink: string) => ({
-    subject: 'Restablece tu contraseña',
+  emailReset: (name: string, code: string) => ({
+    subject: 'Restablece correo electrónico',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #e74c3c;">Restablecer correo electrónico</h2>
+        <p>Hola ${name},</p>
+        <p>Has solicitado restablecer tu correo electrónico. Escribe este código: ${code} en la sección Actualizar Email en la página de perfil</p>
+        <p>Este código expirará en 6 minutos.</p>
+        <p>Si no solicitaste este cambio, ignora este email.</p>
+      </div>
+    `
+  }),
+
+
+  passwordReset: (name: string, code: string) => ({
+    subject: 'Restablece contraseña',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c;">Restablecer Contraseña</h2>
         <p>Hola ${name},</p>
-        <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace:</p>
-        <p><a href="${resetLink}" style="background: #e74c3c; color: white; padding: 10px 20px; 
-           text-decoration: none; border-radius: 4px;">Restablecer Contraseña</a></p>
-        <p>Este enlace expirará en 1 hora.</p>
+        <p>Has solicitado restablecer tu contraseña. Escribe este código: ${code} en la sección Actualizar contraseña en la página de perfil</p>
+        <p>Este enlace expirará en 6 minutos.</p>
         <p>Si no solicitaste este cambio, ignora este email.</p>
       </div>
     `

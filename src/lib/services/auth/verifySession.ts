@@ -1,4 +1,3 @@
-/*
 import { SESSION_SECRET } from '$env/static/private';
 import crypto from 'node:crypto';
 
@@ -13,8 +12,8 @@ export function verifySession(signedData: string): object | null {
     
     return signature === expectedSignature ? JSON.parse(dataStr) : null;
 }
-*/
 
+/*
 export function verifySession(encoded: string): object | null {
   try {
     return JSON.parse(atob(encoded));
@@ -22,3 +21,4 @@ export function verifySession(encoded: string): object | null {
     return null;
   }
 }
+*/

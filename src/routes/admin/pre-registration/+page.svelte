@@ -32,11 +32,13 @@
     <NoneData>No hay docente pre registrado</NoneData>
   </div>
 {/if}
+
 <style>
 .container-teachers-registrations {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
+  padding: 1em;
 }
 .wr-none-data {
   padding: 3em 0;

@@ -1,20 +1,41 @@
-name = "quicktest"
-compatibility_date = "2025-10-31"  # Fecha actual
-pages_build_output_dir = ".svelte-kit/cloudflare"
+#name = "quicktest"
+#compatibility_date = "2025-10-31"  # Fecha actual
+#pages_build_output_dir = ".svelte-kit/cloudflare"
 
 #[assets]
 #directory = ".svelte-kit/cloudflare"
 #binding = "ASSETS"
 
-[env.production]
+#[env.production]
+#compatibility_flags = ["nodejs_compat"]
+
+#[[d1_databases]]
+#binding = "DB"
+#database_name = "language"
+#database_id = "16aae997-5d06-44ae-9678-d5a0d9ca9f68"
+
+#[[kv_namespaces]]
+#binding = "CODES"
+#id = "e3c6d29fe5a745fda5d3b4da4ff0e10b"
+#preview_id = "ddcac06b30024c70ba9032037ca25f10"
+
+
+name = "quicktest"
+compatibility_date = "2025-10-31"
 compatibility_flags = ["nodejs_compat"]
 
+# IMPORTANTE: Para SvelteKit, usa esta ruta
+pages_build_output_dir = ".svelte-kit/cloudflare"
+
+# Bindings D1 - DEBEN estar en el nivel raíz
 [[d1_databases]]
 binding = "DB"
 database_name = "language"
 database_id = "16aae997-5d06-44ae-9678-d5a0d9ca9f68"
 
+# Bindings KV - DEBEN estar en el nivel raíz  
 [[kv_namespaces]]
 binding = "CODES"
 id = "e3c6d29fe5a745fda5d3b4da4ff0e10b"
 preview_id = "ddcac06b30024c70ba9032037ca25f10"
+

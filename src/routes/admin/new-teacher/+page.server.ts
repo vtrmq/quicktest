@@ -12,6 +12,7 @@ export const actions: Actions = {
   default: async ({ request, locals, platform }) => {
 
     if (!locals.user) { throw redirect(303, '/'); }
+    if (locals.user.profile !== 'A') { throw redirect(303, '/unauthorized'); }
 
     const data = await request.formData();
     const name = data.get('name')?.toString() ?? '';

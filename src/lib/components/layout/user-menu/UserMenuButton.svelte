@@ -35,4 +35,9 @@
     object-fit: scale-down;
     width: 100%;
   }
+  @media(min-width: 700px) {
+    .user-menu-button {
+      right: 20px;
+    }
+  }
 </style>

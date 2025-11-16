@@ -1,8 +1,550 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
+  import type { SubmitFunction } from '@sveltejs/kit';
+  import type { PageData } from './$types';
+  import { Title, Input, Button, Toast } from '$lib/components';
   import { userStore } from '$lib/store';
+  import type { UserActionResponse, UserActionEmail, UserActionCode, UserActionPassw } from '$lib/types';
+	import send from '$lib/assets/svg/send.svg?raw';
+	import asterisk from '$lib/assets/svg/asterisk.svg?raw';
+	import ban from '$lib/assets/svg/ban.svg?raw';
+	import save from '$lib/assets/svg/save.svg?raw';
+  let { data }: { data: PageData } = $props();
+  let toast: any = $state();
+
+  let btnLogin = $state<Button>();
+  let photo = userStore.data.photo;
+  let formTab = $state('info');
+  //let formEmail = $state<HTMLFormElement>();
+  let isTabMail = $state('sendMail');
+  let isTabPassw = $state('sendMail');
+
+  //let clearInput = $state(false);
+  /*
+  let userEdit = $state({
+    name: form?.user?.name ?? data.user?.name ?? '',
+    surnames: form?.user?.surnames ?? data.user?.surnames ?? '',
+    phone: form?.user?.phone ?? data.user?.phone ?? ''
+  });
+  */
+  /*
   function handlePhoto() {
     userStore.photo('https://www.svgrepo.com/show/382106/male-avatar-boy-face-man-user-9.svg');
   }
+  */
+
+
+  /*
+  async function handleSendEmail() {
+    const form = new FormData(formEmail);
+    const field = Object.fromEntries(form.entries());
+
+    const data = new FormData();
+    data.append('password', field.password);
+    data.append('new_mail', field.new_mail);
+
+    const res = await fetch('?/email', {
+      method: 'POST',
+      body: data 
+    });
+    const response = await res.json();
+		console.log('Respuesta del servidor:', response.data);
+  }
+  */
+
+  let resultServerInfo: UserActionResponse = $state({
+    error: '',
+    input: '',
+    success: false,
+    user:{ 
+      name: data.user?.name ?? '', 
+      surnames: data.user?.surnames ?? '', 
+      phone: data.user?.phone ?? '' 
+    }
+  });
+
+  let resultServerEmail: UserActionEmail = $state({
+    error: '',
+    input: '',
+    success: false,
+    resp:{ 
+      password: '', 
+      new_mail: '', 
+    }
+  });
+
+  let resultServerCode: UserActionCode = $state({
+    success: false,
+    code: '',
+    error: '',
+    input: '',
+    email: '',
+  });
+
+  let resultServerPassw: UserActionPassw = $state({
+    error: '',
+    input: '',
+    success: false,
+    resp:{ 
+      password: '', 
+      new_password: '', 
+    }
+  });
+
+  function tabForm(tab: string) {
+    formTab = tab;
+    isTabMail = 'sendMail';
+    isTabPassw = 'sendMail';
+
+    // RESET INPUST
+    // ============
+
+    resultServerInfo = {
+      error: '',
+      input: '',
+      success: false,
+      user:{ 
+        name: data.user?.name ?? '', 
+        surnames: data.user?.surnames ?? '', 
+        phone: data.user?.phone ?? '' 
+      }
+    };
+
+    resultServerEmail = {
+      error: '',
+      input: '',
+      success: false,
+      resp:{ 
+        password: '', 
+        new_mail: '', 
+      }
+    };
+
+    resultServerCode = {
+      success: false,
+      code: '',
+      error: '',
+      input: '',
+      email: '',
+    };
+
+    resultServerPassw = {
+      error: '',
+      input: '',
+      success: false,
+      resp:{ 
+        password: '', 
+        new_password: '', 
+      }
+    };
+
+
+  }
+  
+  const handleFormUser: SubmitFunction = () => {
+    btnLogin?.load(true);
+     
+    return async ({ result }) => {
+      btnLogin?.load(false);
+      //resultServer = (result as unknown as { data?: ActionData }).data;
+      //resultServerInfo = (result as any).data;
+      if (result.type === 'success') {
+        resultServerInfo = result.data as UserActionResponse;
+        userStore.info(resultServerInfo.user);
+        toast.view({
+          type: 'success',
+          message: 'Datos actualizados',
+        });
+      } else if (result.type === 'failure') {
+        resultServerInfo = result.data as UserActionResponse;
+      }
+    };
+  };
+
+  const handleFormEmail: SubmitFunction = () => {
+    btnLogin?.load(true);
+     
+    return async ({ update, result }) => {
+      btnLogin?.load(false);
+      if (result.type === 'success') {
+        //resultServerEmail = result.data as UserActionEmail;
+        toast.view({
+          type: 'success',
+          message: 'Email enviado',
+        });
+        await update();
+      } else if (result.type === 'failure' && result.data?.input !== '') {
+        resultServerEmail = result.data as UserActionEmail;
+      } else if (result.type === 'failure' && result.data?.input === '') {
+        resultServerEmail = result.data as UserActionEmail;
+        toast.view({
+          type: 'success',
+          message: result.data.error,
+        });
+      }
+    };
+  };
+
+
+  const handleFormCodeEmail: SubmitFunction = () => {
+    btnLogin?.load(true);
+    resultServerCode = { success: false, code: '', error: '', input: '', email: '' };
+    return async ({ result }) => {
+      btnLogin?.load(false);
+      if (result.type === 'success') {
+        resultServerCode = result.data as UserActionCode;
+        userStore.email(resultServerCode.email);
+        toast.view({
+          type: 'success',
+          message: 'Correo electrónico actualizado',
+        });
+      } else if (result.type === 'failure') {
+        resultServerCode = result.data as UserActionCode;
+      }
+    };
+  };
+
+  const handleFormPassword: SubmitFunction = () => {
+    btnLogin?.load(true);
+     
+    return async ({ update, result }) => {
+      btnLogin?.load(false);
+      if (result.type === 'success') {
+        toast.view({
+          type: 'success',
+          message: 'Email enviado',
+        });
+        await update();
+      } else if (result.type === 'failure' && result.data?.input !== '') {
+        resultServerPassw = result.data as UserActionPassw;
+      } else if (result.type === 'failure' && result.data?.input === '') {
+        resultServerPassw = result.data as UserActionPassw;
+        toast.view({
+          type: 'success',
+          message: result.data.error,
+        });
+      }
+    };
+  };
+
+  const handleFormCodePassword: SubmitFunction = () => {
+    btnLogin?.load(true);
+    resultServerCode = { success: false, code: '', error: '', input: '', email: '' };
+    return async ({ result }) => {
+      btnLogin?.load(false);
+      if (result.type === 'success') {
+        resultServerCode = result.data as UserActionCode;
+        toast.view({
+          type: 'success',
+          message: 'Contraseña actualizada',
+        });
+      } else if (result.type === 'failure') {
+        resultServerCode = result.data as UserActionCode;
+      }
+    };
+  };
+
+  function handleViewInputCodeEmail(opt: string) {
+    isTabMail = opt;
+    resultServerEmail = { error: '', input: '', success: false, resp:{ password: '', new_mail: '', } };
+    resultServerCode = { success: false, code: '', error: '', input: '', email: '' };
+  }
+
+  function handleViewInputCodePassw(opt: string) {
+    isTabPassw = opt;
+    resultServerPassw = { error: '', input: '', success: false, resp:{ password: '', new_password: '', } };
+    resultServerCode = { success: false, code: '', error: '', input: '', email: '' };
+  }
+
 </script>
+
+<Toast bind:this={toast} />
+
+<div class="container-profile">
+  <div class="header-top"></div>
+  <div class="container-body">
+
+    <div class="section">
+      <div class="part">
+        <div class="box-photo">
+          {#if photo}
+            <img src={photo} alt="" class="user-photo" />
+          {:else}
+            <img src='/images/user.png' alt="" class="user-photo" />
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <div class="wr-section">
+      <div class="section">
+        <div class="wr-menu">
+          <button class="btn-option" class:rs={formTab === 'info'} onclick={()=>tabForm('info')}>Mis datos</button>
+          <button class="btn-option" class:rs={formTab === 'mail'} onclick={()=>tabForm('mail')}>Email</button>
+          <button class="btn-option" class:rs={formTab === 'passw'} onclick={()=>tabForm('passw')}>Contraseña</button>
+        </div>
+
+        {#if formTab === 'info'}
+
+          <form method="POST" action="?/user" use:enhance={handleFormUser} novalidate>
+            <Title>Actualizar datos</Title>
+            <div class="body-form">
+              <Input 
+                style="border" type="text" requested label="Nombre" 
+                bind:value={resultServerInfo.user.name} 
+                error={resultServerInfo.error} input={resultServerInfo.input} 
+                name="name" />
+              <Input 
+                style="border" type="text" requested label="Apellidos" 
+                value={resultServerInfo.user.surnames} 
+                error={resultServerInfo.error} input={resultServerInfo.input} 
+                name="surnames" />
+              <Input 
+                style="border" type="text" requested label="Celular" 
+                value={resultServerInfo.user.phone} 
+                error={resultServerInfo.error} input={resultServerInfo.input} 
+                name="phone" />
+            </div>
+            <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Guardar</Button>
+          </form>
+
+        {:else if formTab === 'mail'}
+
+          <Title>Actualizar Email</Title>
+
+          {#if isTabMail === 'sendMail'}
+          <form method="POST" action="?/email" use:enhance={handleFormEmail} novalidate>
+            <div class="body-form">
+              <Input 
+                style="border" type="password" requested label="Contraseña" 
+                value={resultServerEmail.resp.password} 
+                error={resultServerEmail.error} input={resultServerEmail.input} 
+                name="password" />
+              <Input 
+                style="border" type="text" requested label="Nuevo correo electrónico" 
+                value={resultServerEmail.resp.new_mail} 
+                error={resultServerEmail.error} input={resultServerEmail.input} 
+                name="new_mail" />
+            </div>
+            <div class="wr-code">
+              <Button icon={asterisk} type="button" onclick={()=>handleViewInputCodeEmail('sendCode')}>Código</Button>
+              <Button icon={send} onclick={()=>{}} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
+            </div>
+          </form>
+
+          {:else if isTabMail === 'sendCode'}
+
+            <form method="POST" action="?/code_mail" use:enhance={handleFormCodeEmail} novalidate>
+              <div class="body-form">
+                <Input 
+                  style="border" type="text" requested label="Código" 
+                  error={resultServerCode.error} input={resultServerCode.input ?? ''} 
+                  name="code" />
+              </div>
+              <div class="wr-code">
+                <Button icon={ban} type="button" onclick={()=>handleViewInputCodeEmail('sendMail')} bind:this={btnLogin} bg="cadetblue">Cancelar</Button>
+                <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Actualizar</Button>
+              </div>
+            </form>
+          {/if}
+
+
+        {:else if formTab === 'passw'}
+
+          <Title>Actualizar contraseña</Title>
+
+          {#if isTabPassw === 'sendMail'}
+          <form method="POST" action="?/password" use:enhance={handleFormPassword} novalidate>
+            <div class="body-form">
+              <Input 
+                style="border" type="password" requested label="Contraseña" 
+                value={resultServerPassw.resp.password} 
+                error={resultServerPassw.error} input={resultServerPassw.input} 
+                name="password" />
+              <Input 
+                style="border" type="password" requested label="Nueva contraseña" 
+                value={resultServerPassw.resp.new_password} 
+                error={resultServerPassw.error} input={resultServerPassw.input} 
+                name="new_password" />
+            </div>
+            <div class="wr-code">
+              <Button icon={asterisk} type="button" onclick={()=>handleViewInputCodePassw('sendCode')}>Código</Button>
+              <Button icon={send} onclick={()=>{}} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
+            </div>
+          </form>
+
+          {:else if isTabPassw === 'sendCode'}
+
+            <form method="POST" action="?/code_passw" use:enhance={handleFormCodePassword} novalidate>
+              <div class="body-form">
+                <Input 
+                  style="border" type="text" requested label="Código" 
+                  error={resultServerCode.error} input={resultServerCode.input ?? ''} 
+                  name="code" />
+              </div>
+              <div class="wr-code">
+                <Button icon={ban} type="button" onclick={()=>handleViewInputCodePassw('sendMail')} bind:this={btnLogin} bg="cadetblue">Cancelar</Button>
+                <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Actualizar</Button>
+              </div>
+            </form>
+          {/if}
+
+        {/if}
+
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+
+<style>
+.wr-code {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em;
+}
+.wr-menu {
+  display: flex;
+  justify-content: center;
+  gap: 0.3em;
+  margin-bottom: 1.5em;
+}
+.btn-option {
+  padding: 0.3em 1em;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: var(--font-normal);
+  font-size: 1.3em;
+  color: #6049eb;
+  background: #f0edfd;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.btn-option.rs {
+  color: #FFFFFF;
+  background-color: #7770FF;
+}
+.container-profile {
+  display: flex;
+  justify-content: center;
+}
+.wr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  width: 100%;
+}
+.body-form {
+  margin-top: 1em;
+  margin-bottom: 1.4em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.part {
+  display: flex;
+  justify-content: center;
+}
+.box-photo {
+  width: 250px;
+  display: flex;
+}
+.box-photo > img {
+  width: 100%;
+}
+.section {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2em 1em;
+  box-shadow: rgb(100 100 111 / 22%) 0px 7px 29px 0px;
+  /*filter: drop-shadow(0px 4px 16px rgba(155, 155, 155, 0.1));*/
+}
+.container-body {
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1.5em 1em;
+  flex-direction: column;
+  gap: 2em;
+}
+.header-top {
+  background: #6049ea;
+  width: 100%;
+  height: 200px;
+  position: absolute;
+}
+@media(min-width: 700px) {
+  .wr-code {
+    gap: 1em;
+  }
+}
+@media(min-width: 800px) {
+  .container-body {
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    align-items: flex-start;
+  }
+  .section {
+    padding: 2em 4em;
+  }
+}
+</style>
+
+
+<!--
 <h1>Profile</h1>
 <button onclick={handlePhoto}>Photo</button>
+-->
+
+
+<!-- 
+      
+      <div class="section">
+
+        <form method="POST" action="?/email" use:enhance novalidate>
+          <Title>Actualizar Email</Title>
+          <div class="body-form">
+            <Input 
+              style="border" type="password" requested label="Contraseña" 
+              value={form?.mail?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
+              name="email" />
+            <Input 
+              style="border" type="text" requested label="Correo electrónico" 
+              value={form?.mail?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
+              name="email" />
+          </div>
+          <Button bind:this={btnLogin}>Guardar</Button>
+        </form>
+
+      </div>
+
+      <div class="section">
+
+        <form method="POST" action="?/password" use:enhance novalidate>
+          <Title>Actualizar contraseña</Title>
+          <div class="body-form">
+            <Input 
+              style="border" type="password" requested label="Contraseña" 
+              value={form?.passw?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
+              name="email" />
+            <Input 
+              style="border" type="password" requested label="Contraseña" 
+              value={form?.passw?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
+              name="email" />
+          </div>
+          <Button bind:this={btnLogin}>Guardar</Button>
+        </form>
+
+      </div>
+-->
+
+

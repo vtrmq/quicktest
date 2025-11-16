@@ -41,9 +41,16 @@
 
 </script>
 
+<svelte:head>
+  <style>
+  body { background-color: #f9f9f9; }
+  </style>
+  <title>QuickTest - Admin</title>
+</svelte:head>
+
 {#if isVisible}
   <Header bg fixed>
-    <div><a href="/">QuickTest</a></div>
+    <a class="link-logo" href="/"><img src="/images/logo-quicktest.svg" alt=""/></a>
     <UserMenu info={info} options={adminOptions} />
   </Header>
   <Main fixed>
@@ -53,8 +60,3 @@
   </Main>
 {/if}
 
-<style>
-  .section {
-    padding: 1em;
-  }
-</style>
