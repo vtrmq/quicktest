@@ -1,28 +1,32 @@
 <script lang="ts">
-  import type { ActionData } from './$types';
-  import type { SubmitFunction } from '@sveltejs/kit';
-  import { enhance } from '$app/forms';
-  import { DataFrame, Title, Input, Button, LinkBack } from '$lib/components';
-	//import mail from '$lib/assets/svg/mail.svg?raw';
-	//import lock from '$lib/assets/svg/lock-keyhole.svg?raw';
-	//import phone from '$lib/assets/svg/phone.svg?raw';
-	//import type from '$lib/assets/svg/type.svg?raw';
+import type { ActionData } from './$types';
+import type { SubmitFunction } from '@sveltejs/kit';
+import { enhance } from '$app/forms';
+import { DataFrame, Title, Input, Button, LinkBack, Toast } from '$lib/components';
 
-  let { form }: { form: ActionData } = $props();
-  let btnLogin = $state<Button>();
+let { form }: { form: ActionData } = $props();
+let btnSave = $state<Button>();
+let toast = $state<Toast | null>(null);
 
-  const handleForm: SubmitFunction = () => {
-    btnLogin?.load(true);
-    return async ({ update, result }) => {
-      btnLogin?.load(false);
-      console.log('--> new-teacher/+page.svelte', result)
+const handleForm: SubmitFunction = () => {
+  btnSave?.load(true);
+  return async ({ update, result }) => {
+    if (result.type === 'failure') {
+      btnSave?.load(false);
+      const data = result.data;
+      if (data?.origin === 'form') {
+        await update();
+      } else if (data?.origin === 'server') {
+        toast?.view({ type: 'success', message: data.message });
+      }
+    } else {
       await update();
-    };
+    }
   };
-
+};
 </script>
 
-<!-- vtrmq09@gmail.com admin123 -->
+<Toast bind:this={toast} />
 
 <div class="wr-form-login">
   <DataFrame width="400px">
@@ -32,22 +36,22 @@
       <div class="body-form">
         <Input 
           style="border" type="text" requested label="Nombre" 
-          value={form?.data?.name ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.field?.name ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="name" />
         <Input 
           style="border" type="text" requested label="Apellidos" 
-          value={form?.data?.surnames ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.field?.surnames ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="surnames" />
         <Input 
           style="border" type="text" requested label="Correo electrónico" 
-          value={form?.data?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.field?.email ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="email" />
         <Input 
           style="border" type="text" requested label="Celular" 
-          value={form?.data?.phone ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.field?.phone ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="phone" />
       </div>
-      <Button bind:this={btnLogin}>Guardar</Button>
+      <Button bind:this={btnSave}>Guardar</Button>
     </form>
   </DataFrame>
 </div>
@@ -56,7 +60,7 @@
   .wr-form-login {
     display: flex;
     justify-content: center;
-    padding: 2em 0;
+    padding: 2em 1em 3em;
   }
   form {
     margin: 0 auto;
@@ -71,7 +75,7 @@
   }
   @media(min-width: 700px) {
     .wr-form-login {
-      padding: 1em;
+      padding: 2em 1em 3em;
     }
   }
 </style>

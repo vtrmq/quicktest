@@ -1,12 +1,27 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from "@sveltejs/kit";
-
 import type { UserRegister } from '$lib/types';
 import { kvPlatformCodes } from '$lib/server/kv';
-import { validateEmail, validateString, getDateTimeUTC, MError } from '$lib/utils';
+import { validateEmail, validateString, getDateTimeUTC, failForm, failServer } from '$lib/utils';
 import { newTeacher } from '$lib/services/admin';
 import { sendEmail, emailTemplates } from '$lib/server/email';
 import { dbPlatform } from '$lib/server/db';
+
+/*
+type Error = {
+  message: string
+  input: string
+}
+function failForm(error: unknown): error is Error {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    'input' in error
+  );
+}
+throw { message: "El apellido es requerido", input: 'surnames' }; // Así se utiliza
+*/
 
 export const actions: Actions = {
   default: async ({ request, locals, platform }) => {
@@ -24,33 +39,33 @@ export const actions: Actions = {
 
       const nameResult = validateString(name);
       if (!nameResult.success) {
-        throw new MError('El nombre es requerido', 'name');
+        throw new failForm("El nombre es requerido", "name");
       }
 
       const surnamesResult = validateString(surnames);
       if (!surnamesResult.success) {
-        throw new MError('El apellido es requerido', 'surnames');
+        throw new failForm("El apellido es requerido", "surnames");
       }
 
       const emailResult = validateEmail(email);
       if (!emailResult.success) {
-        throw new MError(emailResult.error || 'Email inválido', 'email');
+        throw new failForm(emailResult.error || 'Email inválido', "email");
       }
 
       const phoneResult = validateString(phone);
       if (!phoneResult.success) {
-        throw new MError('El celular es requerido', 'phone');
+        throw new failForm("El celular es requerido", "phone");
       }
 
       // ====== VERIFICAR SERVICIO ======
       const db = dbPlatform(platform);
       if (!db) {
-        throw new MError('DB: servicio no disponible', null);
+        throw new failServer("DB: servicio no disponible");
       }
 
       const kv = kvPlatformCodes(platform);
       if (!kv) {
-        throw new MError('KV: servicio no disponible', null);
+        throw new failServer("KV: servicio no disponible");
       }
 
       let infoTeacher: UserRegister = {
@@ -64,7 +79,7 @@ export const actions: Actions = {
       }
 
       const code = await newTeacher(kv, db, infoTeacher);
-      if (code.length !== 0) {
+      if (code && code.length !== 0) {
         const template = emailTemplates.welcome(name, `https://192.168.1.3:5173/register?code=${code}`);
         const result = await sendEmail({
           to: email,
@@ -72,26 +87,33 @@ export const actions: Actions = {
           html: template.html
         });
         if (!result.success && result.error) {
-          throw new MError(result.error, null);
+          throw new failServer(result.error);
         }
       } else {
-        throw new MError('El correo electrónico ya existe', 'email');
+        throw new failForm("El correo electrónico ya existe", "email");
       }
 
     } catch (error) {
+      
+      if (error instanceof failForm) {
+        return fail(400, {
+          msg: error.message,
+          input: error.input,
+          origin: error.origin,
+          field: { name, surnames, email, phone }
+        });
+      }
 
-      if (error instanceof MError) {
-        return fail(error.code, {
-          error: error.message,
-          data: { name, surnames, email, phone },
-          input: error.input
+      if (error instanceof failServer) {
+        return fail(500, {
+          message: error.message,
+          origin: error.origin,
         });
       }
 
       return fail(500, {
-        error: 'Error del servidor',
-        data: { name, surnames, email, phone },
-        input: null
+        message: 'Error inesperado',
+        origin: 'server'
       });
 
     }

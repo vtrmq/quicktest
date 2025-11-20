@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
   type Props = {
     photo?: string
     onclick: ()=>void
@@ -12,7 +13,7 @@
   aria-label="Menú de usuario"
   {onclick}>
   {#if photo}
-    <img src={photo} alt="" class="user-photo" />
+    <img src='{R2_DOMAIN}/{FOLDER_USER_PHOTOS}/{photo}' alt="" class="user-photo" />
   {:else}
     <img src='/images/user.png' alt="" class="user-photo" />
   {/if}
@@ -30,10 +31,13 @@
     display: flex;
     right: 0.8em;
     position: absolute;
+    overflow: hidden;
   }
   .user-photo {
-    object-fit: scale-down;
-    width: 100%;
+    width: 42px;
+    height: 40px;
+    object-fit: cover;
+    align-self: baseline;
   }
   @media(min-width: 700px) {
     .user-menu-button {

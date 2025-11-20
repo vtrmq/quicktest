@@ -3,8 +3,6 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { PreRegistration } from '$lib/types';
 import { kvGet, kvList, kvPlatformCodes } from '$lib/server/kv';
-import { MError } from '$lib/utils';
-
 
 export const load: PageServerLoad = async ({ locals, platform }) => {
 
@@ -17,12 +15,13 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 
     const kv = kvPlatformCodes(platform);
     if (!kv) {
-      throw new MError('KV: servicio no disponible');
+      throw "KV: servicio no disponible";
     }
 
     const prefix = `key:${user_id}:code:`;
     const listResult = await kvList(kv, prefix);
     const preRegistrations:PreRegistration[] = [];
+
     for (const key of listResult.keys) {
       const valueString = await kvGet(kv, key.name);
       if (valueString) {
@@ -36,11 +35,10 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
     };
 
   } catch (error) {
-    if (error instanceof MError) {
       return { 
+        error,
         user: locals.user, 
         codesTeachers: []
       };
-    }
   }
 };

@@ -4,6 +4,7 @@
 	import teachers from '$lib/assets/svg/users.svg?raw';
 	import perfil from '$lib/assets/svg/settings.svg?raw';
 	import mail from '$lib/assets/svg/mail-question-mark.svg?raw';
+  import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
 
   import { Header, Main, UserMenu } from '$lib/components';
   import { onMount } from 'svelte';
@@ -18,6 +19,7 @@
     name: data.user?.name,
     surnames: data.user?.surnames,
     email: data.user?.email,
+    //photo: data.user?.photo?.length === 0 ? '' : `${R2_DOMAIN}/${FOLDER_USER_PHOTOS}/${data.user?.photo}`,
     photo: data.user?.photo,
     profile: data.user?.profile
   });
@@ -43,7 +45,7 @@
 
 <svelte:head>
   <style>
-  body { background-color: #f9f9f9; }
+  body { background-color: #fafafa; }
   </style>
   <title>QuickTest - Admin</title>
 </svelte:head>

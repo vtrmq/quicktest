@@ -2,37 +2,33 @@
   import { enhance } from '$app/forms';
   import type { SubmitFunction } from '@sveltejs/kit';
   import type { PageData } from './$types';
-  import { Title, Input, Button, Toast } from '$lib/components';
+  import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
+  import { Title, Input, Button, Toast, AddImage } from '$lib/components';
   import { userStore } from '$lib/store';
   import type { UserActionResponse, UserActionEmail, UserActionCode, UserActionPassw } from '$lib/types';
 	import send from '$lib/assets/svg/send.svg?raw';
 	import asterisk from '$lib/assets/svg/asterisk.svg?raw';
 	import ban from '$lib/assets/svg/ban.svg?raw';
 	import save from '$lib/assets/svg/save.svg?raw';
+  //import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
+
   let { data }: { data: PageData } = $props();
   let toast: any = $state();
 
   let btnLogin = $state<Button>();
-  let photo = userStore.data.photo;
+  let photo = $derived(userStore.data.photo);
   let formTab = $state('info');
   //let formEmail = $state<HTMLFormElement>();
   let isTabMail = $state('sendMail');
   let isTabPassw = $state('sendMail');
 
-  //let clearInput = $state(false);
   /*
-  let userEdit = $state({
-    name: form?.user?.name ?? data.user?.name ?? '',
-    surnames: form?.user?.surnames ?? data.user?.surnames ?? '',
-    phone: form?.user?.phone ?? data.user?.phone ?? ''
-  });
+  (()=>{
+    if (photo?.length === 0) {
+      photo = '/images/user.png';
+    }
+  })();
   */
-  /*
-  function handlePhoto() {
-    userStore.photo('https://www.svgrepo.com/show/382106/male-avatar-boy-face-man-user-9.svg');
-  }
-  */
-
 
   /*
   async function handleSendEmail() {
@@ -252,8 +248,12 @@
 
   function handleViewInputCodePassw(opt: string) {
     isTabPassw = opt;
-    resultServerPassw = { error: '', input: '', success: false, resp:{ password: '', new_password: '', } };
+    resultServerPassw = { error: '', input: '', success: false, resp:{ password: '', new_password: '' } };
     resultServerCode = { success: false, code: '', error: '', input: '', email: '' };
+  }
+
+  function handleEventPhoto(e: string) {
+    photo = e;
   }
 
 </script>
@@ -267,11 +267,8 @@
     <div class="section">
       <div class="part">
         <div class="box-photo">
-          {#if photo}
-            <img src={photo} alt="" class="user-photo" />
-          {:else}
-            <img src='/images/user.png' alt="" class="user-photo" />
-          {/if}
+          <img src={photo === null || photo?.length === 0 ? '/images/user.png' : `${R2_DOMAIN}/${FOLDER_USER_PHOTOS}/${photo}`} alt="" class="user-photo" />
+          <AddImage photo={photo === null || photo?.length === 0 ? '/images/user.png' : `${R2_DOMAIN}/${FOLDER_USER_PHOTOS}/${photo}`} onchange={handleEventPhoto} /> <!--  onchange={handleEventPhoto} -->
         </div>
       </div>
     </div>
@@ -305,7 +302,7 @@
                 error={resultServerInfo.error} input={resultServerInfo.input} 
                 name="phone" />
             </div>
-            <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Guardar</Button>
+            <Button icon={save} bind:this={btnLogin}>Guardar</Button>
           </form>
 
         {:else if formTab === 'mail'}
@@ -328,7 +325,7 @@
             </div>
             <div class="wr-code">
               <Button icon={asterisk} type="button" onclick={()=>handleViewInputCodeEmail('sendCode')}>Código</Button>
-              <Button icon={send} onclick={()=>{}} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
+              <Button icon={send} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
             </div>
           </form>
 
@@ -343,7 +340,7 @@
               </div>
               <div class="wr-code">
                 <Button icon={ban} type="button" onclick={()=>handleViewInputCodeEmail('sendMail')} bind:this={btnLogin} bg="cadetblue">Cancelar</Button>
-                <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Actualizar</Button>
+                <Button icon={save} bind:this={btnLogin}>Actualizar</Button>
               </div>
             </form>
           {/if}
@@ -369,7 +366,7 @@
             </div>
             <div class="wr-code">
               <Button icon={asterisk} type="button" onclick={()=>handleViewInputCodePassw('sendCode')}>Código</Button>
-              <Button icon={send} onclick={()=>{}} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
+              <Button icon={send} bind:this={btnLogin} bg="cadetblue">Enviar email</Button>
             </div>
           </form>
 
@@ -384,7 +381,7 @@
               </div>
               <div class="wr-code">
                 <Button icon={ban} type="button" onclick={()=>handleViewInputCodePassw('sendMail')} bind:this={btnLogin} bg="cadetblue">Cancelar</Button>
-                <Button icon={save} onclick={()=>{}} bind:this={btnLogin}>Actualizar</Button>
+                <Button icon={save} bind:this={btnLogin}>Actualizar</Button>
               </div>
             </form>
           {/if}
@@ -450,11 +447,17 @@
   justify-content: center;
 }
 .box-photo {
-  width: 250px;
+  width: 172px;
+  height: 170px;
   display: flex;
+  position: relative;
 }
-.box-photo > img {
+.box-photo > .user-photo {
   width: 100%;
+  height: 170px;
+  border-radius: 160px;
+  object-fit: cover;
+  align-self: baseline;
 }
 .section {
   width: 100%;

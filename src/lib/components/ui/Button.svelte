@@ -1,24 +1,31 @@
 <script lang="ts">
-  let { children, type = 'submit', bg = 'green', onclick, icon = ''} = $props()
-  // , fn = ()=>{}
-  let isLoad: boolean = $state(false);
-  let isDisabled: boolean = $state(false);
+import type { Snippet } from 'svelte';
+type Props = {
+  children: Snippet<[]>;
+  type?: 'submit' | 'reset' | 'button';
+  bg?: string;
+  icon?: string;
+  onclick?: () => void;
+};
+let { children, type = 'submit', bg = 'green', icon = '', onclick}: Props = $props()
+let isLoad: boolean = $state(false);
+let isDisabled: boolean = $state(false);
 
-  function Type(node: HTMLButtonElement) {
-    switch (type) {
-      case 'submit': node.type = "submit"; break;
-      case 'button': node.type = "button"; break;
-      case 'reset': node.type = "reset"; break;
-    }
+function Type(node: HTMLButtonElement) {
+  switch (type) {
+    case 'submit': node.type = "submit"; break;
+    case 'button': node.type = "button"; break;
+    case 'reset': node.type = "reset"; break;
   }
+}
 
-  export function load(_isLoad: boolean) {
-    isLoad = _isLoad;
-  }
+export function load(_isLoad: boolean) {
+  isLoad = _isLoad;
+}
 
-  export function disabled(_isDisabled: boolean) {
-    isDisabled = _isDisabled;
-  }
+export function disabled(_isDisabled: boolean) {
+  isDisabled = _isDisabled;
+}
 
   /*function handleClick() {
     if (type === 'button') {
@@ -32,7 +39,7 @@
 <button use:Type 
   class="button" 
   {onclick} disabled={isLoad || isDisabled} 
-  class:green={bg === 'green'} class:cadetblue={bg === 'cadetblue'}>
+  class:green={bg === 'green'} class:cadetblue={bg === 'cadetblue'} class:gray={bg === 'gray'}>
   {#if !isLoad}
     {#if icon}
       <span class="icon-botton">{@html icon}</span>
@@ -44,47 +51,51 @@
 </button>
 
 <style>
-  :global(.icon-botton > svg) {
-    width: 20px;
-  }
-  .icon-botton {
-    display: flex;
-  }
-  .svg-load {
-    width: 22px;
-    animation: girar 1.5s linear infinite;
-  }
-  @keyframes girar {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .cadetblue {
-    background: cadetblue;
-  }
-  .green {
-    background-color: #7cc54e;
-  }
+.button.gray {
+  background: #f0edfd;
+  color: #6049eb;
+}
+:global(.icon-botton > svg) {
+  width: 20px;
+}
+.icon-botton {
+  display: flex;
+}
+.svg-load {
+  width: 22px;
+  animation: girar 1.5s linear infinite;
+}
+@keyframes girar {
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
+}
+.button.cadetblue {
+  background: cadetblue;
+}
+.button.green {
+  background-color: #7cc54e;
+}
+.button {
+  width: 100%;
+  height: 50px;
+  border-radius: 70px;
+  font-family: var(--font-bold);
+  font-size: 1.1em;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+@media(min-width: 700px) {
   .button {
-    width: 100%;
-    height: 50px;
-    border-radius: 70px;
-    font-family: var(--font-bold);
+    height: 48px;
     font-size: 1.1em;
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5em;
   }
-  @media(min-width: 700px) {
-    .button {
-      height: 48px;
-      font-size: 1.1em;
-    }
-  }
+}
 </style>

@@ -3,8 +3,6 @@
   import type { SubmitFunction } from '@sveltejs/kit';
   import { enhance } from '$app/forms';
   import { DataFrame, Title, Input, Button } from '$lib/components';
-	//import mail from '$lib/assets/svg/mail.svg?raw';
-	//import lock from '$lib/assets/svg/lock-keyhole.svg?raw';
   let { form }: { form: ActionData } = $props();
   let btnLogin = $state<Button>();
   /*
@@ -16,9 +14,8 @@
   */
   const handleForm: SubmitFunction = () => {
     btnLogin?.load(true);
-    return async ({ update, result }) => {
-      btnLogin?.load(false);
-      console.log(result)
+    return async ({ update }) => {
+      //btnLogin?.load(false);
       await update();
     };
   };
@@ -26,7 +23,6 @@
 </script>
 
 <!-- vtrmq09@gmail.com admin123 -->
-
 
 <div class="wr-form-login">
   <DataFrame width="400px">
@@ -42,7 +38,7 @@
           value={form?.data?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
           name="password" />
       </div>
-      <Button onclick={()=>{}} bind:this={btnLogin}>Login</Button>
+      <Button bind:this={btnLogin}>Login</Button>
     </form>
   </DataFrame>
 </div>

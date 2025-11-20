@@ -9,5 +9,6 @@
     font-size: 1.8em;
     font-family: var(--font-bold);
     width: max-content;
+    color: var( --color-title);
   }
 </style>

@@ -3,3 +3,22 @@ export class MError extends Error {
     super(message);
   }
 }
+
+export class failForm extends Error {
+  constructor(
+    public message: string,
+    public input: string,
+    public origin: string = 'form'
+  ) {
+    super(message);
+  }
+}
+
+export class failServer extends Error {
+  constructor(
+    public message: string,
+    public origin: string = 'server'
+  ) {
+    super(message);
+  }
+}

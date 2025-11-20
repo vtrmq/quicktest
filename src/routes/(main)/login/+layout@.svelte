@@ -35,11 +35,13 @@
   min-height: 100vh;
   /*background-image: var(--bg-gradient-movil);*/
   transition: var(--transition);
+  background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
 }
+/*
 @media(min-width: 700px) {
   .page-container {
-    /*background-image: var(--bg-gradient-pc);*/
     background: floralwhite;
   }
 }
+*/
 </style>

@@ -3,7 +3,7 @@ import { generateCodeFromTimestamp } from '$lib/utils';
 import { kvPut } from '$lib/server/kv';
 import { queryFirstDB } from '$lib/server/db';
 
-export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserRegister ): Promise<string> => {
+export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserRegister ): Promise<string | null> => {
   const code = generateCodeFromTimestamp();
   // registerKey: Código que se ingresa en el formulario de registro
   const registerKey = `code:${code}`;
@@ -14,7 +14,7 @@ export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserReg
   const result = await queryFirstDB(db, 'SELECT * FROM users WHERE email = ?', user.email);
   if (result) {
     // Correo encontrado
-    return '';
+    return null;
   }
 
   // Guardar ambas entradas

@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { UserMenuButton, UserMenuContainer, UserMenuOptions, UserMenuInfo } from './index';
-  import type { DataProfile, MenuOption } from '$lib/types';
+import { UserMenuButton, UserMenuContainer, UserMenuOptions, UserMenuInfo } from './index';
+import type { DataProfile, MenuOption } from '$lib/types';
 
-  type Props = {
-    info: DataProfile
-    options: MenuOption[]
-  }
-  let { info = {photo: '', name: '', surnames: '', email: '', profile: ''}, options = [] }: Props = $props();
-  let isOpen = $state(false);
+type Props = {
+  info: DataProfile
+  options: MenuOption[]
+}
+let { info = {photo: '', name: '', surnames: '', email: '', profile: ''}, options = [] }: Props = $props();
+let isOpen = $state(false);
 
-  function toggleMenu() {
-    isOpen = !isOpen;
-  }
+function toggleMenu() {
+  isOpen = !isOpen;
+}
 
-  function handleKeydown(e:KeyboardEvent) {
-    if (isOpen && e.key === 'Escape') {
-      toggleMenu();
-    }
+function handleKeydown(e:KeyboardEvent) {
+  if (isOpen && e.key === 'Escape') {
+    toggleMenu();
   }
+}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

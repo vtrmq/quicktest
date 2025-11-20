@@ -26,6 +26,7 @@ declare global {
       env: {
         DB: D1Database;
         CODES: KVNamespace;
+        QUICKTEST: R2Bucket;
       };
     }
 	}
