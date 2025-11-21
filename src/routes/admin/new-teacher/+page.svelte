@@ -29,8 +29,8 @@ const handleForm: SubmitFunction = () => {
 <Toast bind:this={toast} />
 
 <div class="wr-form-login">
-  <DataFrame width="400px">
-    <LinkBack href="/admin/pre-registration">Pre registros</LinkBack>
+  <DataFrame width="500px">
+    <LinkBack href="/admin/pre-registration">Inscripciones</LinkBack>
     <form method="POST" use:enhance={handleForm} novalidate>
       <Title>Nuevo docente</Title>
       <div class="body-form">
@@ -43,9 +43,9 @@ const handleForm: SubmitFunction = () => {
           value={form?.field?.surnames ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="surnames" />
         <Input 
-          style="border" type="text" requested label="Correo electrónico" 
+          style="border" type="email" requested label="Correo electrónico" 
           value={form?.field?.email ?? ''} error={form?.msg} input={form?.input ?? ''} 
-          name="email" />
+          name="email" lowercase />
         <Input 
           style="border" type="text" requested label="Celular" 
           value={form?.field?.phone ?? ''} error={form?.msg} input={form?.input ?? ''} 

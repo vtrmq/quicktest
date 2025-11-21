@@ -21,7 +21,7 @@
 		"svelte-check": "^4.3.3",
 		"typescript": "^5.9.3",
 		"vite": "^6.4.1",
-		"wrangler": "^4.46.0"
+		"wrangler": "^4.50.0"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.934.0",

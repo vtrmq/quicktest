@@ -1,13 +1,10 @@
 <script lang="ts">
   import type { LayoutData } from './$types';
-  import { DASHBOARDS } from "$lib/utils";
+  import { DASHBOARDS, NAME_APP } from "$lib/utils";
   import { Header, Main, Footer, BoxNav, Link } from '$lib/components';
-  //import { onMount } from 'svelte';
 	let { data, children }: { data: LayoutData; children: any } = $props();
-  //let isVisible: boolean = $state(false);
   let root = $state(data.user?.profile);
 
-  //console.log(data.home)
   async function validatedLogin() {
     try {
       const response = await fetch('/api/validate-session', {
@@ -24,12 +21,6 @@
       console.log(error)
     }
   }
-  /*onMount(()=>{
-    if (data.home) {
-      isVisible = true;
-    }
-  })*/
-
 
 </script>
 
@@ -37,7 +28,7 @@
   <style>
   body { background-color: #fff; }
   </style>
-  <title>QuickTest</title>
+  <title>Inicio - {NAME_APP}</title>
 </svelte:head>
 
 <Header>

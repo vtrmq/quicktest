@@ -149,7 +149,7 @@ async function handleSavePhoto() {
 }
 .win-add-image {
   background: var(--bg-win-action);
-  padding: 2em;
+  padding: 2em 1em;
   border-radius: 8px;
   box-shadow: var(--box-shadow-action);
   width: 100%;
@@ -182,5 +182,10 @@ async function handleSavePhoto() {
   right: 6px;
   border-radius: 50px;
   cursor: pointer;
+}
+@media(min-width: 700px) {
+  .win-add-image {
+    padding: 2em;
+  }
 }
 </style>

@@ -33,7 +33,6 @@ export const POST: RequestHandler = async ({ request, locals, platform, cookies 
     }
 
     const db = dbPlatform(platform);
-
     if (!db) {
       throw new Error('DB: servicio no disponible');
     }
@@ -86,7 +85,6 @@ export const POST: RequestHandler = async ({ request, locals, platform, cookies 
     throw new Error('El usuario es null');
 
   } catch (error) {
-    //console.log(error)
     return json({ 
       success: false,
       message: fileName,

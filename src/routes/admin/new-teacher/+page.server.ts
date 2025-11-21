@@ -7,22 +7,6 @@ import { newTeacher } from '$lib/services/admin';
 import { sendEmail, emailTemplates } from '$lib/server/email';
 import { dbPlatform } from '$lib/server/db';
 
-/*
-type Error = {
-  message: string
-  input: string
-}
-function failForm(error: unknown): error is Error {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    'input' in error
-  );
-}
-throw { message: "El apellido es requerido", input: 'surnames' }; // Así se utiliza
-*/
-
 export const actions: Actions = {
   default: async ({ request, locals, platform }) => {
 
@@ -30,10 +14,10 @@ export const actions: Actions = {
     if (locals.user.profile !== 'A') { throw redirect(303, '/unauthorized'); }
 
     const data = await request.formData();
-    const name = data.get('name')?.toString() ?? '';
-    const surnames = data.get('surnames')?.toString() ?? '';
-    const email = data.get('email')?.toString() ?? '';
-    const phone = data.get('phone')?.toString() ?? '';
+    const name = data.get('name')?.toString().trim() ?? '';
+    const surnames = data.get('surnames')?.toString().trim() ?? '';
+    const email = data.get('email')?.toString().trim() ?? '';
+    const phone = data.get('phone')?.toString().trim() ?? '';
 
     try {
 
@@ -80,7 +64,7 @@ export const actions: Actions = {
 
       const code = await newTeacher(kv, db, infoTeacher);
       if (code && code.length !== 0) {
-        const template = emailTemplates.welcome(name, `https://192.168.1.3:5173/register?code=${code}`);
+        const template = emailTemplates.preRegister(name, code);
         const result = await sendEmail({
           to: email,
           subject: template.subject,

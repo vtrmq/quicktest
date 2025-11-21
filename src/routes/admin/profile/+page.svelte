@@ -10,43 +10,15 @@
 	import asterisk from '$lib/assets/svg/asterisk.svg?raw';
 	import ban from '$lib/assets/svg/ban.svg?raw';
 	import save from '$lib/assets/svg/save.svg?raw';
-  //import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
 
   let { data }: { data: PageData } = $props();
-  let toast: any = $state();
+  let toast = $state<Toast>();
 
   let btnLogin = $state<Button>();
   let photo = $derived(userStore.data.photo);
   let formTab = $state('info');
-  //let formEmail = $state<HTMLFormElement>();
   let isTabMail = $state('sendMail');
   let isTabPassw = $state('sendMail');
-
-  /*
-  (()=>{
-    if (photo?.length === 0) {
-      photo = '/images/user.png';
-    }
-  })();
-  */
-
-  /*
-  async function handleSendEmail() {
-    const form = new FormData(formEmail);
-    const field = Object.fromEntries(form.entries());
-
-    const data = new FormData();
-    data.append('password', field.password);
-    data.append('new_mail', field.new_mail);
-
-    const res = await fetch('?/email', {
-      method: 'POST',
-      body: data 
-    });
-    const response = await res.json();
-		console.log('Respuesta del servidor:', response.data);
-  }
-  */
 
   let resultServerInfo: UserActionResponse = $state({
     error: '',
@@ -147,7 +119,7 @@
       if (result.type === 'success') {
         resultServerInfo = result.data as UserActionResponse;
         userStore.info(resultServerInfo.user);
-        toast.view({
+        toast?.view({
           type: 'success',
           message: 'Datos actualizados',
         });
@@ -164,7 +136,7 @@
       btnLogin?.load(false);
       if (result.type === 'success') {
         //resultServerEmail = result.data as UserActionEmail;
-        toast.view({
+        toast?.view({
           type: 'success',
           message: 'Email enviado',
         });
@@ -173,7 +145,7 @@
         resultServerEmail = result.data as UserActionEmail;
       } else if (result.type === 'failure' && result.data?.input === '') {
         resultServerEmail = result.data as UserActionEmail;
-        toast.view({
+        toast?.view({
           type: 'success',
           message: result.data.error,
         });
@@ -190,7 +162,7 @@
       if (result.type === 'success') {
         resultServerCode = result.data as UserActionCode;
         userStore.email(resultServerCode.email);
-        toast.view({
+        toast?.view({
           type: 'success',
           message: 'Correo electrónico actualizado',
         });
@@ -206,7 +178,7 @@
     return async ({ update, result }) => {
       btnLogin?.load(false);
       if (result.type === 'success') {
-        toast.view({
+        toast?.view({
           type: 'success',
           message: 'Email enviado',
         });
@@ -215,7 +187,7 @@
         resultServerPassw = result.data as UserActionPassw;
       } else if (result.type === 'failure' && result.data?.input === '') {
         resultServerPassw = result.data as UserActionPassw;
-        toast.view({
+        toast?.view({
           type: 'success',
           message: result.data.error,
         });
@@ -230,7 +202,7 @@
       btnLogin?.load(false);
       if (result.type === 'success') {
         resultServerCode = result.data as UserActionCode;
-        toast.view({
+        toast?.view({
           type: 'success',
           message: 'Contraseña actualizada',
         });
@@ -501,53 +473,3 @@
   }
 }
 </style>
-
-
-<!--
-<h1>Profile</h1>
-<button onclick={handlePhoto}>Photo</button>
--->
-
-
-<!-- 
-      
-      <div class="section">
-
-        <form method="POST" action="?/email" use:enhance novalidate>
-          <Title>Actualizar Email</Title>
-          <div class="body-form">
-            <Input 
-              style="border" type="password" requested label="Contraseña" 
-              value={form?.mail?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
-              name="email" />
-            <Input 
-              style="border" type="text" requested label="Correo electrónico" 
-              value={form?.mail?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
-              name="email" />
-          </div>
-          <Button bind:this={btnLogin}>Guardar</Button>
-        </form>
-
-      </div>
-
-      <div class="section">
-
-        <form method="POST" action="?/password" use:enhance novalidate>
-          <Title>Actualizar contraseña</Title>
-          <div class="body-form">
-            <Input 
-              style="border" type="password" requested label="Contraseña" 
-              value={form?.passw?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
-              name="email" />
-            <Input 
-              style="border" type="password" requested label="Contraseña" 
-              value={form?.passw?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
-              name="email" />
-          </div>
-          <Button bind:this={btnLogin}>Guardar</Button>
-        </form>
-
-      </div>
--->
-
-

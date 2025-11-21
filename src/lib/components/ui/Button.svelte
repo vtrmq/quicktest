@@ -6,8 +6,9 @@ type Props = {
   bg?: string;
   icon?: string;
   onclick?: () => void;
+  align?: string;
 };
-let { children, type = 'submit', bg = 'green', icon = '', onclick}: Props = $props()
+let { children, type = 'submit', bg = 'green', icon = '', onclick, align = 'center'}: Props = $props()
 let isLoad: boolean = $state(false);
 let isDisabled: boolean = $state(false);
 
@@ -26,20 +27,16 @@ export function load(_isLoad: boolean) {
 export function disabled(_isDisabled: boolean) {
   isDisabled = _isDisabled;
 }
-
-  /*function handleClick() {
-    if (type === 'button') {
-      fn();
-    }
-  }*/
 </script>
-
-<!-- onclick={handleClick} -->
 
 <button use:Type 
   class="button" 
   {onclick} disabled={isLoad || isDisabled} 
-  class:green={bg === 'green'} class:cadetblue={bg === 'cadetblue'} class:gray={bg === 'gray'}>
+  class:green={bg === 'green'} 
+  class:cadetblue={bg === 'cadetblue'} 
+  class:gray={bg === 'gray'} 
+  class:red={bg === 'red'} 
+  class:none={bg === 'none'} class:center={align === 'center'}> 
   {#if !isLoad}
     {#if icon}
       <span class="icon-botton">{@html icon}</span>
@@ -51,9 +48,52 @@ export function disabled(_isDisabled: boolean) {
 </button>
 
 <style>
+.center {
+  margin: 0 auto;
+}
+.button.none {
+  background: transparent;
+  border: 1px solid #b0a3ff;
+}
+.button.none:hover {
+  background: #5541d3;
+}
 .button.gray {
   background: #f0edfd;
   color: #6049eb;
+}
+.button.gray:hover {
+  background: #f0edfd;
+}
+.button.cadetblue {
+  background: cadetblue;
+}
+.button.green {
+  background-color: #7cc54e;
+}
+.button.green:hover {
+  background: #62b15c;
+}
+.button.red {
+  background: #ff537b;
+}
+.button.red:hover {
+  background: #f12f5c;
+}
+.button {
+  width: 100%;
+  height: 50px;
+  border-radius: 70px;
+  font-family: var(--font-bold);
+  font-size: 1.1em;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  line-height: 0;
+  max-width: 250px;
 }
 :global(.icon-botton > svg) {
   width: 20px;
@@ -72,25 +112,6 @@ from {
 to {
   transform: rotate(360deg);
 }
-}
-.button.cadetblue {
-  background: cadetblue;
-}
-.button.green {
-  background-color: #7cc54e;
-}
-.button {
-  width: 100%;
-  height: 50px;
-  border-radius: 70px;
-  font-family: var(--font-bold);
-  font-size: 1.1em;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5em;
 }
 @media(min-width: 700px) {
   .button {

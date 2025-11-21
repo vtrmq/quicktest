@@ -9,7 +9,8 @@
     style = 'border',
     type = 'text',
     onchange = () => {},
-    icon = ''
+    icon = '',
+    lowercase = false
   } = $props();
 
   let _node: HTMLInputElement;
@@ -33,6 +34,7 @@
       case 'password': node.type = "password"; break;
       case 'number': node.type = "number"; break;
       case 'date': node.type = "date"; break;
+      case 'email': node.type = "email"; break;
     }
   }
 
@@ -63,6 +65,8 @@
         class:input-date={type === 'date'}
         class:padding-left={icon.length && style === 'linear'}
         class:padding-left-border={icon.length && style === 'border'}
+
+        class:lowercase={lowercase}
 
         bind:value 
         {name} 
@@ -112,6 +116,9 @@
 :global(.icon-form) {
   width: 30px;
   color: var(--color-icon-form);
+}
+.lowercase {
+  text-transform: lowercase;
 }
 .input-linear-error-icon.input-linear-error-x {
   width: 100%;

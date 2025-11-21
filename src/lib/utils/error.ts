@@ -22,3 +22,12 @@ export class failServer extends Error {
     super(message);
   }
 }
+
+export class msgError extends Error {
+  constructor(
+    public message: string,
+    public origin: string = 'fail'
+  ) {
+    super(message);
+  }
+}

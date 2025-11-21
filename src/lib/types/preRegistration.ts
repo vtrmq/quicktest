@@ -4,4 +4,5 @@ export type PreRegistration = {
   surnames: string
   email: string
   phone: string
+  code: string
 };

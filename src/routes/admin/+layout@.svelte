@@ -4,13 +4,12 @@
 	import teachers from '$lib/assets/svg/users.svg?raw';
 	import perfil from '$lib/assets/svg/settings.svg?raw';
 	import mail from '$lib/assets/svg/mail-question-mark.svg?raw';
-  import { FOLDER_USER_PHOTOS, R2_DOMAIN } from '$lib/utils';
-
   import { Header, Main, UserMenu } from '$lib/components';
   import { onMount } from 'svelte';
   import type { LayoutData  } from './$types';
   import type { MenuOption, DataProfile } from '$lib/types';
   import { userStore } from '$lib/store';
+  import { NAME_APP } from "$lib/utils";
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
   let isVisible: boolean = $state(false);
@@ -34,7 +33,7 @@
 
   // Opciones para Admin
   const adminOptions: MenuOption[] = [
-    { label: 'Pre registros', icon: mail, href: '/admin/pre-registration' },
+    { label: 'Inscripciones', icon: mail, href: '/admin/pre-registration' },
     { label: 'Nuevo docente', icon: newTeacher, href: '/admin/new-teacher' },
     { label: 'Administrar docentes', icon: teachers, href: '/' },
     { label: 'Mi Perfil', icon: perfil, href: '/admin/profile' },
@@ -47,7 +46,7 @@
   <style>
   body { background-color: #fafafa; }
   </style>
-  <title>QuickTest - Admin</title>
+  <title>Admin - {NAME_APP}</title>
 </svelte:head>
 
 {#if isVisible}

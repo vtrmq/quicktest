@@ -29,7 +29,7 @@
 }
 @media(min-width: 500px) {
   .link {
-    max-width: var(--max-width);
+    max-width: var(--max-width-link-btn);
     font-size: 1em;
   }
 }

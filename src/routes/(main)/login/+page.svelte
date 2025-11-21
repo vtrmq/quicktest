@@ -14,8 +14,10 @@
   */
   const handleForm: SubmitFunction = () => {
     btnLogin?.load(true);
-    return async ({ update }) => {
-      //btnLogin?.load(false);
+    return async ({ update, result }) => {
+      if (result.type === 'failure') {
+        btnLogin?.load(false);
+      }
       await update();
     };
   };

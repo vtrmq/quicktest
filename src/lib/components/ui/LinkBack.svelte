@@ -11,6 +11,8 @@
 <style>
 :global(.arrow-left > svg) {
   width: 26px;
+  position: relative;
+  left: -4px;
 }
 .arrow-left {
   display: flex;
@@ -22,6 +24,7 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  width: fit-content;
 }
 .link:hover {
   text-decoration: underline;

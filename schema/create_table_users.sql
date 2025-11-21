@@ -8,6 +8,7 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   profile TEXT CHECK(profile IN ('A','T','S')) NOT NULL,
   photo TEXT,
+  school TEXT,
   blocked TEXT DEFAULT 'S' CHECK(blocked IN ('S','N')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

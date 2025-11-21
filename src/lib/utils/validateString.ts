@@ -3,14 +3,13 @@ export function validateString(
   options?: { min?: number; max?: number }
 ): { success: true; value: string } | { success: false; error: string } {
   // 1. No vacío
-  if (!value || value.trim() === '') {
+  value = value.trim();
+  if (!value || value === '') {
     return { success: false, error: 'empty' };
   }
 
-  const trimmed = value.trim();
-
   // 2. Longitud mínima
-  if (options?.min !== undefined && trimmed.length < options.min) {
+  if (options?.min !== undefined && value.length < options.min) {
     return {
       success: false,
       error: 'short' 
@@ -18,12 +17,12 @@ export function validateString(
   }
 
   // 3. Longitud máxima
-  if (options?.max !== undefined && trimmed.length > options.max) {
+  if (options?.max !== undefined && value.length > options.max) {
     return {
       success: false,
       error: 'long'
     };
   }
 
-  return { success: true, value: trimmed };
+  return { success: true, value };
 }

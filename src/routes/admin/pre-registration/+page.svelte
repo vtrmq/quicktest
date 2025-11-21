@@ -1,37 +1,55 @@
 <script lang="ts">
   import plus from '$lib/assets/svg/plus.svg?raw';
-  import { Title, LinkBtn, NoneData, PointNum, DataRow, BtnDelete, Dialog } from '$lib/components';
+  import { Title, LinkBtn, NoneData, PointNum, DataRow, BtnDelete, Dialog, Toast } from '$lib/components';
   import type { PreRegistration } from '$lib/types'
   let { data } = $props();
   let dialog = $state<Dialog | null>(null);
-  console.log(data)
-  let preRegistrations:PreRegistration[] = data.preRegistrations ?? [];
+  let preRegistrations:PreRegistration[] = $state(data.preRegistrations ?? []);
+  let code: string = '';
+  let posTeacher: number = -1;
+  let toast = $state<Toast>();
 
   function handleWinDelete(i: number) {
-    console.log(i)
+    const teacher = preRegistrations.find((_, index) => i === index);
+    code = teacher?.code as string
+    posTeacher = i;
+    dialog?.show({
+      type: 'delete',
+      message: `¿Quieres eliminar a ${teacher?.name} ${teacher?.surnames}?`,
+    });
   }
 
-  function handleWin() {
-    dialog?.show();
-  }
-
-  function handleActionWin(e: string | undefined) {
-    console.log(e)
+  async function handleActionWin(e: string) {
+    if (e === 'accept') {
+      preRegistrations = preRegistrations.filter((_, index) => index !== posTeacher);
+      const response = await fetch('/api/admin/delete-preregister', {
+        method: 'POST',
+        body: JSON.stringify({code}),
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+      const resp = await response.json();
+      toast?.view({
+        type: 'success',
+        message: resp.message,
+      });
+    }
   }
 
 </script>
 
-<Dialog bind:this={dialog} winEvent={handleActionWin} />
+<Dialog bind:this={dialog} action={handleActionWin} />
+<Toast bind:this={toast} />
 
 <div class="container-teachers-registrations">
 
   <div>
     <div class="wr-title">
-      <Title>Pre-registro</Title>
+      <Title>Inscripciones</Title>
       <p class="desc">Docentes inscritos y por registrarse</p>
-  <button onclick={handleWin}>Win</button>
     </div>
-    <LinkBtn href="/admin/new-teacher" --max-width="230px">{@html plus} Nuevo docente</LinkBtn>
+    <LinkBtn href="/admin/new-teacher" --max-width-link-btn="230px">{@html plus} Nuevo docente</LinkBtn>
   </div>
 
   {#if preRegistrations.length !== 0}
@@ -43,7 +61,7 @@
             <PointNum>{i + 1}</PointNum>
             <div>
               <p class="name">{preRegistration.name} {preRegistration.surnames}</p>
-              <div class="e-phone">
+              <div class="email-phone">
                 <p>{preRegistration.email}</p>
                 <p>{preRegistration.phone}</p>
               </div>
@@ -58,7 +76,7 @@
 
 {#if preRegistrations.length === 0}
   <div class="wr-none-data">
-    <NoneData>No hay docente pre registrado</NoneData>
+    <NoneData>No hay docentes inscritos</NoneData>
   </div>
 {/if}
 
@@ -72,10 +90,11 @@
   font-weight: 600;
   font-family: var(--font-normal);
 }
-.e-phone {
+.email-phone {
   font-size: 1.4em;
   font-family: var(--font-normal);
   color: #777777;
+  text-transform: lowercase;
 }
 .row-pre {
   display: flex;

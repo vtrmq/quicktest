@@ -7,8 +7,10 @@ export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserReg
   const code = generateCodeFromTimestamp();
   // registerKey: Código que se ingresa en el formulario de registro
   const registerKey = `code:${code}`;
-  // userKey: con este el docente lista los códigos generados
-  const userKey = `key:${user.user_id}:code:${code}`;
+  // userKey: con este el admin lista los códigos generados
+  //const userKey = `key:${user.user_id}:code:${code}`;
+  const userKey = `teachereg:${user.user_id}:code:${code}`;
+  user.code = code;
   const sessionData = JSON.stringify(user);
 
   const result = await queryFirstDB(db, 'SELECT * FROM users WHERE email = ?', user.email);

@@ -22,7 +22,11 @@
   right: 7px;
   top: 7px;
   border-radius: 60px;
-  background: #fdefef;
   cursor: pointer;
+  background: transparent;
+  transition: var(--trasition);
+}
+.btn-delete:hover {
+  background: #fdefef;
 }
 </style>

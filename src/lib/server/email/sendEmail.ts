@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer"
 import { GMAIL_USER, GMAIL_APP_PASS } from '$env/static/private';
+import { NAME_APP } from "$lib/utils";
 
 const createTransporter = () => {
   return nodemailer.createTransport({
@@ -18,7 +19,7 @@ export const sendEmail = async (options: EmailOptions): Promise<{ success: boole
   try {
     const transporter = createTransporter();
     const mailOptions = {
-      from: `"Tu App" <${GMAIL_USER}>`,
+      from: `${NAME_APP} <${GMAIL_USER}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,

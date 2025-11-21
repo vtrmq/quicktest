@@ -28,3 +28,4 @@ export { default as PointNum } from './ui/PointNum.svelte';
 export { default as DataRow } from './ui/DataRow.svelte';
 export { default as BtnDelete } from './ui/BtnDelete.svelte';
 export { default as Dialog } from './ui/Dialog.svelte';
+export { default as CheckBox } from './ui/CheckBox.svelte';
