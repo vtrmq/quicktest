@@ -108,7 +108,7 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
                 <div class="box-b">&nbsp;</div>
               </div>
               <div class="box-a">
-                <div class="box-b" class:border-left={i + 1 === teachers.length}>&nbsp;</div>
+                <div class="box-b" class:border-left={i !== 0 && i + 1 === teachers.length}>&nbsp;</div>
                 <div class="box-b" class:border-left={i + 1 < teachers.length}>&nbsp;</div>
               </div>
             </div>
@@ -130,7 +130,7 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
 
 {#if teachers.length === 0}
   <div class="wr-none-data">
-    <NoneData>No hay docentes inscritos</NoneData>
+    <NoneData>No hay docentes registrados</NoneData>
   </div>
 {/if}
 

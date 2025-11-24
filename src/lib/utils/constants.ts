@@ -1,8 +1,8 @@
 import type { UserProfile } from "$lib/types"
 
 export const NAME_APP = "QuickTest";
-//export const DOMAIN = "https://192.168.1.3:5173"; // https://quicktest-1uf.pages.dev
-export const DOMAIN = "https://quicktest-1uf.pages.dev";
+export const DOMAIN = "https://192.168.1.3:5173";
+//export const DOMAIN = "https://quicktest-1uf.pages.dev";
 
 export const CLIENTAUTHINFO = 'client-auth-info';
 
