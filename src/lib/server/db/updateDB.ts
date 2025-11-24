@@ -10,7 +10,6 @@ export async function updateDB(db: D1Database, query: string, ...args: any[]): P
     const result = await db.prepare(query).bind(...args).run();
     return result.meta;
   } catch (e) {
-    console.error('D1 Update Error:', e);
     throw e;
   }
 }

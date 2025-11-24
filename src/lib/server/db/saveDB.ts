@@ -10,7 +10,6 @@ export async function saveDB(db: D1Database, query: string, ...args: any[]): Pro
     const result = await db.prepare(query).bind(...args).run();
     return result.meta;
   } catch (e) {
-    console.error('D1 Save Error:', e);
     throw e;
   }
 }

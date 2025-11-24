@@ -8,3 +8,4 @@ export * from './userActionResponse';
 export * from './userActionEmail';
 export * from './userActionCode';
 export * from './userActionPassw';
+export * from './teacherPayment';

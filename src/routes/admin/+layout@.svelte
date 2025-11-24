@@ -35,7 +35,7 @@
   const adminOptions: MenuOption[] = [
     { label: 'Inscripciones', icon: mail, href: '/admin/pre-registration' },
     { label: 'Nuevo docente', icon: newTeacher, href: '/admin/new-teacher' },
-    { label: 'Administrar docentes', icon: teachers, href: '/' },
+    { label: 'Administrar docentes', icon: teachers, href: '/admin/teachers' },
     { label: 'Mi Perfil', icon: perfil, href: '/admin/profile' },
     { label: 'Cerrar Sesión', icon: logout, href: '/logout' }
   ];

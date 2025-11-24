@@ -1,0 +1,9 @@
+CREATE TABLE payment_settings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  admin_id INTEGER DEFAULT 0,
+  teacher_id INTEGER DEFAULT 0,
+  pay_day INTEGER DEFAULT 0,
+  price INTEGER DEFAULT 0,
+  next_payment_month INTEGER DEFAULT 0,
+  year INTEGER DEFAULT 0
+);

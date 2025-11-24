@@ -44,8 +44,7 @@ const handleForm: SubmitFunction = () => {
 
       <Input 
         style="border" type="email" requested label="Correo electrónico" 
-        value={form?.field?.email ?? user.email} error={form?.msg} input={form?.input ?? ''} 
-        name="email" />
+        value={user.email} disabled />
 
       <Input 
         style="border" type="text" requested label="Celular" 
@@ -60,8 +59,9 @@ const handleForm: SubmitFunction = () => {
       <Input 
         style="border" type="text" requested label="Nombre de la institución educativa" 
         value={form?.field?.school ?? ''} error={form?.msg} input={form?.input ?? ''} 
-        name="school" />
+        name="school" capitalize />
       
+      <input type="hidden" name="email" value={user.email}>
       <input type="hidden" name="profile" value={user.profile}>
       <input type="hidden" name="user_id" value={user.user_id}>
       <input type="hidden" name="code" value={user.code}>

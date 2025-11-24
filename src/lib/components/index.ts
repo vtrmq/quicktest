@@ -29,3 +29,6 @@ export { default as DataRow } from './ui/DataRow.svelte';
 export { default as BtnDelete } from './ui/BtnDelete.svelte';
 export { default as Dialog } from './ui/Dialog.svelte';
 export { default as CheckBox } from './ui/CheckBox.svelte';
+export { default as PaymentSettingTeacher } from './ui/PaymentSettingTeacher.svelte';
+export { default as Select } from './ui/Select.svelte';
+export { default as SliderMonth } from './ui/SliderMonth.svelte';

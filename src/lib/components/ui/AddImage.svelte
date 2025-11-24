@@ -53,9 +53,7 @@ async function handleSavePhoto() {
     const formData = new FormData();
     formData.append('file', files[0]);
     formData.append('fileName', new_photo);
-
     btnSave?.load(true);
-
     const response = await fetch('/api/upload-photo', {
       method: 'POST',
       body: formData
@@ -66,13 +64,15 @@ async function handleSavePhoto() {
 
     if (result.success) {
       isSave = true;
-      
       photo = `${R2_DOMAIN}/${FOLDER_USER_PHOTOS}/${result.photo}`;
       userStore.photo(result.photo);
       onchange(result.photo);
       handleShowAddPhoto();
     } else {
-      console.log(result.error)
+      toast?.view({
+        type: 'success',
+        message: result.error,
+      });
     }
 
   } else {

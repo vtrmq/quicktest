@@ -10,7 +10,6 @@ export async function deleteDB(db: D1Database, query: string, ...args: any[]): P
     const result = await db.prepare(query).bind(...args).run();
     return result.meta;
   } catch (e) {
-    console.error('D1 Delete Error:', e);
     throw e;
   }
 }
