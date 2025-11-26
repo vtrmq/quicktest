@@ -9,7 +9,6 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
   if (!locals.user) { throw redirect(303, '/'); }
   
   const admin_id = locals.user.id;
-
   const data = await request.formData();
   const paymentSettingId = data.get('paymentSettingId')?.toString();
   const teacher_id = data.get('teacher_id')?.toString();
@@ -53,14 +52,15 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 
     }
 
-
   } catch (error) {
+
     if (error instanceof failServer) {
       return json({ 
         success: false,
         message: error.message,
       });
     }
+
     return json({
       message: 'Error inesperado',
       success: false,

@@ -62,7 +62,7 @@
   .location {
     text-align: center;
     font-family: var(--font-normal);
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: #d54444;
   }
   .title-msg {
@@ -76,7 +76,10 @@
   .text-info {
     text-align: center;
     font-family: var(--font-normal);
-    font-size: 1.4em;
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+    line-height: 28px;
+    padding: 0 1em;
   }
   .wr-message {
     background: var(--bg-message-main);
@@ -104,11 +107,12 @@
   }
   .concept {
     font-family: var(--font-normal);
-    font-size: 1.4em;
+    font-size: 1.3em;
     text-align: center;
     border-top: 4px solid var(--color-border-concept);
     border-bottom: 4px solid var(--color-border-concept);
     padding: 1em 0;
+    line-height: 40px;
   }
   .wr-items {
     padding: 1em 0;
@@ -124,6 +128,7 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    line-height: 32px;
   }
   .svg-item {
     width: 60px;
@@ -166,12 +171,13 @@
   }
   .description {
     text-align: center;
-    font-size: 1.8em;
+    font-size: 1.6em;
     width: 100%;
     max-width: 700px;
     font-family: var(--font-normal);
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 0.5em;
+    line-height: 46px;
   }
   @media(min-width: 800px) {
     .wr-description {

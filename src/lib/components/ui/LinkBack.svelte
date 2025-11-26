@@ -20,7 +20,7 @@
 .link {
   color: var(--color-link);
   font-family: var(--font-normal);
-  font-size: 1.6em;
+  font-size: 1.1em;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -33,7 +33,7 @@
 }
 @media(min-width: 700px) {
   .link {
-    font-size: 1.3em;
+    font-size: 1em;
   }
 }
 </style>

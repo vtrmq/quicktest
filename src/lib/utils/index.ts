@@ -6,3 +6,5 @@ export * from './generateCodeFromTimestamp';
 export * from './getDateTime';
 export * from './constants';
 export * from './profile';
+export * from './formatDateHour';
+export * from './fn';

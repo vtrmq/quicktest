@@ -6,7 +6,7 @@
 
 <style>
   .h-title {
-    font-size: 1.8em;
+    font-size: 1.7em;
     font-family: var(--font-bold);
     width: fit-content;
     color: var(--color-title);

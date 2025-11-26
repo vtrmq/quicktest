@@ -174,7 +174,7 @@
 .label {
   font-family: var(--font-normal);
   font-weight: 600;
-  font-size: 1.3em;
+  font-size: 1em;
   color: var(--color-label-input);
 }
 .input-linear {
@@ -274,6 +274,7 @@
   color: var(--color);
   background: transparent;
   -moz-appearance: textfield;
+  height: 50px;
 }
 
 /* Ocultar icono de calendario nativo */
@@ -308,10 +309,10 @@
   }
   */
   .label {
-    font-size: 1.1em;
+    font-size: 0.8em;
   }
   .msg-error {
-    font-size: 1.1em;
+    font-size: 0.8em;
   }
 }
 

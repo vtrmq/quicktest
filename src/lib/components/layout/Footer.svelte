@@ -21,9 +21,9 @@
     margin: 0 auto;
   }
   .text-footer {
-    color: #fff;
+    color: #c8bfff;
     font-family: var(--font-normal);
-    font-size: 1.1em;
+    font-size: 0.9em;
     text-transform: uppercase;
   }
   .footer {

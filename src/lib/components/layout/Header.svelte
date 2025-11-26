@@ -9,7 +9,7 @@
 :global {
   .link-logo {
     display: flex;
-    margin-left: 30px;
+    margin-left: 14px;
   }
   .link-logo > img {
     display: flex;
@@ -29,5 +29,12 @@
 }
 .header.bg {
   background: var(--bg-header);
+}
+@media(min-width: 700px) {
+  :global {
+    .link-logo {
+      margin-left: 25px;
+    }
+  }
 }
 </style>

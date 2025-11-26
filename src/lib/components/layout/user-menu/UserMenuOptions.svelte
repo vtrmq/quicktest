@@ -31,8 +31,8 @@ $effect(()=>{
   color: #fff;
   text-decoration: none;
   font-family: var(--font-normal);
-  font-size: 1.4em;
-  padding: 0.5em 1em;
+  font-size: 1em;
+  padding: 0.8em 1em;
   align-items: center;
   border-radius: 8px;
   transition: var(--transition);
@@ -44,7 +44,7 @@ $effect(()=>{
   background: #674ff9;
 }
 :global(.link-option-menu > svg) {
-  width: 26px;
+  width: 22px;
   color: #fff;
 }
 </style>

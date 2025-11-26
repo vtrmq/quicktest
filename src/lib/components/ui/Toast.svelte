@@ -38,7 +38,8 @@
 
 <style>
   .message {
-    font-size: 0.9em;
+    font-size: 0.7em;
+    text-align: center;
   }
   .wr-icon-toast {
     height: auto;
@@ -69,8 +70,8 @@
   }
   .toast {
     background: var(--bg-toast);
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    padding: 0.5em 1em;
+    box-shadow: rgb(0 0 0 / 9%) 0px 5px 15px;
+    padding: 0.6em 1em;
     border-radius: 50px;
     transition: 0.3s;
     top: 0;
@@ -79,9 +80,10 @@
     align-items: center;
     margin: 0 0.5em;
     position: absolute;
-    max-width: 350px;
+    max-width: 330px;
     font-family: var(--font-normal);
     font-size: 1.5em;
+    line-height: 22px;
   }
   .toast.top-normal {
     top: -120px;
@@ -94,11 +96,14 @@
       font-size: 23px;
     }
     .toast {
-      max-width: 340px;
+      max-width: 290px;
       font-size: 1.3em;
     }
     .toast.top-high {
       top: -150px;
+    }
+    .message {
+      font-size: 0.7em;
     }
   }
 </style>

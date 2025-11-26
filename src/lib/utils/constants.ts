@@ -5,6 +5,26 @@ export const DOMAIN = "https://192.168.1.3:5173";
 //export const DOMAIN = "https://quicktest-1uf.pages.dev";
 
 export const CLIENTAUTHINFO = 'client-auth-info';
+export const PUBLIC_BASE_EMAIL = 'https://mailersend.localschool.online/mailersend';
+
+const padTo2Digits = (num: number): string => {
+  return num.toString().padStart(2, '0');
+};
+
+export const getCurrentTime = (): string => {
+  const ahora = new Date();
+  const horas = ahora.getHours();
+  const minutos = ahora.getMinutes();
+  const segundos = ahora.getSeconds();
+
+  const horaFormateada = [
+    padTo2Digits(horas),
+    padTo2Digits(minutos),
+    padTo2Digits(segundos)
+  ].join(':');
+
+  return horaFormateada;
+};
 
 /*
 export const SESSION_CONFIG = {
@@ -17,18 +37,18 @@ export const SESSION_CONFIG = {
 */
 
 export const MONTH = {
-  1: "Ene",
-  2: "Feb",
-  3: "Mar",
-  4: "Abr",
-  5: "May",
-  6: "Jun",
-  7: "Jul",
-  8: "Ago",
-  9: "Sep",
-  10: "Oct",
-  11: "Nov",
-  12: "Dic"
+  1: "Enero",
+  2: "Febrero",
+  3: "Marzo",
+  4: "Abril",
+  5: "Mayo",
+  6: "Junio",
+  7: "Julio",
+  8: "Agosto",
+  9: "Septiembre",
+  10: "Octubre",
+  11: "Noviembre",
+  12: "Diciembre"
 } as const; // 'as const' le dice a TS que los valores no cambiarán
 
 export const SESSION_CONFIG = {

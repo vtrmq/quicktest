@@ -41,11 +41,10 @@ function handleClickSlider(move: string) {
       <button type="button" class="btn-slider border-left-bottom" onclick={()=>handleClickSlider('left')}>{@html minus}</button>
     </div>
     <div class="wr-display">
-      <p class="label">Mes de incio</p>
       <p class="display-month">{month}</p>
     </div>
     <div class="bx-btn">
-      <button type="button" class="btn-slider border-right-bottom pos-right" onclick={()=>handleClickSlider('right')}>{@html plus}</button>
+      <button type="button" class="btn-slider border-right-bottom pos-right btn-right" onclick={()=>handleClickSlider('right')}>{@html plus}</button>
     </div>
   </div>
 </div>
@@ -68,40 +67,36 @@ function handleClickSlider(move: string) {
   border-bottom-right-radius: var(--border-radius);
 }
 .bx-btn {
-  padding: 2px;
   height: 100%;
+  width: 40px;
 }
 .wr-display {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #fff;
   align-items: center;
-  width: 98%;
+  width: 100%;
   height: 100%;
-}
-.label {
-  font-family: var(--font-normal);
-  font-weight: 600;
-  font-size: 1.3em;
-  color: var(--color-label-input);
-  text-align: center;
-  display: none;
+  overflow-y: auto;
+  background: #d1e9f1;
+  box-shadow: inset #8cc3d5b5 0px 1px 13px 2px, #ffffff 1px 2px 0px 0px;
 }
 .container-slider {
   display: flex;
   align-items: center;
-  gap: 1em;
-  height: 43.63px;
+  height: 50px;
 }
 .wr-box-slider {
   display: grid;
   grid-template-columns: 40px 1fr 40px;
-  border: 1px solid var(--color-border-input);
   border-radius: var(--border-radius);
   overflow: hidden;
   height: 100%;
   width: 100%;
+}
+.btn-right {
+  position: relative;
+  right: 0;
 }
 .btn-slider {
   width: 40px;
@@ -110,23 +105,19 @@ function handleClickSlider(move: string) {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #add8e6 0%, #4a889b 100%);
+  background: linear-gradient(135deg, #75ebeb 0%, #13808b 100%);
 }
 .display-month {
   font-family: var(--font-normal);
-  font-size: var(--font-size);
+  font-size: 1em;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 20px;
 }
 @media (min-width: 700px) {
-  .wr-display {
-    height: 95%;
-  }
-  .label {
-    font-size: 1.1em;
-    display: block;
+  .display-month {
+    position: relative;
   }
 }
 </style>

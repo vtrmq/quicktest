@@ -15,7 +15,7 @@
 .info-profile {
   color: #fff;
   font-family: var(--font-normal);
-  font-size: 1.4em;
+  font-size: 1em;
 }
 .info-user-name {
   font-size: 1.1em;
@@ -23,7 +23,7 @@
   color: #fff;
 }
 .info-user-email {
-  font-size: 1.2em;
+  font-size: 1em;
   font-family: var(--font-normal);
   color: #0bc5b4;
 }
@@ -35,7 +35,7 @@
 }
 @media(min-width: 700px) {
   .info-profile {
-    font-size: 1.2em;
+    font-size: 1em;
   }
 }
 </style>

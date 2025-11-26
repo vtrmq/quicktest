@@ -32,16 +32,13 @@
 
 <style>
 .page-container {
-  min-height: 100vh;
-  /*background-image: var(--bg-gradient-movil);*/
-  transition: var(--transition);
-  background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+  background: #fff;
 }
-/*
 @media(min-width: 700px) {
   .page-container {
-    background: floralwhite;
+    min-height: 100vh;
+    transition: var(--transition);
+    background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
   }
 }
-*/
 </style>

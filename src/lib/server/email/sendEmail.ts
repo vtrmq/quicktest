@@ -1,3 +1,20 @@
+import { PUBLIC_BASE_EMAIL } from '$lib/utils';
+import type { InfoEmail } from '$lib/types';
+type Result = {
+  type: string;
+  error: string;
+}
+export const sendEmail = async (infoEmail: InfoEmail): Promise<Result> => {
+  const result = await fetch(`${PUBLIC_BASE_EMAIL}/`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(infoEmail)
+  });
+  return await result.json();
+}
+/*
 import nodemailer from "nodemailer"
 import { GMAIL_USER, GMAIL_APP_PASS } from '$env/static/private';
 import { NAME_APP } from "$lib/utils";
@@ -36,3 +53,4 @@ export const sendEmail = async (options: EmailOptions): Promise<{ success: boole
     };
   }
 };
+*/

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { goto } from "$app/navigation";
 import { Title, NoneData, Dialog, Toast, PaymentSettingTeacher } from '$lib/components';
 import type { PaymentSetting } from '$lib/types';
 import { MONTH } from '$lib/utils';
@@ -74,6 +75,20 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
   teachers[index].payment_setting = values;
 }
 
+function handlePayments(index: number) {
+  const id = teachers[index].payment_setting.id;
+  if (!id) {
+    toast?.view({
+      type: 'success',
+      message: 'El docente no tiene día de pago ni precio asignado',
+      time: 5000
+    });
+    return;
+  }
+  const teacherId = teachers[index].teacher.id;
+  goto(`/admin/payments?teacherId=${teacherId}&back=teachers`);
+}
+
 
 </script>
 
@@ -82,11 +97,9 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
 
 <div class="container-teachers-registrations">
 
-  <div>
-    <div class="wr-title">
-      <Title>Docentes registrados</Title>
-      <p class="desc">Configura el precio y el día de pago para cada docente</p>
-    </div>
+  <div class="wr-title">
+    <Title>Docentes registrados</Title>
+    <p class="desc">Configura el precio y el día de pago para cada docente</p>
   </div>
 
   {#if teachers.length !== 0}
@@ -96,7 +109,7 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
         <div>
           <div class="row-teacher">
             <div class="box-point">
-              <button class="point">
+              <button class="point" onclick={()=>handlePayments(i)}>
                 {#if values && values.paid === true}
                   <div class="circle-green">&nbsp;</div>
                 {:else if values && values.paid === false}
@@ -108,7 +121,7 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
                 <div class="box-b">&nbsp;</div>
               </div>
               <div class="box-a">
-                <div class="box-b" class:border-left={i !== 0 && i + 1 === teachers.length}>&nbsp;</div>
+                <div class="box-b" class:border-left={i !== 0 && i + 1 <= teachers.length}>&nbsp;</div>
                 <div class="box-b" class:border-left={i + 1 < teachers.length}>&nbsp;</div>
               </div>
             </div>
@@ -191,19 +204,24 @@ function handleValuesSetting(index: number, values: PaymentSetting) {
   grid-template-columns: 70px 1fr;
 }
 .desc {
-  font-size: 1.4em;
+  font-size: 1em;
   font-family: var(--font-normal);
+  line-height: 23px;
 }
 .name {
-  font-size: 1.6em;
+  font-size: 1.1em;
   font-weight: 600;
   font-family: var(--font-normal);
+  margin: 4px 0;
 }
 .email-phone {
-  font-size: 1.4em;
+  font-size: 1em;
   font-family: var(--font-normal);
   color: #777777;
   text-transform: lowercase;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .container-teachers-registrations {
   width: 100%;

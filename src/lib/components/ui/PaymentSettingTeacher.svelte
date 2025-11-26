@@ -18,7 +18,6 @@ type Props = { setting: TeacherPayment, valuesSetting: (i: number, e: PaymentSet
 let { setting, valuesSetting, index, values }: Props  = $props();
 let isDisplay = $state(false);
 let btnSave = $state<Button>();
-
 let input = $state('');
 let error = $state('');
 let year: number;
@@ -160,21 +159,23 @@ function handleChangeMonth(posMonth: number) {
 
 <style>
 .price {
-  font-size: 1.6em;
+  font-size: 1.1em;
   font-family: var(--font-normal);
   color: #426475;
 }
 .label-msg {
   font-family: var(--font-normal);
-  font-size: 1.2em;
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--color-label-input);
 }
 .container-slider-month {
   width: 100%;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  gap: 1em;
+  gap: 0.3em;
   padding: 0 1em 0;
   margin-bottom: 1em;
 }
@@ -219,7 +220,7 @@ function handleChangeMonth(posMonth: number) {
   margin-bottom: 0.4em;
 }
 .label {
-  font-size: 1.6em;
+  font-size: 1.1em;
   font-family: var(--font-normal);
   color: red;
   text-decoration: underline;
@@ -235,5 +236,15 @@ function handleChangeMonth(posMonth: number) {
   max-width: 460px;
   max-height: 500px;
   position: relative;
+}
+@media(min-width: 700px) {
+  .label-msg {
+    font-size: 0.8em;
+  }
+  .container-slider-month {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+  }
 }
 </style>

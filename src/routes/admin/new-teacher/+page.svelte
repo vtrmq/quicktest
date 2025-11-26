@@ -68,7 +68,7 @@ const handleForm: SubmitFunction = () => {
   }
   .body-form {
     margin-top: 1em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     display: flex;
     flex-direction: column;
     gap: 0.5em;

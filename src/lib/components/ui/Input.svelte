@@ -53,6 +53,7 @@
       {#if icon.length}
         <div class="icon" class:padding-left-icon-border={style === 'border'}>{@html icon}</div>
       {/if}
+      <!-- class:input-date={type === 'date'} -->
       <input 
         use:Type
         autocomplete="off" 
@@ -62,9 +63,7 @@
         class:input-linear-error-icon={input === name && style === 'linear' && icon.length !== 0}
         class:input-border-error-icon={input === name && style === 'border' && icon.length !== 0}
         class:input-linear-error-x={input === name && style === 'linear' && icon.length !== 0}
-
-        class:padding-right={type === 'password'}
-        class:input-date={type === 'date'}
+        class:padding-right={type === 'password'} 
         class:padding-left={icon.length && style === 'linear'}
         class:padding-left-border={icon.length && style === 'border'}
 
@@ -259,7 +258,7 @@
 .label {
   font-family: var(--font-normal);
   font-weight: 600;
-  font-size: 1.3em;
+  font-size: 1em;
   color: var(--color-label-input);
 }
 .input-linear {
@@ -312,13 +311,13 @@
 .container-input {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
   width: 100%;
 }
 .msg-error {
   width: 100%;
   height: 20px;
-  font-size: 1.2em;
+  font-size: 1em;
   color: var(--red);
   font-family: var(--font-normal);
 }
@@ -331,6 +330,7 @@
   background: var(--bg-form);
   border-radius: var(--border-radius);
   pointer-events: none;
+  z-index: 0;
 }
 .wr-calendar-linear {
   position: absolute;
@@ -357,11 +357,13 @@
 
 .input {
   color: var(--color);
-  background: transparent;
+  background: #fff;
   -moz-appearance: textfield;
+  height: 50px;
 }
 
 /* Ocultar icono de calendario nativo */
+/*
 .input-date::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
@@ -375,16 +377,13 @@
   cursor: pointer;
   z-index: 2;
 }
-
-/* Para Firefox */
 .input-date::-moz-calendar-picker-indicator {
   display: none;
 }
-
-/* Asegurar que el input date tenga padding derecho */
 .input-date {
   padding-right: 35px !important;
 }
+*/
 
 @media(min-width: 700px) {
   /*
@@ -393,10 +392,10 @@
   }
   */
   .label {
-    font-size: 1.1em;
+    font-size: 0.8em;
   }
   .msg-error {
-    font-size: 1.1em;
+    font-size: 0.8em;
   }
 }
 

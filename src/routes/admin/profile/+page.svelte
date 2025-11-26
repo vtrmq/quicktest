@@ -383,11 +383,11 @@
   margin-bottom: 1.5em;
 }
 .btn-option {
-  padding: 0.3em 1em;
+  padding: 0.5em 1em;
   border-radius: 50px;
   cursor: pointer;
   font-family: var(--font-normal);
-  font-size: 1.3em;
+  font-size: 1em;
   color: #6049eb;
   background: #f0edfd;
   font-weight: 600;

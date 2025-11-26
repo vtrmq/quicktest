@@ -82,8 +82,9 @@
 
 <style>
 .desc {
-  font-size: 1.4em;
+  font-size: 1em;
   font-family: var(--font-normal);
+  line-height: 23px;
 }
 .name {
   font-size: 1.6em;

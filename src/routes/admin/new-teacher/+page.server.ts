@@ -1,10 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from "@sveltejs/kit";
-import type { UserRegister } from '$lib/types';
+import type { UserRegister, InfoEmail } from '$lib/types';
 import { kvPlatformCodes } from '$lib/server/kv';
 import { validateEmail, validateString, getDateTimeUTC, failForm, failServer } from '$lib/utils';
 import { newTeacher } from '$lib/services/admin';
-import { /*sendEmail,*/ emailTemplates } from '$lib/server/email';
+import { sendEmail, emailTemplates } from '$lib/server/email';
 import { dbPlatform } from '$lib/server/db';
 
 export const actions: Actions = {
@@ -65,52 +65,27 @@ export const actions: Actions = {
       const code = await newTeacher(kv, db, infoTeacher);
       if (code && code.length !== 0) {
         const template = emailTemplates.preRegister(name, code);
-        const PUBLIC_BASE_URL = 'https://mailersend.localschool.online/mailersend';
-
-        const infoEmail = {
+        const infoEmail: InfoEmail = {
           to: email,
           subject: template.subject,
           html: template.html
         }
-
-        const result = await fetch(`${PUBLIC_BASE_URL}/`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify(infoEmail)
-        });
-        const response = await result.json();
+       const response = await sendEmail(infoEmail);
         if (response.type === 'failer') {
           throw new failServer(response.error);
         }
-
-        /*
-        const template = emailTemplates.preRegister(name, code);
-        const result = await sendEmail({
-          to: email,
-          subject: template.subject,
-          html: template.html
-        });
-        if (!result.success && result.error) {
-          throw new failServer(result.error);
-        }
-        */
 
       } else {
         throw new failForm("El correo electrónico ya existe", "email");
       }
 
     } catch (error) {
-
-      //console.error("ERROR CAPTURADO EN EL HANDLER:", error);
       
       if (error instanceof failForm) {
         return fail(400, {
           msg: error.message,
           input: error.input,
           origin: error.origin,
-          stack: error.stack,
           field: { name, surnames, email, phone }
         });
       }

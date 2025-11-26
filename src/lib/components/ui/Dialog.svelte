@@ -80,7 +80,7 @@ function handleChangeCheck(e: boolean) {
   gap: 1em;
   margin-bottom: 2em;
   font-family: var(--font-normal);
-  font-size: 1.4em;
+  font-size: 1em;
   color: #fff;
   justify-content: center;
 }
@@ -94,7 +94,7 @@ function handleChangeCheck(e: boolean) {
   align-items: center;
 }
 .message {
-  font-size: 1.8em;
+  font-size: 1.5em;
   color: #fff;
   text-align: center;
   font-family: var(--font-normal);

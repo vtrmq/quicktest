@@ -9,3 +9,4 @@ export * from './userActionEmail';
 export * from './userActionCode';
 export * from './userActionPassw';
 export * from './teacherPayment';
+export * from './infoEmail';

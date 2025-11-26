@@ -13,7 +13,7 @@
     width: 150px;
   }
   .msg {
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-family: var(--font-normal);
     font-weight: 500;
     text-align: center;
@@ -26,7 +26,7 @@
   }
   @media(min-width: 700px) {
     .msg {
-      font-size: 1.3em;
+      font-size: 1em;
     }
   }
 </style>
