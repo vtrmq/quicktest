@@ -24,7 +24,7 @@
 
 </script>
 
-<!-- vtrmq09@gmail.com admin123 -->
+<!-- vtrmq09@gmail.com admin123, vtrmq@hotmail.com 123456 -->
 
 <div class="wr-form-login">
   <DataFrame width="400px">

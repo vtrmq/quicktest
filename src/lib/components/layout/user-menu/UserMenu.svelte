@@ -1,4 +1,5 @@
 <script lang="ts">
+import { fade } from 'svelte/transition';
 import { UserMenuButton, UserMenuContainer, UserMenuOptions, UserMenuInfo } from './index';
 import type { DataProfile, MenuOption } from '$lib/types';
 
@@ -22,10 +23,11 @@ function handleKeydown(e:KeyboardEvent) {
 
 <svelte:window onkeydown={handleKeydown} />
 
+{#if isOpen}
 <div 
   class="user-menu" 
-  class:visible={isOpen} 
-  onclick={toggleMenu} role="button" tabindex="0" onkeyup={()=>{}}></div>
+  onclick={toggleMenu} role="button" tabindex="0" onkeyup={()=>{}} transition:fade={{ duration: 200 }}></div>
+{/if}
 <UserMenuButton photo={info.photo} onclick={toggleMenu} />
 <UserMenuContainer {isOpen}>
   <UserMenuInfo {info} />
@@ -35,9 +37,6 @@ function handleKeydown(e:KeyboardEvent) {
 <style>
 .user-menu {
   position: relative;
-  display: none;
-}
-.user-menu.visible {
   display: block;
   background: var(--bg-screen);
   position: fixed;

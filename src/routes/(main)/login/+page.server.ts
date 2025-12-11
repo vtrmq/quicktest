@@ -39,16 +39,6 @@ export const actions: Actions = {
         throw new MError('La contraseña es requerida', 'password');
       }
 
-      /*
-      //const r = `Platform: ${!!platform} --> ${!!platform?.env}`;
-      if (platform?.env) {
-        const r = `TODAS las keys en platform.env: ${Object.keys(platform.env)} DB específicamente: ${platform.env.DB} Tipo de DB: ${typeof platform.env.DB}`;
-        console.log(r)
-        throw new MError(r)
-      }
-      */
-
-
       // ====== VERIFICAR SERVICIOS ======
 
       const db = dbPlatform(platform);
@@ -81,11 +71,6 @@ export const actions: Actions = {
         profile: user.profile,
         photo: user.photo
       };
-
-      //const clientAuthInfo = encodeURIComponent(JSON.stringify(sessionUser));
-      //cookies.set(CLIENTAUTHINFO, clientAuthInfo, SESSION_CONFIG);
-      
-      //console.log(sessionUser)
 
       const signedSession = signSession(sessionUser);
       cookies.set(CLIENTAUTHINFO, signedSession, SESSION_CONFIG);

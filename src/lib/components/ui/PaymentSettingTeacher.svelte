@@ -211,7 +211,7 @@ function handleChangeMonth(posMonth: number) {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 3;
+  z-index: 60;
   padding: 1em;
 }
 .btn-setting {

@@ -1,0 +1,24 @@
+CREATE TABLE courses (
+  course_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  teacher_id INTEGER DEFAULT 0,
+  course TEXT NOT NULL,
+  code TEXT,
+  visible BOOLEAN DEFAULT TRUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE subjects (
+  subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  teacher_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL,
+  subject TEXT NOT NULL,
+  visible BOOLEAN DEFAULT TRUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE courses_students (
+  course_student_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL
+);
+

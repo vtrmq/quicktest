@@ -60,7 +60,8 @@ const handleForm: SubmitFunction = () => {
   .wr-form-login {
     display: flex;
     justify-content: center;
-    padding: 2em 1em 3em;
+    background: #fff;
+    border-radius: var(--border-radius);
   }
   form {
     margin: 0 auto;
@@ -76,6 +77,8 @@ const handleForm: SubmitFunction = () => {
   @media(min-width: 700px) {
     .wr-form-login {
       padding: 2em 1em 3em;
+      background: transparent;
+      box-shadow: none;
     }
   }
 </style>

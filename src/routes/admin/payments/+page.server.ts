@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, error } from '@sveltejs/kit';
 import type { Actions } from "@sveltejs/kit";
 import { dbPlatform, saveDB, deleteDB, updateDB } from '$lib/server/db';
 import { failForm, failServer, validateString, getCurrentTime } from '$lib/utils';
@@ -26,6 +26,9 @@ export const load: PageServerLoad = async ({ url, locals, platform }) => {
   if (locals.user.profile !== 'A') { throw redirect(303, '/unauthorized'); }
 
   const teacherId = url.searchParams.get('teacherId');
+  const page = Number(url.searchParams.get("page") ?? 1);
+  const limit = 10;
+  const offset = (page - 1) * limit;
 
   try {
 
@@ -34,56 +37,38 @@ export const load: PageServerLoad = async ({ url, locals, platform }) => {
       throw new failServer("DB: servicio no disponible");
     }
 
-    /*
-    const stmtUser = db.prepare(
-      `SELECT id, name, surnames FROM users WHERE id = ?`
-    );
+    const totalsQuery = `
+    SELECT COUNT(p.payment_id) AS total_count, SUM(p.amount) AS total_amount FROM payments p WHERE p.teacher_id = ?
+  `;
 
-    const stmtSettings = db.prepare(
-      `SELECT pay_day, price, next_payment_month FROM payment_settings WHERE teacher_id = ?`
-    );
-
-    const stmtPayments = db.prepare(
-      `SELECT payment_id, amount, date_at FROM payments WHERE teacher_id = ?`
-    );
-
-    const batchResult = await db.batch([
-      stmtUser?.bind(teacherId),
-      stmtSettings?.bind(teacherId),
-      stmtPayments?.bind(teacherId)
-    ]);
-
-    const [usersResult, settingsResult, paymentsResult] = batchResult;
-
-    const teacher: Teacher = {
-      ...usersResult.results[0],
-      ...settingsResult.results[0]
-    };
-    const payments: Payments[] = paymentsResult.results;
-    */
+    type Totals = { total_count: number; total_amount: number };
+    const stmtPage = db.prepare(totalsQuery);
+    const totals: Totals = await stmtPage.bind(teacherId).first();
+    const totalCount = totals?.total_count ?? 0;
+    const totalAmount = totals?.total_amount ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
 
     let teacher: Teacher | null = null;
     let payments: Payments[] = [];
 
     const stmt = db.prepare(`
-  SELECT
-    u.name,
-    u.name,
-    u.surnames,
-    ps.id,
-    ps.pay_day,
-    ps.price,
-    ps.next_payment_month,
-    p.payment_id,
-    p.amount,
-    p.date_at
-  FROM users u
-  LEFT JOIN payment_settings ps ON ps.teacher_id = u.id
-  LEFT JOIN payments p         ON p.teacher_id  = u.id
-  WHERE u.id = ?;
-`);
+      SELECT 
+        u.name, 
+        u.surnames, 
+        ps.id, 
+        ps.pay_day, 
+        ps.price, 
+        ps.next_payment_month, 
+        p.payment_id, 
+        p.amount, 
+        p.date_at
+      FROM users u
+      LEFT JOIN payment_settings ps ON ps.teacher_id = u.id
+      LEFT JOIN payments p ON p.teacher_id = u.id
+      WHERE u.id = ?
+      ORDER BY DATE(p.date_at) DESC LIMIT ? OFFSET ?;`);
 
-    const rows = await stmt.bind(teacherId).all();
+    const rows = await stmt.bind(teacherId, limit, offset).all();
 
     for (const row of rows.results) {
       // Solo llenamos el teacher una vez (la primera fila)
@@ -111,7 +96,14 @@ export const load: PageServerLoad = async ({ url, locals, platform }) => {
 
     return {
       teacher,
-      payments
+      payments,
+      pagination: {
+        page,
+        totalPages,
+        limit,
+        totalCount,
+        totalAmount
+      }
     };
 
   } catch (error) {
@@ -162,13 +154,9 @@ export const actions: Actions = {
       const amount = parseInt(price);
       const teacher_id = parseInt(teacherId);
 
-      //let response: D1ResultMeta;
       await saveDB(db, 
         'INSERT INTO payments (admin_id, teacher_id, amount, date_at) VALUES (?, ?, ?, ?)', 
         admin_id, teacher_id, amount, date_at);
-
-
-      //payments.push({date: `${date} ${getCurrentTime()}`, price: parseInt(price)});
 
     } catch (error) {
 
@@ -218,18 +206,16 @@ export const actions: Actions = {
 
       }
 
-    } catch (error) {
-      if (error instanceof failServer) {
-        return fail(500, {
-          message: error.message,
-          origin: error.origin,
+    } catch (err) {
+
+      if (err instanceof failServer) {
+        throw error(500, {
+          message: err.message
         });
       }
 
-      return fail(500, {
-        message: 'Error inesperado',
-        origin: 'server'
-      });
+      throw error(500, 'Error inesperado');
+
     }
   },
 
@@ -256,18 +242,16 @@ export const actions: Actions = {
         await updateDB(db, query, next_payment_month, payment_id, admin_id, teacher_id);
       }
 
-    } catch (error) {
-      if (error instanceof failServer) {
-        return fail(500, {
-          message: error.message,
-          origin: error.origin,
+    } catch (err) {
+
+      if (err instanceof failServer) {
+        throw error(500, {
+          message: err.message
         });
       }
 
-      return fail(500, {
-        message: 'Error inesperado',
-        origin: 'server'
-      });
+      throw error(500, 'Error inesperado');
+
     }
   }
 

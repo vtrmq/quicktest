@@ -85,7 +85,8 @@ export const actions: Actions = {
         } else {
           throw new msgError('No se pudo ejecutar la acción');
         }
-      } else if (profile === 'S') {
+      } else {
+        throw new msgError('Error inesperado');
       }
       
     } catch (error) {

@@ -30,7 +30,7 @@ $effect(()=>{
   gap: 0.5em;
   color: #fff;
   text-decoration: none;
-  font-family: var(--font-normal);
+  font-family: var(--font-bold);
   font-size: 1em;
   padding: 0.8em 1em;
   align-items: center;

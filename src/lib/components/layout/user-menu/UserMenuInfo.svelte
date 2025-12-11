@@ -21,6 +21,7 @@
   font-size: 1.1em;
   font-family: var(--font-bold);
   color: #fff;
+  padding: 0 2em;
 }
 .info-user-email {
   font-size: 1em;

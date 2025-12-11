@@ -79,7 +79,6 @@ function handleClickSlider(move: string) {
   height: 100%;
   overflow-y: auto;
   background: #d1e9f1;
-  box-shadow: inset #8cc3d5b5 0px 1px 13px 2px, #ffffff 1px 2px 0px 0px;
 }
 .container-slider {
   display: flex;

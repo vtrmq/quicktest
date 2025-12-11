@@ -87,15 +87,19 @@
   line-height: 23px;
 }
 .name {
-  font-size: 1.6em;
+  font-size: 1.2em;
   font-weight: 600;
   font-family: var(--font-normal);
+  margin-bottom: 0.2em;
 }
 .email-phone {
-  font-size: 1.4em;
+  font-size: 1.05em;
   font-family: var(--font-normal);
   color: #777777;
   text-transform: lowercase;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
 }
 .row-pre {
   display: flex;
@@ -106,7 +110,6 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1em;
 }
 .wr-none-data {
   padding: 3em 0;

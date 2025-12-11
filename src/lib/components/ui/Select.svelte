@@ -28,7 +28,7 @@
     <div class="wr-input">
       <select 
         autocomplete="off" 
-        class="input"
+        class="select"
         class:input-border={input !== name && style === 'border'} class:input-border-error={input === name && style === 'border' && icon.length === 0} 
         class:input-linear={input !== name && style === 'linear'} class:input-linear-error={input === name && style === 'linear' && icon.length === 0} 
         class:input-linear-error-icon={input === name && style === 'linear' && icon.length !== 0}
@@ -72,6 +72,9 @@
 :global(.icon-form) {
   width: 30px;
   color: var(--color-icon-form);
+}
+:global(.select > option) {
+  color: #000;
 }
 .lowercase {
   text-transform: lowercase;
@@ -264,16 +267,15 @@
   z-index: 1;
 }
 
-.input::-webkit-outer-spin-button,
-.input::-webkit-inner-spin-button {
+.select::-webkit-outer-spin-button,
+.select::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.input {
+.select {
   color: var(--color);
-  background: transparent;
-  -moz-appearance: textfield;
+  background: var(--bg-select, transparent);
   height: 50px;
 }
 

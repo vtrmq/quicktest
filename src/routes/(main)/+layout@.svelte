@@ -39,7 +39,7 @@
     {:else if root !== undefined}
       <Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link>
     {/if}
-    <!--a href="/register">Regístrate</a-->
+    <Link href="/register-student">Regístrate</Link>
   </BoxNav>
 </Header>
 

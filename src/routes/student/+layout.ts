@@ -3,9 +3,9 @@ import { browser } from '$app/environment';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ data }) => {
-  if (browser && !data.info) {
+  if (browser && !data.user) {
     goto('/', { replaceState: true });
     return {};
   }
-  return { info: data.info };
+  return { ...data };
 };

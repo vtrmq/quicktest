@@ -77,11 +77,19 @@ const handleForm: SubmitFunction = () => {
   <div class="wr">
     <LinkBack href="/">Home</LinkBack>
     <Title>Información</Title>
-    <p class="msg-error">{data.message}</p>
+    <p class="msg-error">{@html data.message}</p>
   </div>
 {/if}
 
 <style>
+:global {
+  .code-r {
+    color: red;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1px;
+  }
+}
 .wr {
   display: grid;
   grid-template-rows: 26px 40px;
@@ -90,6 +98,7 @@ const handleForm: SubmitFunction = () => {
 .msg-error {
   font-family: var(--font-normal);
   font-size: var(--font-size);
+  line-height: 28px;
 }
 .body-form {
   margin-top: 1em;

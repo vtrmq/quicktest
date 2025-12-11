@@ -11,6 +11,6 @@
     display: flex;
     gap: 1em;
     align-items: center;
-    margin-right: 0.5em;
+    margin-right: 1em;
   }
 </style>

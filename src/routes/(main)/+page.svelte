@@ -56,7 +56,7 @@
     --color-border-concept: #ff9800;
   }
   :global(.dark) {
-    --bg-message-main: #1c2930;
+    --bg-message-main: #F1F0FF;
     --color-border-concept: #6ea6c3;
   }
   .location {
@@ -199,6 +199,7 @@
     .text-item {
       text-align: left;
       padding: 0;
+      font-size: 1.1em;
     }
     .wr-concept {
       padding: 3em 0;

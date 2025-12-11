@@ -1,14 +1,15 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-  type Props = {
-    isOpen: boolean
-    children: Snippet
-  }
-  let { isOpen = false, children }: Props = $props();
+import { fade } from 'svelte/transition';
+import type { Snippet } from 'svelte';
+type Props = {
+  isOpen: boolean
+  children: Snippet
+}
+let { isOpen = false, children }: Props = $props();
 </script>
 
 {#if isOpen}
-  <div class="container-options">
+  <div class="container-options" transition:fade={{ duration: 200 }}>
     {@render children?.()}
   </div>
 {/if}

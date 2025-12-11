@@ -1,13 +1,17 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
-import { Title, NoneData, Dialog, Toast, PaymentSettingTeacher } from '$lib/components';
+import { goto, invalidateAll } from "$app/navigation";
+import { Title, NoneData, Dialog, Toast, PaymentSettingTeacher, Input, OptionSelect, Pagination } from '$lib/components';
 import type { PaymentSetting } from '$lib/types';
 import { MONTH } from '$lib/utils';
+import trash from '$lib/assets/svg/trash.svg?raw'
+import shieldCheck from '$lib/assets/svg/shield-check.svg?raw'
+import shieldAlert from '$lib/assets/svg/shield-alert.svg?raw'
 
 let { data } = $props();
 let dialog = $state<Dialog | null>(null);
-//let posTeacher: number = -1;
 let toast = $state<Toast>();
+let posTeacher: number = 0;
+let isSearch: boolean = $state(false);
 
 type TeacherPayment = {
   teacher: {
@@ -18,16 +22,26 @@ type TeacherPayment = {
     phone: string;
     school: string;
     created_at: string;
+    blocked: string;
   };
   payment_setting: PaymentSetting;
 };
 
-let teachers: TeacherPayment[] = $state(data.teachers ?? []);
-
-console.log($state.snapshot(teachers))
-
-function handleActionWin() {
+type PaginationResult = {
+  limit: number;
+  page: number;
+  totalCount: number;
+  totalPages: number;
 }
+
+let search: string = $state(data.search ?? '');
+let teachers: TeacherPayment[] = $state([]);
+let pagination: PaginationResult = $state({limit: 0, page: 0, totalCount: 0, totalPages: 0});
+
+$effect(() => {
+  teachers = data.teachers;
+  pagination = data.pagination;
+});
 
 // Definimos un tipo para asegurar que solo se pasen números de mes válidos (del 1 al 12)
 type NumberOfMonth = keyof typeof MONTH;
@@ -86,13 +100,98 @@ function handlePayments(index: number) {
     return;
   }
   const teacherId = teachers[index].teacher.id;
-  goto(`/admin/payments?teacherId=${teacherId}&back=teachers`);
+  if (search.length === 0) {
+    goto(`/admin/payments?teacherId=${teacherId}&back=teachers`);
+  } else {
+    goto(`/admin/payments?teacherId=${teacherId}&search=${search}&back=teachers`);
+  }
 }
 
+async function handleSearch(event: Event) {
+  event.preventDefault();
+  const form = event.target as HTMLFormElement;
+  const formData = new FormData(form);
+  const search = formData.get('search');
+  isSearch = true;
+  await goto(search ? `/admin/teachers?search=${search}` : '/admin/teachers', {
+    replaceState: true, // No añade una nueva entrada al historial
+    noScroll: true,    // Evita scroll al inicio
+  });
+  await invalidateAll();
+  isSearch = false;
+}
+
+async function handleEnableDisabled(index: number) {
+  const blocked = teachers[index].teacher.blocked === 'N' ? 'S' : 'N';
+  teachers[index].teacher.blocked = blocked;
+  const teacherId = teachers[index].teacher.id.toString();
+
+  const formData = new FormData();
+  formData.append('teacher_id', teacherId);
+  formData.append('blocked', blocked);
+
+  const response = await fetch('?/blocked', {
+    method: 'POST',
+    body: formData
+  });
+
+  if (response.ok) {
+    toast?.view({
+      type: 'success',
+      message: blocked === 'N' ? 'Docente habilitado' : 'Docente bloqueado',
+      time: 3000
+    });
+  } else {
+    const errData = await response.json();
+    toast?.view({
+      type: 'success',
+      message: errData.error.message,
+    });
+  }
+}
+
+function handleActionShowWin(index: number) {
+  const teacher = teachers[index].teacher;
+  posTeacher = index;
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar a ${teacher?.name} ${teacher?.surnames}?`,
+  });
+}
+
+async function handleActionDelete(e: string) {
+  if (e === 'accept') {
+    const teacherId = teachers[posTeacher].teacher.id.toString();
+    teachers = teachers.filter((_, i) => i !== posTeacher);
+
+    const formData = new FormData();
+    formData.append('teacher_id', teacherId);
+
+    const response = await fetch('?/visible', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      toast?.view({
+        type: 'success',
+        message: 'Docente eliminado',
+        time: 3000
+      });
+    } else {
+      const errData = await response.json();
+      toast?.view({
+        type: 'success',
+        message: errData.error.message,
+      });
+    }
+
+  }
+}
 
 </script>
 
-<Dialog bind:this={dialog} action={handleActionWin} />
+<Dialog bind:this={dialog} action={handleActionDelete} />
 <Toast bind:this={toast} />
 
 <div class="container-teachers-registrations">
@@ -100,42 +199,69 @@ function handlePayments(index: number) {
   <div class="wr-title">
     <Title>Docentes registrados</Title>
     <p class="desc">Configura el precio y el día de pago para cada docente</p>
+    <form class="form-search" onsubmit={handleSearch} novalidate>
+      <Input 
+        isSearch={isSearch} 
+        type="search" 
+        label="Buscar docente / Día de pago" 
+        name="search" 
+        bind:value={search} />
+    </form>
   </div>
 
   {#if teachers.length !== 0}
-    <div class="wrapper">
-      {#each teachers as row, i}
-        {@const values: ValuesPay | null = handlePay(i)}
-        <div>
-          <div class="row-teacher">
-            <div class="box-point">
-              <button class="point" onclick={()=>handlePayments(i)}>
-                {#if values && values.paid === true}
-                  <div class="circle-green">&nbsp;</div>
-                {:else if values && values.paid === false}
-                  <div class="circle-gray">&nbsp;</div>
-                {/if}
-              </button>
-              <div class="box-a">
-                <div class="box-b">&nbsp;</div>
-                <div class="box-b">&nbsp;</div>
+    <div>
+      <div class="wrapper">
+        {#each teachers as row, i}
+          {@const values: ValuesPay | null = handlePay(i)}
+          <div>
+            <div class="row-teacher">
+              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === teachers.length}>
+                <button class="point" onclick={()=>handlePayments(i)}>
+                  {#if values && values.paid === true}
+                    <div class="circle-green">&nbsp;</div>
+                  {:else if values && values.paid === false}
+                    <div class="circle-gray">&nbsp;</div>
+                  {/if}
+                </button>
+                <div class="box-a">
+                  <div class="box-b">&nbsp;</div>
+                  <div class="box-b">&nbsp;</div>
+                </div>
+                <div class="box-a">
+                  <div class="box-b" class:border-left={i !== 0 && i + 1 <= teachers.length}>&nbsp;</div>
+                  <div class="box-b" class:border-left={i + 1 < teachers.length}>&nbsp;</div>
+                </div>
               </div>
-              <div class="box-a">
-                <div class="box-b" class:border-left={i !== 0 && i + 1 <= teachers.length}>&nbsp;</div>
-                <div class="box-b" class:border-left={i + 1 < teachers.length}>&nbsp;</div>
-              </div>
-            </div>
-            <div>
-              <div><PaymentSettingTeacher {values} setting={row} valuesSetting={handleValuesSetting} index={i} /></div>
-              <p class="name">{row.teacher.name} {row.teacher.surnames}</p>
-              <div class="email-phone">
-                <p>{row.teacher.email}</p>
-                <p>{row.teacher.phone}</p>
+              <div>
+                <div class="wr-pay-select">
+                  <PaymentSettingTeacher {values} setting={row} valuesSetting={handleValuesSetting} index={i} />
+                  <OptionSelect>
+                    <button onclick={()=>handleEnableDisabled(i)}>
+                      {#if row.teacher.blocked === 'N'}
+                        {@html shieldCheck} 
+                        <span>Habilitado</span>
+                      {:else}
+                        {@html shieldAlert} 
+                        <span>Bloqueado</span>
+                      {/if}
+                    </button>
+                    <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar docente</span></button>
+                  </OptionSelect>
+                </div>
+                <div><p class="name" class:blocked={row.teacher.blocked === 'S'}>{row.teacher.name} {row.teacher.surnames}</p></div>
+                <div class="email-phone">
+                  <p>{row.teacher.email}</p>
+                  <p>{row.teacher.phone}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
+      {#if pagination.totalPages > 1} 
+        <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+      {/if}
     </div>
   {/if}
 
@@ -148,17 +274,29 @@ function handlePayments(index: number) {
 {/if}
 
 <style>
+.form-search {
+  margin-top: 0.5em;
+}
+.blocked {
+  background: #ffb6de;
+}
+.wr-pay-select {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1em;
+  align-items: center;
+}
 .circle-green {
   background: #1bf51b;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border-radius: 60px;
   box-shadow: rgb(17 17 26 / 63%) 0px 4px 15px, rgb(17 17 26 / 42%) 0px 0px 6px;
 }
 .circle-gray {
   background: #ff5fbe;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border-radius: 60px;
   box-shadow: rgb(17 17 26 / 63%) 0px 4px 15px, rgb(17 17 26 / 42%) 0px 0px 6px;
 }
@@ -197,6 +335,12 @@ function handlePayments(index: number) {
   justify-content: center;
   align-items: center;
 }
+.border-top-left {
+  border-top-left-radius: 8px;
+}
+.border-bottom-left {
+  border-bottom-left-radius: 8px;
+}
 .row-teacher {
   display: grid;
   align-items: center;
@@ -213,6 +357,7 @@ function handlePayments(index: number) {
   font-weight: 600;
   font-family: var(--font-normal);
   margin: 4px 0;
+  display: inline-block;
 }
 .email-phone {
   font-size: 1em;
@@ -227,7 +372,7 @@ function handlePayments(index: number) {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1em;
+  padding: 1em 0;
 }
 .wr-none-data {
   padding: 3em 0;
@@ -240,19 +385,31 @@ function handlePayments(index: number) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
+  background: #f0ffff8a;
+  height: max-content;
   box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
-@media(min-width: 700px) {
+@media(min-width: 800px) {
   .container-teachers-registrations {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3em;
+  }
+  .desc {
+    font-size: 1em;
+  }
+  .desc {
+    font-size: 1em;
+  }
+  .wr-title {
+    position: sticky;
+    top: 105px;
+    height: fit-content;
+    margin-top: 13px;
   }
 }
 </style>

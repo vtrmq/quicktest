@@ -4,7 +4,7 @@ import { page } from '$app/state';
 import type { ActionData } from './$types';
 import type { SubmitFunction /*, ActionResult*/ } from '@sveltejs/kit';
 import { enhance /*, deserialize*/ } from '$app/forms';
-import { LinkBack,  Title, Input, DataFrame, Button, Toast, NoneData, Dialog, SliderMonth } from '$lib/components';
+import { LinkBack,  Title, Input, DataFrame, Button, Toast, NoneData, Dialog, SliderMonth, Pagination } from '$lib/components';
 import { formatDateHour, searchParam } from '$lib/utils';
 
 let btnSave = $state<Button>();
@@ -15,7 +15,15 @@ let toast = $state<Toast | null>(null);
 let paymentId: number = -1;
 let dialog = $state<Dialog | null>(null);
 
-const href = searchParam(page.url.search, 'back');
+const back = searchParam(page.url.search, 'back');
+const search = searchParam(page.url.search, 'search');
+let href: string = $state(`/admin/${back}`);
+
+(()=>{
+  if (search) {
+    href = `${href}?search=${search}`;
+  }
+})();
 
 type Payments = {
   payment_id: number;
@@ -33,11 +41,25 @@ type Teacher = {
   next_payment_month: number
 }
 
+type PaginationResult = {
+  limit: number;
+  page: number;
+  totalAmount: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 const teacher: Teacher = $derived(data.teacher);
 let payments: Payments[] = $derived(data.payments);
+//const pagination = $derived(data.pagination);
 let next_payment_month: number = data.teacher.next_payment_month;
+let pagination: PaginationResult = $state({limit: 0, page: 0, totalAmount: 0, totalCount: 0, totalPages: 0});
 
+$effect(() => {
+  pagination = data.pagination;
+});
 
+/*
 let total: number = $derived.by(()=>{
   let _total = 0;
   for (let i = 0; i < payments.length; i++) {
@@ -45,6 +67,7 @@ let total: number = $derived.by(()=>{
   }
   return _total;
 });
+*/
 
 const handleForm: SubmitFunction = () => {
   btnSave?.load(true);
@@ -92,13 +115,12 @@ async function handleActionWin(e: string) {
         time: 3000
       });
     } else {
+      const errData = await response.json();
       toast?.view({
         type: 'success',
-        message: 'No se pudo eliminar el pago',
+        message: errData.error.message,
       });
     }
-    //const result: ActionResult = deserialize(await response.json());
-    //console.log(result)
 
   }
 }
@@ -127,6 +149,12 @@ async function handleSaveMonth() {
       type: 'success',
       message: 'Mes de pago actualizado',
     });
+  } else {
+    const errData = await response.json();
+    toast?.view({
+      type: 'success',
+      message: errData.error.message,
+    });
   }
 }
 
@@ -138,13 +166,13 @@ async function handleSaveMonth() {
 <div class="container-teacher-payments">
   <div class="wrapper-payments">
     <div class="wr-title">
-      <LinkBack href="/admin/{href}">Docentes</LinkBack>
+      <LinkBack href={href}>Docentes</LinkBack>
       <Title>Pagos adicionados</Title>
       <p class="desc">Lista de pagos realizados por el docente</p>
     </div>
 
     <DataFrame width="690px">
-      <form method="POST" action="?/add" use:enhance={handleForm} novalidate>
+      <form class="form" method="POST" action="?/add" use:enhance={handleForm} novalidate>
         <h2 class="name">{teacher.name} {teacher.surnames}</h2>
         <div class="body-form">
           <div class="row-form">
@@ -199,9 +227,15 @@ async function handleSaveMonth() {
             </div> 
           </div>
         {/each}
-        {#if total !== 0}
-          <div class="total">Total: ${total}</div>
-        {/if}
+        <div>
+          {#if pagination.totalPages > 1}
+            <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+          {/if}
+          <div class="r-total">
+            <p class="total">${pagination.totalAmount}</p>
+            <p class="reg">Reg: {pagination.totalCount}</p>
+          </div>
+        </div>
       {:else}
         <div class="wr-none-data">
           <NoneData>No hay pagos registrados</NoneData>
@@ -213,6 +247,27 @@ async function handleSaveMonth() {
 </div>
 
 <style>
+.form {
+  padding: 0.6em 0;
+}
+.r-total {
+  text-align: right;
+  font-family: var(--font-normal);
+  padding: 0.8em 0.4em;
+  margin-top: 1em;
+  background: #fff;
+  box-shadow: rgb(32 36 39 / 0%) 0px 12px 27px -5px, #353e431c 0px 3px 20px 0px;
+  border-radius: var(--border-radius);
+}
+.total {
+  font-weight: 600;
+  color: #000;
+  font-size: 1.4em;
+}
+.reg {
+  color: #717171;
+  font-size: 1em;
+}
 .wr-slider {
   display: grid;
   width: 100%;
@@ -231,7 +286,7 @@ async function handleSaveMonth() {
   flex-direction: column;
   align-items: center;
   grid-template-columns: 84px 2fr 100px;
-  background: #fff;
+  background: #ffffff;
   box-shadow: rgb(32 36 39 / 0%) 0px 12px 27px -5px, #353e431c 0px 3px 20px 0px;
   border-radius: var(--border-radius);
   padding: 1em;
@@ -242,18 +297,6 @@ async function handleSaveMonth() {
   width: 100%;
   border-bottom: 1px dashed #999999;
   height: 21px;
-}
-.total {
-  text-align: right;
-  font-weight: 600;
-  color: #000;
-  font-size: 1.4em;
-  font-family: var(--font-normal);
-  padding: 0.8em 0.4em;
-  margin-top: 1em;
-  background: #fff;
-  box-shadow: rgb(32 36 39 / 0%) 0px 12px 27px -5px, #353e431c 0px 3px 20px 0px;
-  border-radius: var(--border-radius);
 }
 .price {
   font-weight: 500;
@@ -316,9 +359,6 @@ async function handleSaveMonth() {
   justify-content: center;
   align-items: center;
 }
-
-
-
 .wrapper-payments {
   width: 100%;
   max-width: 690px;
@@ -351,7 +391,6 @@ async function handleSaveMonth() {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1em;
 }
 .wr-title {
   display: flex;
@@ -365,6 +404,9 @@ async function handleSaveMonth() {
   font-family: var(--font-normal);
 }
 @media(min-width: 700px) {
+  .form {
+    padding: 0;
+  }
   .label {
     font-size: 0.8em;
   }
@@ -378,10 +420,5 @@ async function handleSaveMonth() {
     padding: 1.8em;
     gap: 1em;
   }
-  /*
-  .container-payments {
-    padding: 0 1em;
-  }
-  */
 }
 </style>

@@ -4,9 +4,15 @@ export const NAME_APP = "QuickTest";
 export const DOMAIN = "https://192.168.1.3:5173";
 //export const DOMAIN = "https://quicktest-1uf.pages.dev";
 
+export const FOLDER_USER_PHOTOS = 'user-photos';
+export const R2_DOMAIN = "https://pub-5704f7fdaf98447e9d7b7ba7db62af68.r2.dev"
+
 export const CLIENTAUTHINFO = 'client-auth-info';
 export const PUBLIC_BASE_EMAIL = 'https://mailersend.localschool.online/mailersend';
 
+export const TIMEKVREG = 6000;
+
+/*
 const padTo2Digits = (num: number): string => {
   return num.toString().padStart(2, '0');
 };
@@ -25,6 +31,7 @@ export const getCurrentTime = (): string => {
 
   return horaFormateada;
 };
+*/
 
 /*
 export const SESSION_CONFIG = {
@@ -61,9 +68,6 @@ export const SESSION_CONFIG = {
 
 export const DASHBOARDS: Record<UserProfile, string> = {
   'A': '/admin/pre-registration',
-  'T': '/teacher', 
-  'S': '/student'
+  'T': '/teacher/inbox', 
+  'S': '/student/inbox'
 };
-
-export const FOLDER_USER_PHOTOS = 'user-photos';
-export const R2_DOMAIN = "https://pub-5704f7fdaf98447e9d7b7ba7db62af68.r2.dev"

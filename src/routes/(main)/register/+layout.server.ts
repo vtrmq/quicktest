@@ -21,7 +21,7 @@ export const load: LayoutServerLoad = async ({ url, platform }) => {
     const registerKey = `code:${code}`;
     const user = await kvGet(kv, registerKey);
     if (!user) {
-      throw new msgError(`El código de registro ${code} ha caducado o no existe. Para registrarte debes solicitar un nuevo código.`);
+      throw new msgError(`El código de registro <span class="code-r">${code}</span> ha caducado o no existe. Para registrarte debes solicitar un nuevo código.`);
     }
 
     //infoUser = JSON.parse(user);

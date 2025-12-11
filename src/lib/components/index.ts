@@ -32,3 +32,6 @@ export { default as CheckBox } from './ui/CheckBox.svelte';
 export { default as PaymentSettingTeacher } from './ui/PaymentSettingTeacher.svelte';
 export { default as Select } from './ui/Select.svelte';
 export { default as SliderMonth } from './ui/SliderMonth.svelte';
+export { default as OptionSelect } from './ui/OptionSelect.svelte';
+export { default as BarChartMonths } from './ui/BarChartMonths.svelte';
+export { default as Pagination } from './ui/Pagination.svelte';

@@ -6,7 +6,6 @@
   outline: none;
   border: none;
   -webkit-tap-highlight-color: transparent;
-  transition: var(--transition);
 }
 
 :root {
@@ -18,9 +17,9 @@
   --font-size: 1.2em;
 }
 
-@media(min-width: 600px) {
+@media(min-width: 700px) {
   :root {
-    --font-size: 1.1em;
+    --font-size: 1em;
   }
 }
 /*

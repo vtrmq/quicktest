@@ -149,7 +149,7 @@ export const actions = {
           subject: template.subject,
           html: template.html
         });
-        if (!result.success && result.error) {
+        if (result.type === 'failer') {
           throw new MError(result.error, null);
         }
       }
@@ -304,7 +304,7 @@ export const actions = {
           subject: template.subject,
           html: template.html
         });
-        if (!result.success && result.error) {
+        if (result.type === 'failer') {
           throw new MError(result.error, null);
         }
         return { success: true, resp: info, error: '', input: '' }
@@ -386,8 +386,5 @@ export const actions = {
       }
     }
 	},
-
-
-
 
 } satisfies Actions;

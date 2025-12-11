@@ -2,6 +2,7 @@ import type { UserRegister } from '$lib/types';
 import { generateCodeFromTimestamp } from '$lib/utils';
 import { kvPut } from '$lib/server/kv';
 import { queryFirstDB } from '$lib/server/db';
+import { TIMEKVREG } from '$lib/utils';
 
 export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserRegister ): Promise<string | null> => {
   const code = generateCodeFromTimestamp();
@@ -21,8 +22,8 @@ export const newTeacher = async ( kv: KVNamespace, db: D1Database, user: UserReg
 
   // Guardar ambas entradas
   await Promise.all([
-    await kvPut(kv, registerKey, sessionData, 6000),
-    await kvPut(kv, userKey, sessionData, 6000),
+    await kvPut(kv, registerKey, sessionData, TIMEKVREG),
+    await kvPut(kv, userKey, sessionData, TIMEKVREG),
   ]);
 
   return code;

@@ -1,49 +1,57 @@
 <script lang="ts">
-  let { 
-    label = 'Label', 
-    value = $bindable(), 
-    name = 'a', 
-    error = '', 
-    input = '', 
-    requested = true,
-    style = 'border',
-    type = 'text',
-    onchange = () => {},
-    icon = '',
-    lowercase = false,
-    capitalize = false,
-    disabled = false,
-  } = $props();
+import search from '$lib/assets/svg/search.svg?raw';
+let { 
+  label = 'Label', 
+  value = $bindable(), 
+  name = 'a', 
+  error = '', 
+  input = '', 
+  requested = true,
+  style = 'border',
+  type = 'text',
+  onchange = () => {},
+  oninput = () => {},
+  icon = '',
+  lowercase = false,
+  capitalize = false,
+  disabled = false,
+  isSearch = false,
+} = $props();
 
-  let _node: HTMLInputElement;
-  let _type = $state(type);
+let _node: HTMLInputElement;
+let _type = $state(type);
 
-  const changeInput = () => { 
-    _type = _type === "text" ? "password" : "text"; 
-    Type(_node);
-  }
+const changeInput = () => { 
+  _type = _type === "text" ? "password" : "text"; 
+  Type(_node);
+}
 
-  function keyup(e: KeyboardEvent) {
-    if (e.key !== 'Enter') {
-      input = '';
-    }
-  }
-
-  function Type(node: HTMLInputElement) {
-    _node = node;
-    switch (_type) {
-      case 'text': node.type = "text"; break;
-      case 'password': node.type = "password"; break;
-      case 'number': node.type = "number"; break;
-      case 'date': node.type = "date"; break;
-      case 'email': node.type = "email"; break;
-    }
-  }
-
-  function onChange() {
+function keyup(e: KeyboardEvent) {
+  if (e.key !== 'Enter') {
     input = '';
-    onchange();
   }
+}
+
+function Type(node: HTMLInputElement) {
+  _node = node;
+  switch (_type) {
+    case 'text': node.type = "text"; break;
+    case 'password': node.type = "password"; break;
+    case 'number': node.type = "number"; break;
+    case 'date': node.type = "date"; break;
+    case 'email': node.type = "email"; break;
+    case 'search': node.type = "search"; break;
+  }
+}
+
+function onChange() {
+  input = '';
+  onchange();
+}
+
+function onInput(e: Event) {
+  oninput(e)
+}
 
 </script>
 <div class="container-input">
@@ -63,12 +71,14 @@
         class:input-linear-error-icon={input === name && style === 'linear' && icon.length !== 0}
         class:input-border-error-icon={input === name && style === 'border' && icon.length !== 0}
         class:input-linear-error-x={input === name && style === 'linear' && icon.length !== 0}
-        class:padding-right={type === 'password'} 
+        class:padding-right={type === 'password' || type === 'search'} 
         class:padding-left={icon.length && style === 'linear'}
         class:padding-left-border={icon.length && style === 'border'}
 
         class:lowercase={lowercase}
         class:capitalize={capitalize}
+
+        oninput={onInput}
 
         bind:value 
         {name} 
@@ -104,6 +114,15 @@
           </svg>
         </div>
       {/if}
+      {#if type === 'search'}
+        <button class="btn-search-input">
+          {#if !isSearch}
+          {@html search}
+          {:else}
+            <svg class="svg-load" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          {/if}
+        </button>
+      {/if}
     </div>
     <line class:display-none={style === 'border'}></line>
 
@@ -116,9 +135,49 @@
 </div>
 
 <style>
+
+.svg-load {
+  width: 20px;
+  animation: girar 1.5s linear infinite;
+}
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+
 :global(.icon-form) {
   width: 30px;
   color: var(--color-icon-form);
+}
+:global {
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .btn-search-input > svg {
+    width: 20px;
+    color: #333;
+  }
+}
+.btn-search-input {
+  width: 40px;
+  height: 46px;
+  position: absolute;
+  right: 2px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #fff;
 }
 .lowercase {
   text-transform: lowercase;
@@ -306,7 +365,7 @@
   transition: var(--transition);
 }
 .input-border.padding-right, .input-linear.padding-right {
-  padding-right: 40px;
+  padding-right: 47px;
 }
 .container-input {
   display: flex;

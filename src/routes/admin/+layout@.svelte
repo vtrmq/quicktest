@@ -4,6 +4,7 @@
 	import teachers from '$lib/assets/svg/users.svg?raw';
 	import perfil from '$lib/assets/svg/settings.svg?raw';
 	import mail from '$lib/assets/svg/mail-question-mark.svg?raw';
+	import chartPie from '$lib/assets/svg/chart-pie.svg?raw';
   import { Header, Main, UserMenu } from '$lib/components';
   import { onMount } from 'svelte';
   import type { LayoutData  } from './$types';
@@ -18,7 +19,6 @@
     name: data.user?.name,
     surnames: data.user?.surnames,
     email: data.user?.email,
-    //photo: data.user?.photo?.length === 0 ? '' : `${R2_DOMAIN}/${FOLDER_USER_PHOTOS}/${data.user?.photo}`,
     photo: data.user?.photo,
     profile: data.user?.profile
   });
@@ -36,6 +36,7 @@
     { label: 'Inscripciones', icon: mail, href: '/admin/pre-registration' },
     { label: 'Nuevo docente', icon: newTeacher, href: '/admin/new-teacher' },
     { label: 'Administrar docentes', icon: teachers, href: '/admin/teachers' },
+    { label: 'Estadísticas', icon: chartPie, href: '/admin/statistics' },
     { label: 'Mi Perfil', icon: perfil, href: '/admin/profile' },
     { label: 'Cerrar Sesión', icon: logout, href: '/logout' }
   ];
@@ -61,3 +62,8 @@
   </Main>
 {/if}
 
+<style>
+.section {
+  padding: 1em;
+}
+</style>

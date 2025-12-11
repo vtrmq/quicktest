@@ -25,7 +25,7 @@
   justify-content: space-between;
   align-items: center;
   height: var(--height-header);
-  z-index: 1;
+  z-index: 50;
 }
 .header.bg {
   background: var(--bg-header);
@@ -33,7 +33,7 @@
 @media(min-width: 700px) {
   :global {
     .link-logo {
-      margin-left: 25px;
+      margin-left: 18px;
     }
   }
 }

@@ -99,6 +99,7 @@ function handleChangeCheck(e: boolean) {
   text-align: center;
   font-family: var(--font-normal);
   font-weight: bold;
+  line-height: 38px;
 }
 .container-info {
   margin: 0 auto;
@@ -135,7 +136,7 @@ function handleChangeCheck(e: boolean) {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 3;
+  z-index: 60;
   padding: 1em;
 }
 </style>

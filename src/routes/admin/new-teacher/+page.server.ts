@@ -70,7 +70,7 @@ export const actions: Actions = {
           subject: template.subject,
           html: template.html
         }
-       const response = await sendEmail(infoEmail);
+        const response = await sendEmail(infoEmail);
         if (response.type === 'failer') {
           throw new failServer(response.error);
         }
