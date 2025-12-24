@@ -34,9 +34,9 @@
     overflow: hidden;
   }
   .user-photo {
-    width: 42px;
-    height: 40px;
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
     align-self: baseline;
   }
   @media(min-width: 700px) {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import logout from '$lib/assets/svg/log-out.svg?raw';
-	import newTeacher from '$lib/assets/svg/user-pen.svg?raw';
-	import perfil from '$lib/assets/svg/settings.svg?raw';
+	import bookText from '$lib/assets/svg/book-text.svg?raw';
+	import perfil from '$lib/assets/svg/user.svg?raw';
 	import mail from '$lib/assets/svg/mail-question-mark.svg?raw';
   import { Header, Main, UserMenu } from '$lib/components';
   import { onMount } from 'svelte';
@@ -32,8 +32,7 @@
   // Opciones para Admin
   const adminOptions: MenuOption[] = [
     { label: 'Bandeja', icon: mail, href: '/student/inbox' },
-    { label: 'Mis asignaturas', icon: newTeacher, href: '/student/subject' },
-    { label: 'Actividades', icon: newTeacher, href: '/student/activity' },
+    { label: 'Mis asignaturas', icon: bookText, href: '/student/subject' },
     { label: 'Mi Perfil', icon: perfil, href: '/student/profile' },
     { label: 'Cerrar Sesión', icon: logout, href: '/logout' }
   ];

@@ -1,9 +1,9 @@
 <script lang="ts">
 import plus from '$lib/assets/svg/plus.svg?raw';
+import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { Title, NoneData, LinkBtn } from '$lib/components';
 let { data } = $props();
 let subjects = data.subjects
-console.log(data)
 </script>
 
 <div class="container-teachers-registrations">
@@ -12,7 +12,7 @@ console.log(data)
     <Title>Mis asignaturas</Title>
     <p class="course">{data.course}</p>
     <p class="desc">Registra más asignaturas adicionando el código del curso.</p>
-    <LinkBtn href="/student/add-course" --max-width-link-btn="230px">{@html plus} Adicionar curso</LinkBtn>
+    <LinkBtn href="/student/add-course" --max-width-link-btn="230px">{@html plus} Adicionar código</LinkBtn>
   </div>
 
   {#if subjects.length !== 0}
@@ -37,8 +37,10 @@ console.log(data)
             <div class="box-course">
               <div class="info-subject">
                 <div>
-                  <div>{row.subject}</div>
+                  <div class="subject">{row.subject}</div>
+                  <div class="teacher">{row.name} {row.surnames}</div>
                 </div>
+                <a class="box-link-subject" href="/student/subject/topic?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}">{@html sendHorizontal}</a>
               </div>
             </div>
           </div>
@@ -57,6 +59,20 @@ console.log(data)
 {/if}
 
 <style>
+.subject {
+  font-weight: 700;
+  font-size: 1.2em;
+}
+.teacher {
+  font-size: 1em;
+  color: #6d6d6d;
+  font-style: italic;
+}
+.box-link-subject {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .course {
   font-size: 1.1em;
   font-family: var(--font-normal);
@@ -66,6 +82,11 @@ console.log(data)
   .svg-subject > svg {
     width: 14px;
     color: #fff;
+    stroke-width: 3px;
+  }
+  .box-link-subject > svg {
+    width: 20px;
+    color: orange;
     stroke-width: 3px;
   }
 }
@@ -163,8 +184,17 @@ console.log(data)
   font-size: 1em;
   padding: 0.5em;
   font-family: var(--font-normal);
+  display: grid;
+  gap: 1em;
+  grid-template-columns: 1fr 40px;
 }
 @media(min-width: 800px) {
+  .subject {
+    font-size: 1em;
+  }
+  .teacher {
+    font-size: 0.9em;
+  }
   .container-teachers-registrations {
     display: grid;
     grid-template-columns: 1fr 2fr;

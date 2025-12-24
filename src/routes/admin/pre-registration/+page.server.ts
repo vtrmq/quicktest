@@ -6,6 +6,7 @@ import { kvGet, kvList, kvPlatformCodes } from '$lib/server/kv';
 export const load: PageServerLoad = async ({ locals, platform }) => {
 
   if (!locals.user) { throw redirect(303, '/'); }
+  if (locals.user.profile !== 'A') { throw redirect(303, '/unauthorized'); }
   const user_id = locals.user.id;
 
   try {

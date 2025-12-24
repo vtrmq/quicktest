@@ -136,7 +136,7 @@ function handleChangeCheck(e: boolean) {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 60;
+  z-index: 160;
   padding: 1em;
 }
 </style>

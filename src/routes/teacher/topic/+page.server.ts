@@ -7,45 +7,43 @@ import { dbPlatform } from '$lib/server/db';
  * @param {Array<Object>} flatResults El array de resultados planos de la consulta SQL.
  * @returns {Array<Object>} Una estructura organizada por tema, con sus asignaturas anidadas.
  */
-function organizeTopicsBySubject(flatResults: any): Array<Object> {
-    // Usamos un mapa temporal para agrupar por topic_id
-    const topicsMap = new Map();
 
-    flatResults.forEach((row: any) => {
+function organizeTopicsBySubject(flatResults: any[]): Array<Object> {
+    const topicsMap = new Map<number, any>();
+
+    flatResults.forEach((row) => {
         const topicId = row.topic_id;
 
         if (!topicsMap.has(topicId)) {
-            // Si es la primera vez que vemos este topic_id, inicializamos el objeto del tema
             topicsMap.set(topicId, {
                 topic_id: row.topic_id,
                 topic: row.topic,
                 teacher_id: row.teacher_id,
-                // ...otros campos del tema que necesites...
                 created_at: row.created_at,
-                subjects: [] // Aquí almacenaremos las asignaturas relacionadas
+                subjects: []
             });
         }
 
-        // Obtenemos la referencia al objeto del tema
         const currentTopic = topicsMap.get(topicId);
 
-        // Añadimos la asignatura si existe y tiene un subject_id válido)
-        if (row.subject_name !== 'Sin asignar' && row.subject_id !== null) {
+        if (row.subject_id !== null) {
             currentTopic.subjects.push({
                 subject_id: row.subject_id,
-                subject_name: row.subject_name,
-                // Puedes añadir más campos de la tabla topic_subjects/subjects aquí si es necesario
+                subject: row.subject_name,
+                course_id: row.course_id,
+                course: row.course_name
             });
         }
     });
 
-    // Convertimos el mapa de vuelta a un array de temas
     return Array.from(topicsMap.values());
 }
+
 
 export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   if (!locals.user) { throw redirect(303, '/'); }
+  if (locals.user.profile !== 'T') { throw redirect(303, '/unauthorized'); }
 
   const teacherId = locals.user.id;
   const page = Number(url.searchParams.get("page") ?? 1);
@@ -64,43 +62,47 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     const stmtPage = db.prepare(totalsQuery);
     const totals: Totals = await stmtPage.bind(teacherId).first();
     const totalCount = totals?.total_count ?? 0;
-    const totalAmount = totals?.total_amount ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalCount / limit));
 
     const stmt = db.prepare(`SELECT
-    -- Campos de la tabla principal 'topics'
+    -- Topics
     T.topic_id,
     T.teacher_id,
     T.topic,
-    T.videos,
     T.file,
     T.shadow_file,
     T.content,
     T.order_by,
     T.visible,
     T.created_at,
-    -- Campos de la tabla de unión 'topic_subjects' (serán NULL si no hay coincidencia)
+
+    -- Topic_subjects
     TS.topic_subject_id,
     TS.course_id,
     TS.subject_id,
-    -- Nombre de la asignatura de la tabla 'subjects' (será NULL si no hay coincidencia)
-    S.subject AS subject_name
-FROM
-    topics AS T
-LEFT JOIN
-    topic_subjects AS TS ON T.topic_id = TS.topic_id
-LEFT JOIN
-    subjects AS S ON TS.subject_id = S.subject_id
-WHERE
-    T.teacher_id = ?
-ORDER BY
-    T.order_by ASC
+
+    -- Subjects
+    S.subject AS subject_name,
+
+    -- Courses
+    C.course AS course_name
+
+FROM topics AS T
+LEFT JOIN topic_subjects AS TS 
+    ON T.topic_id = TS.topic_id
+LEFT JOIN subjects AS S 
+    ON TS.subject_id = S.subject_id
+LEFT JOIN courses AS C
+    ON TS.course_id = C.course_id
+
+WHERE T.teacher_id = ?
+ORDER BY T.order_by ASC
 LIMIT ?
-OFFSET ?;`);
+OFFSET ?;
+`);
 
     const rows = await stmt.bind(teacherId, limit, offset).all();
     const results = organizeTopicsBySubject(rows.results);
-    console.log('-->', results)
 
     return { 
       type: 'success',
@@ -111,7 +113,6 @@ OFFSET ?;`);
         totalPages,
         limit,
         totalCount,
-        totalAmount
       }
     };
 

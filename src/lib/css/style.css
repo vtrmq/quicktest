@@ -17,6 +17,22 @@
   --font-size: 1.2em;
 }
 
+em {
+  font-style: italic;
+}
+blockquote {
+  border-left: 4px solid #ccc;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  color: #666;
+}
+em > strong {
+  font-style: italic;
+}
+ol {
+  margin-left: 24px;
+}
+
 @media(min-width: 700px) {
   :root {
     --font-size: 1em;

@@ -1,3 +1,40 @@
+export function isDateEnd(fechaLimiteStr: string) {
+  // 1. Convertir la fecha límite a objeto Date (medianoche)
+  const fechaLimite = new Date(fechaLimiteStr + 'T23:59:59');
+  
+  // 2. Obtener la fecha y hora actual
+  const ahora = new Date();
+
+  // 3. Retorna true si hoy es menor o igual a la fecha límite
+  return ahora <= fechaLimite;
+}
+
+export const formatDate = (fechaStr: string) => {
+  const [annio, month, day] = fechaStr.split('-');
+  return `${day}/${month}/${annio}`;
+};
+
+export function typeActivity(type: string) {
+  switch(type) {
+    case 'R': type = 'Actividad de repaso'; break;
+    case 'V': type = 'Actividad valorativa'; break;
+  }
+  return type;
+}
+
+export function filtrarParametros(url: string, parametros: Array<string>): string { // Array<string> -> string[]
+  const urlObj = new URL(url);
+  const params = new URLSearchParams();
+  
+  parametros.forEach(param => {
+    if (urlObj.searchParams.has(param)) {
+      params.append(param, urlObj.searchParams.get(param)!);
+    }
+  });
+  
+  return params.toString() ? `${params.toString()}` : '';
+}
+
 export function searchParam(url: string, key: string): string | null {
   const urlParams = new URLSearchParams(url);
   return urlParams.get(key);
@@ -43,4 +80,16 @@ export function truncateNumber(num: number, decimalPlaces: number = 1): string {
     // JavaScript omite automáticamente el ".0" aquí.
     return String(truncatedNum);
   }
+}
+
+export function isUrlImagen(url: string) {
+  return /\.(jpe?g|png|gif|webp|bmp|tiff|svg|avif)$/i.test(url);
+}
+
+export function extractYouTubeId(urlVideo: string) {
+  // Expresión regular para capturar el ID
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = urlVideo.match(regExp);
+  const url = (match && match[2].length === 11) ? match[2] : null;
+  return `https://www.youtube.com/embed/${url}`;
 }

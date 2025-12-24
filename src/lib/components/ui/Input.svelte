@@ -44,9 +44,9 @@ function Type(node: HTMLInputElement) {
   }
 }
 
-function onChange() {
+function onChange(e: Event) {
   input = '';
-  onchange();
+  onchange(e);
 }
 
 function onInput(e: Event) {

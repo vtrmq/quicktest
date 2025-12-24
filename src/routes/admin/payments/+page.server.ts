@@ -37,9 +37,7 @@ export const load: PageServerLoad = async ({ url, locals, platform }) => {
       throw new failServer("DB: servicio no disponible");
     }
 
-    const totalsQuery = `
-    SELECT COUNT(p.payment_id) AS total_count, SUM(p.amount) AS total_amount FROM payments p WHERE p.teacher_id = ?
-  `;
+    const totalsQuery = `SELECT COUNT(p.payment_id) AS total_count, SUM(p.amount) AS total_amount FROM payments p WHERE p.teacher_id = ?`;
 
     type Totals = { total_count: number; total_amount: number };
     const stmtPage = db.prepare(totalsQuery);
@@ -154,8 +152,7 @@ export const actions: Actions = {
       const amount = parseInt(price);
       const teacher_id = parseInt(teacherId);
 
-      await saveDB(db, 
-        'INSERT INTO payments (admin_id, teacher_id, amount, date_at) VALUES (?, ?, ?, ?)', 
+      await saveDB(db, 'INSERT INTO payments (admin_id, teacher_id, amount, date_at) VALUES (?, ?, ?, ?)', 
         admin_id, teacher_id, amount, date_at);
 
     } catch (error) {

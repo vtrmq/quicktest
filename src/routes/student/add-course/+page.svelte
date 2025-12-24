@@ -63,7 +63,7 @@ const handleForm: SubmitFunction = ({ formData, cancel }) => {
   <DataFrame width="500px">
     <LinkBack href="/student/subject">Mis asignaturas</LinkBack>
     <form method="POST" use:enhance={handleForm} novalidate>
-      <Title>Adicionar curso</Title>
+      <Title>Adicionar código</Title>
       <div class="body-form">
         <Input 
           style="border" type="text" requested label="Código del curso" 

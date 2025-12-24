@@ -7,6 +7,13 @@ export { default as Footer } from './layout/Footer.svelte';
 export { default as BoxNav } from './layout/BoxNav.svelte';
 export { default as UserMenu } from './layout/user-menu/UserMenu.svelte';
 
+export { default as EditText } from './layout/edit/EditText.svelte';
+export { default as EditBtn } from './layout/edit/Btn.svelte';
+export { default as Toolbar } from './layout/edit/Toolbar.svelte';
+export { default as ImageContent } from './layout/edit/Image.svelte';
+export { default as VideoContent } from './layout/edit/Video.svelte';
+export { default as Vignette } from './layout/edit/Vignette.svelte';
+
 
 // COMPONENTS UI
 // =============
@@ -35,3 +42,4 @@ export { default as SliderMonth } from './ui/SliderMonth.svelte';
 export { default as OptionSelect } from './ui/OptionSelect.svelte';
 export { default as BarChartMonths } from './ui/BarChartMonths.svelte';
 export { default as Pagination } from './ui/Pagination.svelte';
+export { default as Album } from './ui/Album.svelte';

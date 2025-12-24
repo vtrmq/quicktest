@@ -16,9 +16,9 @@
     children,
   } = $props();
 
-  function onChange() {
+  function onChange(e: Event) {
     input = '';
-    onchange();
+    onchange(e);
   }
 
 </script>
@@ -230,7 +230,7 @@
 .container-input {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
   width: 100%;
 }
 .msg-error {

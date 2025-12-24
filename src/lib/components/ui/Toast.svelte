@@ -70,7 +70,7 @@
   }
   .toast {
     background: var(--bg-toast);
-    box-shadow: rgb(0 0 0 / 9%) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 14%) 0px 5px 15px;
     padding: 0.6em 1em;
     border-radius: 50px;
     transition: 0.3s;

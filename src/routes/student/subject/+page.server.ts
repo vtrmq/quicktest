@@ -17,11 +17,23 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 
     const [course, subjects] = await db.batch([
       db.prepare(`SELECT course FROM courses WHERE course_id IN (SELECT user_id FROM users WHERE id = ?)`).bind(studentId),
-      db.prepare(`SELECT subject_id, teacher_id, course_id, subject FROM subjects WHERE course_id IN (SELECT course_id FROM courses_students WHERE student_id = ?) AND visible = 1;`).bind(studentId)
+      db.prepare(`SELECT 
+      s.subject_id, 
+      s.teacher_id, 
+      s.course_id, 
+      s.subject,
+      u.name,
+      u.surnames
+    FROM subjects s
+    LEFT JOIN users u ON s.teacher_id = u.id
+    WHERE s.course_id IN (
+      SELECT course_id FROM courses_students WHERE student_id = ?
+    ) 
+    AND s.visible = 1;`).bind(studentId)
     ]);
 
     return {
-      course: course.results[0].course,
+      course: course.results[0]?.course,
       subjects: subjects.results
     };
 

@@ -1,12 +1,13 @@
 <script lang="ts">
 import { deserialize } from '$app/forms';
+import listTodo from '$lib/assets/svg/list-todo.svg?raw';
+import pencil from '$lib/assets/svg/pencil.svg?raw';
 import plus from '$lib/assets/svg/plus.svg?raw';
 import fileText from '$lib/assets/svg/file-text.svg?raw';
 import minus from '$lib/assets/svg/minus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
-import fileType from '$lib/assets/svg/file-type.svg?raw'
-import smile from '$lib/assets/svg/smile.svg?raw'
-import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog } from '$lib/components';
+import blocks from '$lib/assets/svg/blocks.svg?raw'
+import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog, Pagination } from '$lib/components';
 
 let { data } = $props();
 let subjId: string = $state('');
@@ -17,6 +18,7 @@ let posTopic: number = 0;
 type Subjects = {
   subject_id: number;
   subject: string;
+  course: string;
 }
 
 type Topic = {
@@ -27,8 +29,20 @@ type Topic = {
   created_at: string;
 };
 
+type PaginationResult = {
+  limit: number;
+  page: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+let pagination: PaginationResult | undefined = $state({limit: 0, page: 0, totalCount: 0, totalPages: 0});
 let topics: Topic[] = $state(data.topics as Topic[]);
-console.log($state.snapshot(topics))
+
+$effect(() => {
+  pagination = data.pagination;
+  topics = data.topics as Topic[];
+});
 
 function handleViewSubject(i: number, cant: number) {
   if (cant === 0) return;
@@ -86,62 +100,69 @@ async function handleActionDelete(e: string) {
 
   <div class="wr-title">
     <Title>Temas</Title>
-    <p class="desc">Crea tus cursos y las asignaturas que impartes en cada uno de tus cursos</p>
+    <p class="desc">Crea los temas de clase para cada una de tus asignaturas.</p>
     <LinkBtn href="/teacher/topic/new" --max-width-link-btn="230px">{@html plus} Crear tema</LinkBtn>
   </div>
 
   {#if topics.length !== 0}
     <div class="wrapper">
-      
-      {#each topics as row, i}
-        <div>
-          <div class="row-teacher">
-            <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === topics.length}>
-              <div class="point">
-                <div class="circle-green">&nbsp;</div>
-              </div>
-              <div class="box-a">
-                <div class="box-bb">&nbsp;</div>
-                <div class="box-b">&nbsp;</div>
-              </div>
-              <div class="box-a">
-                <div class="box-bb" class:border-left={i !== 0 && i + 1 <= topics.length}>&nbsp;</div>
-                <div class="box-b" class:border-left={i + 1 < topics.length}>&nbsp;</div>
-              </div>
-            </div>
-            <div class="box-course">
-              <div class="info-course"><p class="course">{row.topic}</p></div>
-              <div class="info-pay">
-                <div>
-                  <div>
-                    <button onclick={()=>handleViewSubject(i, row.subjects.length)} class="btn-view-subjects">
-                      <span class="svg-subject">
-                        {#if `subj-${i}` === subjId}
-                          {@html minus}
-                        {:else}
-                          {@html plus}
-                        {/if}
-                      </span> 
-                      {row.subjects.length === 0 ? 'No asignado' : `Enviado a`}</button>
-                  </div>
-                  <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
-                    {#each row.subjects as subject, id}
-                      <div>{id + 1}. {subject.subject}</div>
-                    {/each}
-                  </div>
+      <div class="container-rows">      
+        {#each topics as row, i}
+          <div>
+            <div class="row-teacher">
+              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === topics.length}>
+                <div class="point">
+                  <div class="circle-green">&nbsp;</div>
+                </div>
+                <div class="box-a">
+                  <div class="box-bb">&nbsp;</div>
+                  <div class="box-b">&nbsp;</div>
+                </div>
+                <div class="box-a">
+                  <div class="box-bb" class:border-left={i !== 0 && i + 1 <= topics.length}>&nbsp;</div>
+                  <div class="box-b" class:border-left={i + 1 < topics.length}>&nbsp;</div>
                 </div>
               </div>
-              <div class="box-select">
-                <OptionSelect>
-                  <a href="/teacher/topic/content?topicId={row.topic_id}">{@html fileType} <span>Contenido</span></a>
-                  <a href="/teacher/topic/activity?topicId={row.topic_id}">{@html fileText} <span>Actividades</span></a>
-                  <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
-                </OptionSelect>
+              <div class="box-course">
+                <div class="info-topic"><p class="topic">{row.topic}</p></div>
+                <div class="info-pay">
+                  <div>
+                    <div>
+                      <button onclick={()=>handleViewSubject(i, row.subjects.length)} class="btn-view-subjects">
+                        <span class="svg-subject">
+                          {#if `subj-${i}` === subjId}
+                            {@html minus}
+                          {:else}
+                            {@html plus}
+                          {/if}
+                        </span> 
+                        {row.subjects.length === 0 ? 'Tema no asignado' : `Cursos y asignaturas`}</button>
+                    </div>
+                    <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
+                      {#each row.subjects as subject}
+                        <div class="in-course-subject"><span>{subject.course}</span> <span>{subject.subject}</span></div>
+                      {/each}
+                    </div>
+                  </div>
+                </div>
+                <div class="box-select">
+                  <OptionSelect>
+                    <a href="/teacher/topic/content?topicId={row.topic_id}">{@html fileText} <span>Contenido</span></a>
+                    <a href="/teacher/topic/activity?topicId={row.topic_id}">{@html listTodo} <span>Actividades</span></a>
+                    <a href="/teacher/topic/assign?topicId={row.topic_id}">{@html blocks} <span>Asignar tema</span></a>
+                    <a href="/teacher/topic/edit?topicId={row.topic_id}">{@html pencil} <span>Editar</span></a>
+                    <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
+                  </OptionSelect>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
+
+      {#if pagination && pagination.totalPages > 1}
+        <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+      {/if}
 
     </div>
   {/if}
@@ -155,6 +176,16 @@ async function handleActionDelete(e: string) {
 {/if}
 
 <style>
+.in-course-subject {
+  display: flex;
+  gap: 0.5em;
+}
+.container-rows {
+  background: #f0ffff8a;
+  height: max-content;
+  box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
+  border-radius: 6px;
+}
 .box-select {
   display: inline-flex;
   position: absolute;
@@ -189,7 +220,7 @@ async function handleActionDelete(e: string) {
 .box-subjects {
   display: none;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 1em;
   padding: 1em 1em 0.5em 0.3em;
   color: brown;
   font-weight: 600;
@@ -202,11 +233,7 @@ async function handleActionDelete(e: string) {
   padding: 1em 0;
   position: relative;
 }
-.code {
-  font-family: var(--font-normal);
-  font-size: 1.1em;
-}
-.info-course {
+.info-topic {
   display: flex;
   align-items: baseline;
   gap: 0.5em;
@@ -244,10 +271,10 @@ async function handleActionDelete(e: string) {
   width: 50%;
 }
 .box-bb {
-  height: 30%;
+  height: 23%;
 }
 .box-b {
-  height: 70%;
+  height: 100%;
 }
 .box-point {
   display: flex;
@@ -275,12 +302,12 @@ async function handleActionDelete(e: string) {
   font-family: var(--font-normal);
   line-height: 23px;
 }
-.course {
+.topic {
   font-size: 1.3em;
   font-weight: 800;
   font-family: var(--font-normal);
   margin: 4px 0;
-  color: #407777;
+  color: #3f3f3f;
 }
 .info-pay {
   font-size: 1.1em;
@@ -309,10 +336,6 @@ async function handleActionDelete(e: string) {
   margin: 2em 0;
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
-  background: #f0ffff8a;
-  height: max-content;
-  box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
 @media(min-width: 800px) {
   .box-subjects {

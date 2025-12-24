@@ -1,10 +1,6 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { Actions } from "@sveltejs/kit";
-import type { TeacherPayment, PaymentSetting } from '$lib/types';
-import { dbPlatform, selectDB, updateDB } from '$lib/server/db';
-import { failServer } from '$lib/utils';
-
+import { dbPlatform, selectDB } from '$lib/server/db';
 
 type Result = {
   year: number;

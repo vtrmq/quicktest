@@ -1,0 +1,89 @@
+.content-body > h1 {
+  font-family: var(--font-bold);
+  font-size: 2.4em;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+}
+.content-body > h2 {
+  font-family: var(--font-bold);
+  font-size: 1.6em;
+  font-weight: 100;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+}
+.content-body > p {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  line-height: 30px;
+  padding-bottom: 1.5em;
+}
+.content-body > .container-image > .wr-img {
+  display: flex;
+  box-shadow: rgb(149 157 165 / 46%) 0px 8px 24px;
+  border: 1px solid #fff;
+}
+.content-body > .container-image > .wr-img > .image {
+  width: 100%;
+  padding: 10px;
+}
+.content-body > .container-image {
+  padding: 0.8em 0 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content-body > .wr-items {
+  display: flex;
+  width: 100%;
+  padding-bottom: 2em;
+}
+.content-body > .wr-items > .ul-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.content-body > .wr-items > .ul-items > .li-item {
+  display: flex;
+  align-items: start;
+  gap: 1em;
+}
+.content-body > .wr-items > .ul-items > .li-item > .text-list {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  line-height: 30px;
+}
+.content-body > .wr-items > .ul-items > .li-item > .n-item {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  font-weight: 800;
+  color: #cb7900;
+  display: flex;
+  background: transparent;
+  line-height: 30px;
+}
+.content-body > .container-iframe {
+  padding: 1em 0 2.4em;
+}
+.content-body > .container-iframe > .wr-iframe {
+  display: flex;
+  width: 100%;
+  height: 300px;
+  position: relative;
+  box-shadow: rgb(149 157 165 / 46%) 0px 8px 24px;
+  border: 1px solid #fff;
+  padding: 10px;
+}
+.content-body > .container-iframe > .wr-iframe > .iframe {
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .content-body > .container-iframe {
+    padding: 1em 2em 2.4em;
+  }
+}
+@media (max-width: 600px) {
+  .content-body > .container-image > .wr-img {
+    width: 100% !important; /* Fuerza 100% en móviles */
+  }
+}

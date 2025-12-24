@@ -1,0 +1,1 @@
+ALTER TABLE topic_subjects ADD COLUMN topic_id INTEGER NOT NULL;

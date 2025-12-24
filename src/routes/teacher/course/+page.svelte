@@ -6,7 +6,6 @@ import minus from '$lib/assets/svg/minus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
 import shieldCheck from '$lib/assets/svg/shield-check.svg?raw'
 import shieldX from '$lib/assets/svg/shield-x.svg?raw'
-import folderKanban from '$lib/assets/svg/folder-kanban.svg?raw'
 import smile from '$lib/assets/svg/smile.svg?raw'
 import { generateCryptographicKey } from '$lib/utils';
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog } from '$lib/components';
@@ -20,6 +19,7 @@ let posCourse: number = 0;
 type Subjects = {
   subject: string;
 }
+
 type Courses = {
   code: string;
   course: string;
@@ -191,7 +191,6 @@ async function handleActionDelete(e: string) {
               <div class="box-select">
                 <OptionSelect>
                   <a href="/teacher/student?courseId={row.course_id}">{@html smile} <span>Estudiantes del curso</span></a>
-                  <a href="/teacher/course/edit">{@html folderKanban} <span>Actividades</span></a>
                   <button onclick={()=>handleCode(i)}>
                     {#if row.code.length === 0}
                       {@html shieldCheck} 
