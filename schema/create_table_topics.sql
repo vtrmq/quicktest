@@ -2,7 +2,6 @@ CREATE TABLE topics (
   topic_id INTEGER PRIMARY KEY AUTOINCREMENT,
   teacher_id INTEGER DEFAULT 0,
   topic TEXT NOT NULL,
-  videos TEXT,
   file TEXT,
   shadow_file TEXT,
   content TEXT,
@@ -10,12 +9,3 @@ CREATE TABLE topics (
   visible BOOLEAN DEFAULT TRUE,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE TABLE topic_subjects (
-  topic_subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  teacher_id INTEGER NOT NULL,
-  course_id INTEGER NOT NULL,
-  topic_id INTEGER NOT NULL,
-  subject_id INTEGER NOT NULL
-);
-

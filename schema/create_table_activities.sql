@@ -4,7 +4,6 @@ CREATE TABLE activities (
   topic_id INTEGER NOT NULL,
   activity TEXT NOT NULL,
   type_general TEXT NOT NULL,
-  type_activity TEXT NOT NULL,
   time INTEGER,
   file TEXT,
   shadow_file TEXT,

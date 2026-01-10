@@ -33,11 +33,11 @@
       <div class="body-form">
         <Input 
           style="linear" type="text" requested label="Correo electrónico" 
-          value={form?.data?.email ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.data?.email ?? 'vtrmq@hotmail.com'} error={form?.error} input={form?.input ?? ''} 
           name="email" />
         <Input 
           style="linear" type="password" requested label="Contraseña" 
-          value={form?.data?.password ?? ''} error={form?.error} input={form?.input ?? ''} 
+          value={form?.data?.password ?? '123456'} error={form?.error} input={form?.input ?? ''} 
           name="password" />
       </div>
       <Button bind:this={btnLogin}>Login</Button>

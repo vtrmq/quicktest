@@ -457,7 +457,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
 }
 @media(min-width: 800px) {
   .date-end {
-    margin-left: 2.2em;
+    margin-left: 2.15em;
   }
   .btn-subject {
     font-size: 1em;

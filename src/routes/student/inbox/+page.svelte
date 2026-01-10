@@ -95,13 +95,6 @@ const result: Result[] = data.activities as Result[];
   font-family: var(--font-normal);
   font-size: 1.1em;
 }
-.topic {
-  font-family: var(--font-normal);
-  font-size: 1.4em;
-  font-weight: 800;
-  margin-top: 0.3em;
-  color: brown;
-}
 .link {
   text-decoration: none;
   font-size: 1em;
@@ -225,6 +218,14 @@ const result: Result[] = data.activities as Result[];
 
 
 /* =========================================== */
+/*
+.topic {
+  font-family: var(--font-normal);
+  font-size: 1.4em;
+  font-weight: 800;
+  margin-top: 0.3em;
+  color: brown;
+}
 .name-teacher {
   font-family: var(--font-normal);
   font-size: 1em;
@@ -241,6 +242,7 @@ const result: Result[] = data.activities as Result[];
   font-size: 1.3em;
   font-family: var(--font-bold);
 }
+*/
 .wr-none-data {
   padding: 3em 0;
 }

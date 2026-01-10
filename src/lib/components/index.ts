@@ -43,3 +43,6 @@ export { default as OptionSelect } from './ui/OptionSelect.svelte';
 export { default as BarChartMonths } from './ui/BarChartMonths.svelte';
 export { default as Pagination } from './ui/Pagination.svelte';
 export { default as Album } from './ui/Album.svelte';
+export { default as HeaderExercise } from './ui/HeaderExercise.svelte';
+export { default as EditExercise } from './ui/EditExercise.svelte';
+export { default as TextArea } from './ui/TextArea.svelte';

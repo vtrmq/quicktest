@@ -1,0 +1,889 @@
+<script lang="ts">
+import { FOLDER_IMAGES, R2_DOMAIN, ALFABETO } from '$lib/utils';
+import menu from '$lib/assets/svg/menu.svg?raw';
+//import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
+import pencil from '$lib/assets/svg/pencil.svg?raw';
+import circleX from '$lib/assets/svg/circle-x.svg?raw';
+import trash from '$lib/assets/svg/trash.svg?raw';
+import { Select, Button, Toast, TextArea, Input, Album, OptionSelect, Dialog } from '$lib/components';
+import { activityLocalstore } from '$lib/store/activity';
+
+type AnswersTest = {
+  resp: string;
+  image: string;
+  rst: boolean;
+  rss: boolean;
+};
+type questionsTest = {
+  question: string;
+  images: string[];
+  answers: AnswersTest[];
+};
+
+let { items, handleActivity, topic, activity } = $props();
+const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+let dialog = $state<Dialog | null>(null);
+let viewBox = $state(true); // false
+let sheet = $state('ejercises'); // type
+let selectType = $state('');
+let toast = $state<Toast>();
+let album = $state<Album | null>(null);
+
+let stateDelete = $state(''); // itemExercise, itemTest, itemAudio
+let stateExercise = $state('new'); // Si la actividad es nuevo (new) o si se está actualizando (update)
+let posImage = 'none';
+let posItem = -1;
+let title = $state('');
+let content = $state('');
+let optionSuboptions = $state([{option: ''}]);
+let leftWords = $state([{word: ''}]);
+let rightWords = $state([{word: ''}]);
+let arrayQuestionsTest: questionsTest[] = $state([]);
+let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false }]);
+let questionTest: questionsTest = $state( { question: '', images: [], answers: [] })
+let indexExercise = -1;
+let posItemPoint = $state(-1);
+let itemResaltado = $state(-1);
+let itemDelete = -1;
+
+/*
+let questionTest: questionsTest = $state(
+  { 
+    question: 'En Svelte y SvelteKit, no puedes interpolar directamente una variable dentro de un atributo como href usando {variable} dentro de una cadena de texto como ?{root}, ya que Svelte no lo interpretará correctamente.', 
+    images: [], 
+    answers: [
+      {
+        resp: 'Eliminar por valor (usando filter)', 
+        image: '', 
+        rst: false, 
+        rss: false 
+      },
+      {
+        resp: 'Eliminar por índice (usando splice)', 
+        image: '', 
+        rst: false, 
+        rss: false 
+      },
+      {
+        resp: 'Eliminar el último elemento (usando pop)', 
+        image: '', 
+        rst: false, 
+        rss: false 
+      },
+      {
+        resp: 'Eliminar el primero (usando shift)', 
+        image: '', 
+        rst: false, 
+        rss: false 
+      },
+    ] 
+  }
+);
+*/
+
+//console.log(items)
+
+function reset() {
+  stateDelete = '';
+  posItemPoint = -1;
+  indexExercise = -1;
+  stateExercise = 'new';
+  posImage = 'none';
+  posItem = -1;
+  selectType = '';
+  title = '';
+  content = '';
+  optionSuboptions = [{option: ''}];
+  leftWords = [{word: ''}];
+  rightWords = [{word: ''}];
+  answersTest = [{resp: '', image: '', rst: false, rss: false }];
+  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }] };
+}
+
+function handleViewBoxExercise() {
+  viewBox = !viewBox;
+  sheet = 'ejercises';
+  reset();
+}
+
+function handleNewExercise() {
+  if (sheet === 'ejercises') {
+    sheet = 'type';
+  }
+}
+
+function handleIntro() {
+  if (selectType.length === 0) {
+    toast?.view({
+      type: 'fail',
+      message: 'Selecciona el tipo de ejercicio',
+      time: 4000
+      });
+    return;
+  }
+  stateExercise = 'new';
+  arrayQuestionsTest = [];
+  sheet = selectType;
+}
+
+function handlePlusOption() {
+  if (optionSuboptions.length < 5) {
+    optionSuboptions = [...optionSuboptions, {option: ''}];
+  } else {
+    toast?.view({
+      type: 'fail',
+      message: 'Las palabras alcanzaron el límite',
+      time: 4000
+      });
+  }
+}
+
+function handleCancel() {
+  sheet = 'type';
+  reset();
+}
+
+function handlePlusMatchWords(box: string) {
+  if (box === 'left') {
+    leftWords = [...leftWords, {word: ''}];
+  } else if (box === 'right') {
+    rightWords = [...rightWords, {word: ''}];
+  }
+}
+
+function handleDone() {
+  if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
+    if (stateExercise === 'new') {
+      items.push({type:'test', points: arrayQuestionsTest});
+    } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
+      items[indexExercise].points = arrayQuestionsTest;
+    }
+    activityLocalstore.set(items);
+  }
+  console.log($state.snapshot(items));
+  sheet = 'ejercises';
+  reset();
+}
+
+function handleAddPoint() {
+  sheet = 'new-point';
+  answersTest = [{resp: '', image: '', rst: false, rss: false }];
+  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }] };
+  posItemPoint = -1;
+}
+
+function handleDonePoint() {
+  if ((indexExercise === -1 || indexExercise !== -1) && posItemPoint === -1) {
+    arrayQuestionsTest.push(questionTest);
+  } else if (indexExercise !== -1 && posItemPoint !== -1) {
+    arrayQuestionsTest[posItemPoint] = questionTest;
+  }
+  sheet = 'test';
+}
+
+function handleUpload() {
+  posImage = 'image-question';
+  album?.handleShowAlbum();
+}
+
+async function handleImageSelect(image: string) {
+  let localText: string = `${root}/${image}`;
+  if (posImage === 'image-question') {
+    questionTest.images.push(localText);
+  } else if (posImage === 'image-item') {
+    questionTest.answers[posItem].image = localText;
+  }
+}
+
+function handleRemoveImageQuestion(index: number) {
+  questionTest.images.splice(index, 1);
+}
+
+function handleRemoveImageItem(index: number) {
+  questionTest.answers[index].image = '';
+}
+
+function handleAddItem() {
+  questionTest.answers.push({resp: '', image: '', rst: false, rss: false });
+}
+
+function handleUploadImageItem(index: number) {
+  posImage = 'image-item';
+  posItem = index;
+  album?.handleShowAlbum();
+}
+
+function handleRemoveItem(index: number) {
+  questionTest.answers.splice(index, 1);
+}
+
+function handleBackTest() {
+  sheet = 'test';
+  if (stateExercise === 'new') {
+    reset();
+  }
+}
+
+function handleSelectItem(point: number, index: number) {
+  arrayQuestionsTest[point].answers[index].rst = !arrayQuestionsTest[point].answers[index].rst;
+}
+
+function handleSelectActivity(index: number) {
+  itemResaltado = index;
+  viewBox = !viewBox;
+  handleActivity(index, items);
+}
+
+function handleActionShowWin(index: number) {
+  itemDelete = index;
+  stateDelete = 'itemExercise';
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar el ejercicio ${index + 1}?`,
+  });
+}
+
+function handleActionShowWinItem(index: number) {
+  itemDelete = index;
+  stateDelete = 'itemTest';
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar el punto ${index + 1}?`,
+  });
+}
+
+function handleEditActivity(index: number) {
+  indexExercise = index;
+  const type = items[index].type;
+  stateExercise = 'update';
+  if (type === 'test') {
+    arrayQuestionsTest = items[index].points;
+    sheet = 'test';
+  }
+  handleActivity(-1, items);
+}
+
+function handleCancelUpdate() {
+  sheet = 'ejercises';
+  reset();
+}
+
+function handleEditTestPoint(point: number) {
+  posItemPoint = point;
+  questionTest = arrayQuestionsTest[posItemPoint]
+  sheet = 'new-point';
+}
+
+async function handleActionDelete(e: string) {
+  if (e === 'accept') {
+    if (stateDelete === 'itemTest') {
+      arrayQuestionsTest.splice(itemDelete, 1);
+      items[indexExercise].points = arrayQuestionsTest;
+    } else if (stateDelete === 'itemExercise') {
+      items = items.filter((_: object, item: number) => item !== itemDelete);
+    }
+    activityLocalstore.set(items);
+    itemDelete = -1;
+    itemResaltado = -1;
+    handleActivity(-1, items);
+  }
+}
+
+</script>
+
+<Toast bind:this={toast} />
+<Album bind:this={album} onSelectImage={handleImageSelect} />
+<Dialog bind:this={dialog} action={handleActionDelete} />
+
+<button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
+<div class="container-edit-exercise" class:view-box={viewBox}>
+  <div class="header-box-exercise">
+    {#if sheet === 'ejercises'}
+      <div>
+        <button class="btn-new" onclick={handleNewExercise}>Guardar</button>
+        <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
+      </div>
+    {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match' || sheet === 'morphosyntax'}
+      <div>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+      </div>
+    {:else if sheet === 'test'}
+      <div>
+        <button class="btn-new" onclick={handleAddPoint}>Nuevo punto</button>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
+      </div>
+    {:else if sheet === 'new-point'}
+      <div>
+        <button class="btn-new" onclick={handleBackTest}>Volver</button>
+        <button class="btn-new" onclick={handleAddItem}>Adicionar item</button>
+        <button class="btn-new" onclick={handleDonePoint}>Listo</button>
+      </div>
+    {:else}
+      &nbsp;
+    {/if}
+    <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html circleX}</button>
+  </div>
+  <div class="body-box-exercise">
+
+    {#if sheet === 'ejercises' && items}
+      <!-- ================================================== -->
+      <div class="container-info">
+        <h1 class="topic">{topic}</h1>
+        <h2 class="activity">{activity}</h2>
+      </div>
+
+      {#each items as item, index}
+        <div class="row-link-activity" class:resaltar={itemResaltado === index}>
+          <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
+            <div class="box-item-link">{index + 1}</div> <span class="label-activity" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
+          </button>
+          <OptionSelect>
+            <button onclick={()=>handleEditActivity(index)}>{@html pencil} <span>Editar</span></button>
+            <button onclick={()=>handleActionShowWin(index)}>{@html trash} <span>Eliminar</span></button>
+          </OptionSelect>
+        </div>
+      {/each}
+
+    {:else if sheet === 'type'}
+
+      <div class="sheet-type">
+        <Select label="Tipos de ejercicios" bind:value={selectType}>
+          <option value="">Selecciona ejercicio</option>
+          <option value="select">Seleccionar palabras</option>
+          <option value="character">Colocar palabras</option>
+          <option value="match">Relacionar conceptos</option>
+          <option value="test-fs">Escuchar audio y construir oración</option>
+          <option value="point-out">Señalar partes</option>
+          <option value="test">Test</option>
+          <option value="morphosyntax">Morfosintaxis</option>
+        </Select>
+        <div class="wr-cancel-intro">
+          <Button bg="gray" onclick={handleCancelUpdate}>Cancelar</Button>
+          <Button onclick={handleIntro}>Entrar</Button>
+        </div>
+      </div>
+
+    {:else if sheet === 'select'}
+
+      <p class="label-type">Seleccionar palabras</p>
+      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
+      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" />
+      <div class="container-type-content">
+        {#each optionSuboptions as op, i}
+          <Input 
+            type="text" 
+            label="Palabra {i + 1}" bind:value={op.option} requested={false} />
+        {/each}
+      </div>
+      <Button onclick={handlePlusOption}>Adicionar palabra</Button>
+
+    {:else if sheet === 'character'}
+
+      <p class="label-type">Colocar palabras</p>
+      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
+      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" />
+
+    {:else if sheet === 'match'}
+
+      <p class="label-type">Relacionar conceptos</p>
+      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
+      <div class="wr-words-match">
+        <div class="header-match">
+          <h1 class="title-wd">Palabras del lado izquierdo</h1>
+          <button class="add-word" onclick={()=>handlePlusMatchWords('left')}>Adicionar</button>
+        </div>
+        <div>
+          {#each leftWords as ws}
+            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} />
+          {/each}
+        </div>
+      </div>
+      <div class="wr-words-match">
+        <div class="header-match">
+          <h1 class="title-wd">Palabras del lado derecho</h1>
+          <button class="add-word" onclick={()=>handlePlusMatchWords('right')}>Adicionar</button>
+        </div>
+        <div>
+          {#each rightWords as ws}
+            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} />
+          {/each}
+        </div>
+      </div>
+
+    {:else if sheet === 'morphosyntax'}
+
+      <p class="label-type">Morfosintaxis</p>
+      <TextArea name="def" label="Escribe una oración" bind:value={title} --height-text-area="80px" />
+
+    {:else if sheet === 'test'}
+
+      <p class="label-type">Test</p>
+
+      {#each arrayQuestionsTest as qs, point}
+
+        <div class="container-question">
+          <div class="wr-point-number">
+            <div class="point-number">{point + 1}</div>
+            <div class="wr-opt-select">
+              <OptionSelect>
+                <button onclick={()=>handleEditTestPoint(point)}>{@html pencil} <span>Editar</span></button>
+                <button onclick={()=>handleActionShowWinItem(point)}>{@html trash} <span>Eliminar</span></button>
+              </OptionSelect>
+            </div>
+          </div>
+          <div class="question">{qs.question}</div>
+
+          {#if qs.images.length !== 0}
+            <div class="container-images-question">
+              {#each qs.images as img, i}
+                <div class="box-image-question">
+                  <div class="wr-image-question">
+                    <img class="image-question" src={img} alt="" />
+                  </div>
+                  {#if qs.images.length > 1}
+                    <div class="label-image">Imagen {ALFABETO(i + 1)}</div>
+                  {/if}
+                </div>
+              {/each}
+            </div>
+          {/if}
+
+          <div class="container-items-answer">
+            {#each qs.answers as answer, index}
+
+              <div class="container-answer" onclick={()=>handleSelectItem(point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point={answer.rst}>
+                <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
+                {#if answer.image.length !== 0}
+                  <div class="wr-image-question">
+                    <img class="image-question" src={answer.image} alt="" />
+                  </div>
+                {/if}
+                <div class="wr-input-item">
+                  <div class="answer-item">{answer.resp}</div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+
+      {/each}
+
+    {:else if sheet === 'new-point'}
+      
+      {#if (stateExercise === 'new' || stateExercise === 'update') && posItemPoint === -1}
+        <p class="label-type">Nuevo punto</p>
+      {:else if stateExercise === 'update' && posItemPoint !== -1}
+        <p class="label-type">Actualizar punto</p>
+      {/if}
+
+      <div class="wr-hd">
+        <button class="btn-view-album" onclick={handleUpload}>Imagen</button>
+      </div>
+
+      <TextArea name="def" label="Pregunta" bind:value={questionTest.question} --height-text-area="80px" />
+
+      {#if questionTest.images.length !== 0}
+        <div class="container-images-question">
+          {#each questionTest.images as image, index}
+            <div class="box-image-question">
+              <div class="wr-image-question">
+                <img class="image-question" src={image} alt="" />
+                <button class="btn-remove-image-test" onclick={()=>handleRemoveImageQuestion(index)}>{@html trash}</button>
+              </div>
+              {#if questionTest.images.length > 1}
+                <div class="label-image">Imagen {ALFABETO(index + 1)}</div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+      
+      <h1 class="label-response">Respuestas</h1>
+
+      <div class="container-items-answer">
+        {#each questionTest.answers as answer, index}
+          <div class="container-answer">
+            {#if answer.image.length !== 0}
+              <div class="wr-image-question">
+                <img class="image-question" src={answer.image} alt="" />
+                <button class="btn-remove-image-test" onclick={()=>handleRemoveImageItem(index)}>{@html trash}</button>
+              </div>
+            {/if}
+
+            <div class="wr-input-item">
+              <textarea class="textarea-item" bind:value={answer.resp}></textarea>
+            </div>
+
+            <div class="wr-btn-img-item">
+              <button class="btn-view-item" onclick={()=>handleUploadImageItem(index)}>Imagen</button>
+              <button class="btn-remove-item" onclick={()=>handleRemoveItem(index)}>Quitar</button>
+            </div>
+            
+          </div>
+        {/each}
+      </div>
+
+    {/if}
+  </div>
+</div>
+
+<style>
+:global {
+  .btn-remove-image-test > svg {
+    width: 18px;
+    color: #fff;
+    stroke-width: 3px;
+  }
+  .btn-view-close > svg {
+    width: 18px;
+    color: #fff;
+    stroke-width: 3px;
+  }
+}
+.container-info {
+  padding: 0 0 1em;
+}
+.topic {
+  font-size: 1.4em;
+  font-family: var(--font-bold);
+  margin-bottom: 0.3em;
+}
+.activity {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  font-weight: 500;
+}
+.label-activity {
+  font-family: var(--font-normal);
+  font-size: 1.2em;
+}
+.label-activity.resaltar {
+  font-weight: 900;
+  font-style: italic;
+}
+.wr-opt-select {
+  right: 0;
+  position: absolute;
+}
+.row-link-activity {
+  display: flex;
+  width: 100%;
+  background: #f9f9f9;
+  align-items: center;
+  padding-right: 0.3em;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 6px;
+}
+.row-link-activity.resaltar {
+  background: #56d3ce;
+}
+.box-item-link {
+  height: 48px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #94ebe8;
+  font-family: var(--font-normal);
+  font-weight: 900;
+}
+.link-activity {
+  display: flex;
+  font-family: var(--font-normal);
+  cursor: pointer;
+  border-radius: 6px;
+  align-items: center;
+  gap: 1em;
+  overflow: hidden;
+  width: 100%;
+  background: transparent;
+}
+.wr-label-point {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  top: -22px;
+  left: 0;
+}
+.label-resp {
+  background: var(--border-item);
+  font-family: var(--font-normal);
+  font-size: 0.88em;
+  padding: 5px 10px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  transition: var(--transition);
+}
+.label-resp.rst-point {
+  background: #11d511;
+}
+.container-question {
+  padding: 0.5em 0;
+}
+.wr-point-number {
+  display: flex;
+  justify-content: center;
+  background: #93deff;
+  height: 1px;
+  align-items: center;
+  margin: 1em 0 2em;
+  position: relative;
+}
+.point-number {
+  background: #93deff;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 60px;
+  font-family: var(--font-normal);
+  font-weight: 600;
+}
+.answer-item {
+  width: 100%;
+  resize: none;
+  background: transparent;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  padding: 0.4em 0.5em;
+  border-radius: var(--border-radius);
+  line-height: 28px;
+}
+.question {
+  font-family: var(--font-normal);
+  padding-bottom: 2em;
+  line-height: 28px;
+  font-size: var(--font-size);
+}
+.container-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  background: var(--border-item);
+  padding: 8px;
+  border-radius: var(--border-radius);
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
+}
+.container-answer.rst-point {
+  background: #11d511;
+  box-shadow: rgb(0 167 0) 0px 7px 0px 0px;
+}
+.label-response {
+  font-family: var(--font-normal);
+  font-weight: 900;
+  font-size: 1em;
+}
+.wr-btn-img-item {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+}
+.btn-view-item {
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #9de1ff;
+  font-family: var(--font-normal);
+}
+.btn-remove-item {
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #ffd8cc;
+  font-family: var(--font-normal);
+}
+.container-items-answer {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+}
+.wr-input-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /*border: 1px solid var(--color-border-input);*/
+  border-radius: var(--border-radius);
+  padding: 2px 3px 2px 0;
+  transition: var(--transition);
+  background: #fff;
+  border: 1px solid #fff;
+}
+.wr-input-item:focus-within {
+  border: 1px solid #6049eb;
+  box-shadow: 0px 0px 0px 4px rgba(119, 112, 255, 0.2);
+}
+.textarea-item {
+  resize: none;
+  width: 100%;
+  resize: none;
+  background: transparent;
+  height: 65px;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  padding: 0.4em 0.5em;
+  border-radius: var(--border-radius);
+  line-height: 23px;
+}
+.btn-view-album {
+  position: absolute;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #c4dcc4;
+  top: 10px;
+  font-family: var(--font-normal);
+}
+.wr-hd {
+  display: flex;
+  justify-content: right;
+  position: relative;
+}
+.box-image-question {
+  /*border: 2px solid #333;*/
+}
+.label-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3em;
+  font-family: var(--font-normal);
+  font-weight: 600;
+}
+.btn-remove-image-test {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: black;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container-images-question {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding-bottom: 2em;
+}
+.wr-image-question {
+  width: 100%;
+  position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 1px solid #b5c7fb;
+}
+.image-question {
+  width: 100%;
+  display: block;
+}
+.wr-words-match {
+  margin-bottom: 2em;
+}
+.add-word {
+  font-family: var(--font-normal);
+  font-size: 1em;
+  color: var(--color-label-input);
+  background: transparent;
+  cursor: pointer;
+}
+.header-match {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+.title-wd {
+  font-family: var(--font-normal);
+  font-weight: 600;
+  font-size: 1em;
+  color: #000000;
+}
+.label-type {
+  font-family: var(--font-normal);
+  font-weight: 600;
+  font-size: 1em;
+  color: #000000;
+}
+.btn-new {
+  font-family: var(--font-normal);
+  padding: 0.4em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: bisque;
+  font-size: 1em;
+  transition: var(--transition);
+}
+.sheet-type {
+  margin: 2em 0;
+}
+.wr-cancel-intro {
+  display: flex;
+  gap: 2em;
+}
+.body-box-exercise {
+  background: #fff;
+  height: calc(100% - var(--height-header));
+  overflow-y: auto;
+  padding: 1em 1em 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.btn-view-close {
+  width: 36px;
+  height: 35px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 60px;
+  background: #d98507;
+}
+.header-box-exercise {
+  height: var(--height-header);
+  width: 100%;
+  background: #ff9800;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5em 0 1em;
+}
+.container-edit-exercise {
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  background: azure;
+  position: fixed;
+  top: 0;
+  right: -510px;
+  transition: 0.4s;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.container-edit-exercise.view-box {
+  right: 0;
+}
+@media (min-width: 500px) {
+  .btn-new {
+    font-size: 0.85em;
+  }
+  .btn-new:hover {
+    background: #f9d6ad;
+  }
+}
+</style>

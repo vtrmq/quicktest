@@ -5,6 +5,7 @@
   let visible = $state(false);
   let id = 0;
   let idx = 0;
+
   export function view(data) {
     if (Object.entries(data).length !== 0) {
       t = data;
@@ -21,6 +22,7 @@
       }, 200);
     }
   }
+
   onDestroy(() => {
     clearTimeout(id);
     clearTimeout(idx);

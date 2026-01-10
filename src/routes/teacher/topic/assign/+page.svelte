@@ -3,6 +3,7 @@ import { deserialize } from '$app/forms';
 import check from '$lib/assets/svg/check.svg?raw';
 import plus from '$lib/assets/svg/plus.svg?raw';
 import minus from '$lib/assets/svg/minus.svg?raw';
+import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { Title, NoneData, Toast, Dialog, LinkBack } from '$lib/components';
 
 let { data } = $props();
@@ -161,6 +162,9 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
                           </div>  
                           {subject.subject}
                         </button>
+                        {#if subject.topic_subject_id}
+                          <a class="box-link-subject" href="/teacher/topic/activities?topicId={topicId}&courseId={row.course_id}&subjectId={subject.subject_id}">{@html sendHorizontal}</a>
+                        {/if}
                       </div>
                     {/each}
                   </div>
@@ -183,6 +187,18 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
 {/if}
 
 <style>
+.box-link-subject {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+:global {
+  .box-link-subject > svg {
+    width: 20px;
+    color: orange;
+    stroke-width: 3px;
+  }
+}
 .btn-subject {
   display: flex;
   align-items: center;
@@ -204,7 +220,8 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
 .row-subject {
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  gap: 1em;
+  justify-content: space-between;
 }
 .btn-check {
   width: 20px;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
@@ -149,7 +150,9 @@ function handleSelectImageDelete(index: number) {
 }
 
 onDestroy(()=>{
-  document.body.style.overflowY = 'visible';
+  if (browser) {
+    document.body.style.overflowY = 'visible';
+  }
 });
 
 </script>

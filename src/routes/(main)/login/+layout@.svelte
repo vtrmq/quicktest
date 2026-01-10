@@ -38,7 +38,8 @@
   .page-container {
     min-height: 100vh;
     transition: var(--transition);
-    background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+    /*background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);*/
+    background-image: radial-gradient(at 0% 0%, rgba(0, 116, 204, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(0, 168, 34, 0.25) 0px, transparent 50%);
   }
 }
 </style>

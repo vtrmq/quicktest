@@ -138,7 +138,7 @@ async function handleSend(index: number) {
                 </div>
                 <div class="box-select">
                   <OptionSelect>
-                    <a href="/teacher/topic/content?topicId={row.activity_id}">{@html fileText} <span>Ejercicios</span></a>
+                    <a href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}">{@html fileText} <span>Ejercicios</span></a>
                     <a href="/teacher/topic/activity/edit?topicId={topic.topic_id}&activityId={row.activity_id}">{@html pencil} <span>Editar</span></a>
                     <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
                   </OptionSelect>
@@ -168,6 +168,9 @@ async function handleSend(index: number) {
   font-family: var(--font-normal);
   font-size: 1em;
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
 }
 .none-send {
   color: brown;

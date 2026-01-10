@@ -277,6 +277,7 @@
   color: var(--color);
   background: var(--bg-select, transparent);
   height: 50px;
+  transition: var(--transition);
 }
 
 /* Ocultar icono de calendario nativo */

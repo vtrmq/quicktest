@@ -419,6 +419,7 @@ function onInput(e: Event) {
   background: #fff;
   -moz-appearance: textfield;
   height: 50px;
+  transition: var(--transition);
 }
 
 /* Ocultar icono de calendario nativo */

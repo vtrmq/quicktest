@@ -35,7 +35,8 @@ let { children } = $props();
 }
 @media(min-width: 700px) {
   .page-container {
-    background: floralwhite;
+    /*background: floralwhite;*/
+    background-image: radial-gradient(at 0% 0%, rgba(0, 116, 204, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(0, 168, 34, 0.25) 0px, transparent 50%);
   }
 }
 </style>
