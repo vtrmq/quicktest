@@ -1,17 +1,25 @@
 <script lang="ts">
-import { FOLDER_IMAGES, R2_DOMAIN, ALFABETO } from '$lib/utils';
+import { ALFABETO } from '$lib/utils';
 import { page } from '$app/state';
-import { HeaderExercise, EditExercise, LinkBack } from '$lib/components';
+import { HeaderExercise, EditExercise, LinkBack, BtnAudio } from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
 
 type Item = {
   points: [];
   type: string;
 };
+type Words = {
+  id: number;
+  word: string;
+};
 type Point = {
-  answers: [{resp: '', image: '', rst: false, rss: false }]; 
+  answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
   images: []; 
-  question: ''
+  image: ''; 
+  words: Words[];
+  question: '';
+  answersFS: [{id: number, word: string;}];
+  text: number;
 }
 
 let { data } = $props();
@@ -19,6 +27,7 @@ console.log(data)
 let items = data.items;
 let type = $state('info');
 let points: Point[] = $state([]);
+let idPoint = $state(-1);
 
 const root = filtrarParametros(page.url.href, ['topicId']);
 
@@ -26,9 +35,59 @@ function handleActivity(index: number, _items: Item[]) {
   if (index !== -1) {
     type = _items[index].type;
     points = _items[index].points;
+    console.log($state.snapshot(points));
   } else if (index === -1) {
     type = 'info';
   }
+}
+
+function handleSelectWordFS(point: number, index: number) {
+  points[point].answersFS.push(points[point].words[index]);
+}
+
+function handleSelectWordFSRemove(point: number, index: number) {
+  points[point].answersFS.splice(index, 1);
+}
+
+/*
+function hablar(texto: string) {
+  // Verificar si el navegador soporta la API
+  if ('speechSynthesis' in window) {
+    const mensaje = new SpeechSynthesisUtterance(texto);
+    
+    console.log(texto)
+    // Configurar el idioma a inglés
+    mensaje.lang = 'en-US';
+    
+    // Opcional: ajustar velocidad y tono
+    mensaje.rate = 1; // Velocidad normal (0.1 a 10)
+    mensaje.pitch = 1; // Tono (0 a 2)
+
+    // Reproducir el audio
+    window.speechSynthesis.speak(mensaje);
+  } else {
+    console.log("Tu navegador no soporta texto a voz.");
+  }
+}
+*/
+
+function hablar(texto: string) {
+  const utterance = new SpeechSynthesisUtterance(texto);
+  utterance.lang = 'en-US';
+  //utterance.lang = 'el';
+  utterance.rate = 0.6;      // Velocidad (0.1 a 10)
+  utterance.pitch = 1;     // Tono (0 a 2)
+  utterance.volume = 1;    // Volumen (0 a 1)
+  utterance.onend = function() {
+    idPoint = -1;
+  };
+  speechSynthesis.speak(utterance);
+}
+
+function handleAudio(point: number) {
+  const texto = String(points[point].text);
+  hablar(texto);
+  idPoint = point;
 }
 </script>
 
@@ -38,12 +97,16 @@ function handleActivity(index: number, _items: Item[]) {
 </HeaderExercise>
 
 <div class="container-body">
+
   {#if type === 'info'}
+
     <div class="container-info">
       <h1 class="topic">{data.topic}</h1>
       <h2 class="activity">{data.activity}</h2>
     </div>
+
   {:else if type === 'test'}
+
     <div class="container-activity">
       {#each points as qs, point}
         <div class="container-question">
@@ -84,10 +147,92 @@ function handleActivity(index: number, _items: Item[]) {
         </div>
       {/each}
     </div>
+
+  {:else if type === 'test-fs'}
+
+    <div class="container-activity">
+      {#each points as qs, point}
+        <div class="container-question">
+          <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
+          
+          <div class="wr-container-box-fs">
+            {#if qs.image.length !== 0}
+              <div class="box-image-question">
+                <div class="wr-image-question">
+                  <img class="image-question" src={qs.image} alt="" />
+                </div>
+              </div>
+            {/if}
+
+            <div class="wr-btn-audio"><BtnAudio sw={point === idPoint} onclick={()=>handleAudio(point)} /></div>
+
+            {#if qs.answersFS}
+              <div class="container-answer-fs-rs">
+                {#each qs.answersFS as word, index}
+                  <button class="answer-fs" onclick={()=>handleSelectWordFSRemove(point, index)}>{word.word}</button>
+                {/each}
+              </div>
+            {/if}
+
+            {#if qs.words.length !== 0}
+              <div class="container-answer-fs">
+                {#each qs.words as word, index}
+                  <button class="answer-fs" onclick={()=>handleSelectWordFS(point, index)}>{word.word}</button>
+                {/each}
+              </div>
+            {/if}
+
+          </div>
+
+        </div>
+      {/each}
+    </div>
+
   {/if}
 </div>
 
 <style>
+.wr-btn-audio {
+  display: flex;
+  justify-content: center;
+}
+.wr-container-box-fs {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-bottom: 2em;
+}
+.container-answer-fs-rs {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  padding: 1em 0.5em 1em;
+  background: #c5eb98;
+  box-shadow: #98c95d 0px 7px 0px 0px;
+  border-radius: var(--border-radius);
+  flex-wrap: wrap;
+}
+.container-answer-fs {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  padding: 1em 0.5em 1em;
+  background: var(--border-item);
+  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
+  border-radius: var(--border-radius);
+  flex-wrap: wrap;
+}
+.answer-fs {
+  cursor: pointer;
+  font-family: var(--font-normal);
+  font-size: 1.6em;
+  background: #ffffff;
+  box-shadow: rgb(155 161 177) 0px 7px 0px 0px;
+  padding: 0 0.2em;
+  border-radius: 6px;
+  color: #4e5b69;
+  font-weight: 800;
+}
 .container-info {
   padding: 2em 0;
 }
@@ -168,10 +313,13 @@ function handleActivity(index: number, _items: Item[]) {
 }
 .image-question {
   width: 100%;
+  height: 100%;
   display: block;
+  object-fit: fill;
 }
 .wr-image-question {
   width: 100%;
+  height: 300px;
   position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;

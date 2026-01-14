@@ -46,3 +46,4 @@ export { default as Album } from './ui/Album.svelte';
 export { default as HeaderExercise } from './ui/HeaderExercise.svelte';
 export { default as EditExercise } from './ui/EditExercise.svelte';
 export { default as TextArea } from './ui/TextArea.svelte';
+export { default as BtnAudio } from './ui/BtnAudio.svelte';

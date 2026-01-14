@@ -1,3 +1,15 @@
+type Words = {
+  id: number;
+  word: string;
+};
+export function barajarArray(array: Words[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 export function isDateEnd(fechaLimiteStr: string) {
   // 1. Convertir la fecha límite a objeto Date (medianoche)
   const fechaLimite = new Date(fechaLimiteStr + 'T23:59:59');

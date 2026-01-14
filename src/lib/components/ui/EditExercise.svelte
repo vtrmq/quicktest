@@ -7,6 +7,7 @@ import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
 import { Select, Button, Toast, TextArea, Input, Album, OptionSelect, Dialog } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
+import { barajarArray } from '$lib/utils/';
 
 type AnswersTest = {
   resp: string;
@@ -18,6 +19,18 @@ type questionsTest = {
   question: string;
   images: string[];
   answers: AnswersTest[];
+  value: number;
+};
+type Words = {
+  id: number;
+  word: string;
+};
+type questionsTestFS = {
+  text: string;
+  image: string;
+  answersFS: Words[];
+  words: Words[];
+  value: number;
 };
 
 let { items, handleActivity, topic, activity } = $props();
@@ -40,11 +53,14 @@ let leftWords = $state([{word: ''}]);
 let rightWords = $state([{word: ''}]);
 let arrayQuestionsTest: questionsTest[] = $state([]);
 let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false }]);
-let questionTest: questionsTest = $state( { question: '', images: [], answers: [] })
+let questionTest: questionsTest = $state( { question: '', images: [], answers: [], value: 0 })
 let indexExercise = -1;
 let posItemPoint = $state(-1);
 let itemResaltado = $state(-1);
 let itemDelete = -1;
+
+let arrayQuestionsTestFS: questionsTestFS[] = $state([]);
+let questionTestFS: questionsTestFS = $state( { text: '', image: '', answersFS: [], words: [], value: 0 })
 
 /*
 let questionTest: questionsTest = $state(
@@ -97,7 +113,7 @@ function reset() {
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
   answersTest = [{resp: '', image: '', rst: false, rss: false }];
-  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }] };
+  questionTestFS = { text: '', image: '', answersFS: [], words: [], value: 0 };
 }
 
 function handleViewBoxExercise() {
@@ -158,8 +174,15 @@ function handleDone() {
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTest;
     }
-    activityLocalstore.set(items);
+  } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
+    if (stateExercise === 'new') {
+      items.push({type:'test-fs', points: arrayQuestionsTestFS});
+    } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
+      items[indexExercise].points = arrayQuestionsTestFS;
+    }
   }
+  activityLocalstore.set(items);
+
   console.log($state.snapshot(items));
   sheet = 'ejercises';
   reset();
@@ -168,7 +191,7 @@ function handleDone() {
 function handleAddPoint() {
   sheet = 'new-point';
   answersTest = [{resp: '', image: '', rst: false, rss: false }];
-  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }] };
+  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }], value: 0 };
   posItemPoint = -1;
 }
 
@@ -192,6 +215,8 @@ async function handleImageSelect(image: string) {
     questionTest.images.push(localText);
   } else if (posImage === 'image-item') {
     questionTest.answers[posItem].image = localText;
+  } else if (posImage === 'image-question-fs') {
+    questionTestFS.image = localText;
   }
 }
 
@@ -259,6 +284,9 @@ function handleEditActivity(index: number) {
   if (type === 'test') {
     arrayQuestionsTest = items[index].points;
     sheet = 'test';
+  } else if (type === 'test-fs') {
+    arrayQuestionsTestFS = items[index].points;
+    sheet = 'test-fs';
   }
   handleActivity(-1, items);
 }
@@ -279,6 +307,9 @@ async function handleActionDelete(e: string) {
     if (stateDelete === 'itemTest') {
       arrayQuestionsTest.splice(itemDelete, 1);
       items[indexExercise].points = arrayQuestionsTest;
+    } else if (stateDelete === 'itemTestFS') {
+      arrayQuestionsTestFS.splice(itemDelete, 1);
+      items[indexExercise].points = arrayQuestionsTestFS;
     } else if (stateDelete === 'itemExercise') {
       items = items.filter((_: object, item: number) => item !== itemDelete);
     }
@@ -287,6 +318,73 @@ async function handleActionDelete(e: string) {
     itemResaltado = -1;
     handleActivity(-1, items);
   }
+}
+
+function handleAddPointFS() {
+  sheet = 'new-point-fs';
+  questionTestFS = { text: '', image: '', answersFS: [], words: [], value: 0 };
+  posItemPoint = -1;
+}
+
+function handleUploadImageItemFS() {
+  posImage = 'image-question-fs';
+  album?.handleShowAlbum();
+}
+
+function handleRemoveImageQuestionFS() {
+  questionTestFS.image = '';
+}
+
+function handleBackTestFS() {
+  sheet = 'test-fs';
+  if (stateExercise === 'new') {
+    reset();
+  }
+}
+
+function handleDonePointFS() {
+  const textoLimpio = questionTestFS.text.replace(/[.,;:]+$/, '').trim();
+  questionTestFS.text = textoLimpio;
+  const palabras = textoLimpio.split(" ").map((palabra, index) => ({
+    id: index,
+    word: palabra,
+  }));
+  const palabrasBarajadas = barajarArray(palabras);
+  questionTestFS.words = palabrasBarajadas;
+  /*
+  const sinDuplicados = palabrasBarajadas.filter((obj, index, self) =>
+    index === self.findIndex(o => o.word.toLowerCase() === obj.word.toLowerCase())
+  );
+  questionTestFS.words = sinDuplicados;
+  */
+
+  //console.log('--> 1', indexExercise)
+  //console.log('--> 2', posItemPoint)
+
+  if ((indexExercise === -1 || indexExercise !== -1) && posItemPoint === -1) {
+    console.log(1)
+    arrayQuestionsTestFS.push(questionTestFS);
+  } else if (indexExercise !== -1 && posItemPoint !== -1) {
+    console.log(2)
+    arrayQuestionsTestFS[posItemPoint] = questionTestFS;
+  }
+  console.log($state.snapshot(arrayQuestionsTestFS));
+  sheet = 'test-fs';
+}
+
+function handleEditTestPointFS(point: number) {
+  posItemPoint = point;
+  questionTestFS = arrayQuestionsTestFS[posItemPoint]
+  sheet = 'new-point-fs';
+}
+
+function handleActionShowWinItemFS(index: number) {
+  itemDelete = index;
+  stateDelete = 'itemTestFS';
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar el punto ${index + 1}?`,
+  });
 }
 
 </script>
@@ -318,11 +416,26 @@ async function handleActionDelete(e: string) {
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
       </div>
+    {:else if sheet === 'test-fs'}
+      <div>
+        <button class="btn-new" onclick={handleAddPointFS}>Nuevo punto</button>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
+      </div>
     {:else if sheet === 'new-point'}
       <div>
         <button class="btn-new" onclick={handleBackTest}>Volver</button>
         <button class="btn-new" onclick={handleAddItem}>Adicionar item</button>
         <button class="btn-new" onclick={handleDonePoint}>Listo</button>
+      </div>
+    {:else if sheet === 'new-point-fs'}
+      <div>
+        <button class="btn-new" onclick={handleBackTestFS}>Volver</button>
+        <button class="btn-new" onclick={handleDonePointFS}>Listo</button>
       </div>
     {:else}
       &nbsp;
@@ -529,6 +642,70 @@ async function handleActionDelete(e: string) {
         {/each}
       </div>
 
+    {:else if sheet === 'test-fs'}
+
+      <p class="label-type">Test FS</p>
+
+      {#each arrayQuestionsTestFS as qs, point}
+
+        <div class="container-question">
+          <div class="wr-point-number">
+            <div class="point-number">{point + 1}</div>
+            <div class="wr-opt-select">
+              <OptionSelect>
+                <button onclick={()=>handleEditTestPointFS(point)}>{@html pencil} <span>Editar</span></button>
+                <button onclick={()=>handleActionShowWinItemFS(point)}>{@html trash} <span>Eliminar</span></button>
+              </OptionSelect>
+            </div>
+          </div>
+
+          <div class="wr-container-box-fs">
+            {#if qs.image.length !== 0}
+              <div class="box-image-question">
+                <div class="wr-image-question">
+                  <img class="image-question" src={qs.image} alt="" />
+                </div>
+              </div>
+            {/if}
+
+            {#if qs.words.length !== 0}
+              <div class="container-answer-fs">
+                {#each qs.words as word}
+                  <button class="answer-fs">{word.word}</button>
+                {/each}
+              </div>
+            {/if}
+          </div>
+          
+        </div>
+
+      {/each}
+
+    {:else if sheet === 'new-point-fs'}
+      
+      {#if (stateExercise === 'new' || stateExercise === 'update') && posItemPoint === -1}
+        <p class="label-type">Nuevo punto</p>
+      {:else if stateExercise === 'update' && posItemPoint !== -1}
+        <p class="label-type">Actualizar punto</p>
+      {/if}
+
+      {#if questionTestFS.image.length !== 0}
+        <div class="container-images-question">
+          <div class="box-image-question">
+            <div class="wr-image-question">
+              <img class="image-question" src={questionTestFS.image} alt="" />
+              <button class="btn-remove-image-test" onclick={handleRemoveImageQuestionFS}>{@html trash}</button>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <div class="wr-hd">
+        <button class="btn-view-album" onclick={handleUploadImageItemFS}>Imagen</button>
+      </div>
+
+      <TextArea name="def" label="Texto" bind:value={questionTestFS.text} --height-text-area="80px" />
+
     {/if}
   </div>
 </div>
@@ -545,6 +722,32 @@ async function handleActionDelete(e: string) {
     color: #fff;
     stroke-width: 3px;
   }
+}
+.wr-container-box-fs {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.container-answer-fs {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  padding: 1em 0.5em 1em;
+  background: var(--border-item);
+  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
+  border-radius: var(--border-radius);
+  flex-wrap: wrap;
+}
+.answer-fs {
+  cursor: pointer;
+  font-family: var(--font-normal);
+  font-size: 1.6em;
+  background: #ffffff;
+  box-shadow: rgb(155 161 177) 0px 7px 0px 0px;
+  padding: 0 0.2em;
+  border-radius: 6px;
+  color: #4e5b69;
+  font-weight: 800;
 }
 .container-info {
   padding: 0 0 1em;
@@ -782,6 +985,7 @@ async function handleActionDelete(e: string) {
 }
 .wr-image-question {
   width: 100%;
+  height: 300px;
   position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -789,6 +993,8 @@ async function handleActionDelete(e: string) {
 }
 .image-question {
   width: 100%;
+  height: 100%;
+  object-fit: fill;
   display: block;
 }
 .wr-words-match {
