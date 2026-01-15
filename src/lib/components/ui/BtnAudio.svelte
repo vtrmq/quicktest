@@ -2,7 +2,7 @@
 import audioLines from '$lib/assets/svg/audio-lines.svg?raw';
 let { onclick, sw = false } = $props();
 </script>
-<button class="btn-audio" onclick={()=>onclick()}>
+<button class="btn-audio" onclick={onclick}>
   {#if !sw}
     Audio
   {:else}

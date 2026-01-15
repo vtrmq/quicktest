@@ -1,0 +1,370 @@
+.text-syn-morpho {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+}
+.color-rr-morpho {
+  font-weight: bold;
+  color: var(--color-r);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--color-r);
+  text-decoration-thickness: 1px;
+}
+.main-exercise-morphosyntax-morpho {
+  position: relative;
+  width: 100%;
+  background: #f3f3f3;
+  overflow-x: auto;
+  height: 100%;
+  overflow-y: hidden;
+  border-radius: 8px;
+  border: 2px solid #333;
+}
+.resaltar-bx-morpho {
+  background: var(--highlight-synt);
+}
+.a-back-morpho {
+  position: fixed;
+  left: 12px;
+  bottom: 10px;
+  z-index: 1;
+  display: flex;
+  background: var(--bg-a-back);
+  padding: 0.2em;
+  border-radius: 50px;
+  box-shadow: 0px 2px 0px 1px #b77413;
+}
+.canvas-morpho {
+  position: absolute;
+  bottom: 28px;
+  z-index: 1;
+  right: 80px;
+}
+.container-f-btns-morpho {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  bottom: 80px;
+  z-index: 1;
+  gap: 1em;
+  height: 0px;
+  background: var(--bg-header-synt);
+}
+.label-text-morpho {
+  text-align: center;
+  color: var(--color-synt);
+  display: flex;
+  gap: 0.3em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.bg-box-synt-morpho {
+  background: var(--bg-box-synt);
+}
+.pa-morpho {
+  cursor: pointer;
+}
+.bg-morphosyntax-morpho {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #00000070;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  top: 0;
+  left: 0;
+}
+.win-syn-morpho {
+  background: #fff;
+  padding: 2em 1em;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: rgb(0 0 0) 1px 3px 30px -10px;
+}
+.wr-btns-morpho {
+  display: flex;
+  gap: 1em;
+}
+.btn-cancel-morphosyntax-morpho {
+  color: #fff;
+  background: #b35b5b;
+  padding: 0.5em 1em;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: var(--font-normal);
+  font-size: 1em;
+}
+.btn-cancel-morphosyntax-morpho:hover {
+  background: #d34646;
+}
+.btn-accept-morphosyntax-morpho {
+  color: #fff;
+  background: #0196d9;
+  padding: 0.5em 1em;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: var(--font-normal);
+  font-size: 1em;
+}
+.btn-accept-morphosyntax-morpho:hover {
+  background: #0172a5;
+}
+.wrapper-textarea-morpho.z-index {
+  z-index: 1;
+}
+.wrapper-board-morpho.z-index {
+  z-index: 1;
+}
+.wrapper-board-morpho {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: grid;
+  z-index: 0;
+  padding: 2em 1em 1em;
+  box-shadow: var(--shadow-card);
+  border-radius: var(--border-radius);
+  background: #fff;
+}
+
+.wrapper-board-morpho::-webkit-scrollbar {
+  width: 10px;     /* Tamaño del scroll en vertical */
+  height: 10px;    /* Tamaño del scroll en horizontal */
+  border-radius: 20px;
+}
+.wrapper-board-morpho::-webkit-scrollbar-thumb {
+  background-color: var(--bg-scroll-color-synt);
+  border-radius: 20px;
+  border: 2px solid var(--bg-scroll-synt);
+}
+.wrapper-board-morpho::-webkit-scrollbar-thumb:hover {
+  /*background: #648c9f;*/
+}
+.wrapper-board-morpho::-webkit-scrollbar-track {
+  background: var(--bg-scroll-synt);
+  border-radius: 20px;
+}
+.wrapper-textarea-morpho {
+  /*background: var(--bg-syntax);*/
+  width: 100%;
+  padding: 0 1em;
+  z-index: 0;
+}
+.word-morpho {
+  font-size: 30px;
+  font-weight: 400;
+  padding: 0 5px;
+  font-family: var(--font-normal);
+}
+.sign-morpho {
+  /*padding: 0 0.15em;*/
+  width: 5px;
+}
+.w-sign-morpho {
+  font-size: 30px;
+  font-weight: 400;
+  position: relative;
+  left: -13px;
+}
+.bloque-morpho {
+  height: 100%;
+  width: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  overflow: hidden;
+  font-family: var(--font-normal);
+}
+.border-morpho {
+  outline: 1px dashed var(--border-box-synt);
+}
+.container-rows-morpho {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.6em;
+  padding-bottom: 1em;
+}
+.rr-morpho {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-syntax);
+}
+.r-morpho {
+  display: flex;
+  gap: 6px;
+  height: 30px;
+  /*padding: 0.1em;*/
+}
+.container-board-morpho {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  /*padding: 2em 1em 4em;*/
+}
+.container-textarea-morpho {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 500px;
+  padding: 2em 0 4em;
+}
+.container-textarea-morpho div {
+  display: flex;
+  padding: 1em 0;
+  justify-content: center;
+}
+.btn-aceptar-morphosyntax-morpho {
+  border: none;
+  outline: none;
+  padding: 0.8em 2em;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: 0.3s;
+  font-size: 1.2em;
+  background: var(--bg-syntax);
+  border: 1px solid var(--line-synt);
+  color: var(--color-synt);
+}
+.textarea-morphosyntax-morpho {
+  width: 100%;
+  padding: 1em;
+  font-size: 1.4em;
+  background: var(--bg-syntax);
+  border: 1px solid var(--line-synt);
+  color: var(--color-synt);
+  border-radius: 8px;
+  resize: none;
+  height: 180px;
+  transition: 0.3s;
+}
+.w22-morpho {
+  width: 22px;
+}
+.w28-morpho {
+  width: 28px;
+}
+.svg-morpho {
+  color: var(--color-svg-synt);
+}
+.svg-back-syn-morpho {
+  color: var(--color-svg-synt-back);
+}
+.svg-morpho.color-disabled-morpho {
+  color: var(--color-svg-synt-disabled);
+}
+.container-btns-morpho button.btn-sy-morpho.color-disabled-morpho {
+  /*border: 2px solid var(--border-btns-synt);*/
+  background: var(--bg-btn-disabled-synt);
+}
+.container-btns-morpho {
+  display: flex;
+  gap: 0.8em;
+  padding: 0.5em;
+}
+.container-btns-morpho button {
+  outline: none;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+}
+.container-btns-morpho button.btn-sy-morpho {
+  border: 1px solid #c3c3c3;
+}
+.container-btns-morpho button.highlight-border-morpho {
+  background: var(--bg-btn-highlight-synt);
+}
+.container-syntax-morpho {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  /*height: -webkit-fill-available;*/
+  display: grid;
+  grid-template-rows: 90px 1fr;
+}
+.board-morpho {
+  position: relative;
+  display: flex;
+  margin: auto;
+  background: #e9e9e9;
+  height: calc(100% - 60px);
+  overflow-y: auto;
+}
+.header-syn-morpho {
+  background: var(--bg-header-synt);
+  /*border-bottom: 1px solid var(--line-synt);*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+.word-t-morpho {
+  font-weight: 600;
+  font-size: 1.4em;
+  font-family: var(--font-normal);
+}
+.sign-t-morpho {
+  position: relative;
+  left: -6px;
+  width: 3px;
+}
+.wr-options-morpho {
+  display: flex;
+  gap: 0.5em;
+  font-family: var(--font-normal);
+  font-size: 1em;
+}
+.wr-options-morpho > label {
+  position: relative;
+}
+.wr-input-morpho {
+  width: 100%;
+}
+.wr-input-check-morpho {
+  width: 100%;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 1em;
+}
+.svg-load-morpho {
+  width: 22px;
+  animation: girarmorpho 1.5s linear infinite;
+  color: var(--color-svg-synt);
+}
+@keyframes girarmorpho {
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
+}

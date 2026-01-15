@@ -14,6 +14,7 @@
     capitalize = false,
     disabled = false,
     children,
+    isError = true,
   } = $props();
 
   function onChange(e: Event) {
@@ -61,11 +62,13 @@
     <line class:display-none={style === 'border'}></line>
 
   </div>
-  <div class="msg-error">
-    {#if input === name}
-      {error}
-    {/if}
-  </div>
+  {#if isError}
+    <div class="msg-error">
+      {#if input === name}
+        {error}
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>

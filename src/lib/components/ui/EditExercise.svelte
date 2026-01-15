@@ -5,7 +5,7 @@ import menu from '$lib/assets/svg/menu.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
-import { Select, Button, Toast, TextArea, Input, Album, OptionSelect, Dialog } from '$lib/components';
+import { Select, Button, Toast, TextArea, Input, Album, OptionSelect, Dialog, HeaderExercise } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
 import { barajarArray } from '$lib/utils/';
 
@@ -180,9 +180,24 @@ function handleDone() {
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTestFS;
     }
+  } else if (sheet === 'morphosyntax') {
+    const exercise = {
+      content, 
+      arrWords: [], 
+      syntax: {
+        arrWordsBox: [],
+        isGrid: false
+      }, 
+      comment_teacher: [], 
+      comment_student: []
+    }
+    if (stateExercise === 'new') {
+      items.push({type:'morphosyntax', exercise});
+    } else if (stateExercise === 'update') {
+      items[indexExercise].exercise = exercise;
+    }
   }
   activityLocalstore.set(items);
-
   console.log($state.snapshot(items));
   sheet = 'ejercises';
   reset();
@@ -256,7 +271,8 @@ function handleSelectItem(point: number, index: number) {
 function handleSelectActivity(index: number) {
   itemResaltado = index;
   viewBox = !viewBox;
-  handleActivity(index, items);
+  const _items = activityLocalstore.get();
+  handleActivity(index, _items);
 }
 
 function handleActionShowWin(index: number) {
@@ -287,6 +303,9 @@ function handleEditActivity(index: number) {
   } else if (type === 'test-fs') {
     arrayQuestionsTestFS = items[index].points;
     sheet = 'test-fs';
+  } else if (type === 'morphosyntax') {
+    content = items[index].exercise.content;
+    sheet = 'morphosyntax';
   }
   handleActivity(-1, items);
 }
@@ -306,10 +325,14 @@ async function handleActionDelete(e: string) {
   if (e === 'accept') {
     if (stateDelete === 'itemTest') {
       arrayQuestionsTest.splice(itemDelete, 1);
-      items[indexExercise].points = arrayQuestionsTest;
+      if (items[indexExercise]) {
+        items[indexExercise].points = arrayQuestionsTest;
+      }
     } else if (stateDelete === 'itemTestFS') {
       arrayQuestionsTestFS.splice(itemDelete, 1);
-      items[indexExercise].points = arrayQuestionsTestFS;
+      if (items[indexExercise]) {
+        items[indexExercise].points = arrayQuestionsTestFS;
+      }
     } else if (stateDelete === 'itemExercise') {
       items = items.filter((_: object, item: number) => item !== itemDelete);
     }
@@ -401,7 +424,12 @@ function handleActionShowWinItemFS(index: number) {
         <button class="btn-new" onclick={handleNewExercise}>Guardar</button>
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
       </div>
-    {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match' || sheet === 'morphosyntax'}
+    {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
+      <div>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+      </div>
+    {:else if sheet === 'morphosyntax'}
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         <button class="btn-new" onclick={handleCancel}>Cancelar</button>
@@ -442,6 +470,7 @@ function handleActionShowWinItemFS(index: number) {
     {/if}
     <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html circleX}</button>
   </div>
+
   <div class="body-box-exercise">
 
     {#if sheet === 'ejercises' && items}
@@ -532,7 +561,7 @@ function handleActionShowWinItemFS(index: number) {
     {:else if sheet === 'morphosyntax'}
 
       <p class="label-type">Morfosintaxis</p>
-      <TextArea name="def" label="Escribe una oración" bind:value={title} --height-text-area="80px" />
+      <TextArea name="def" label="Escribe una oración" bind:value={content} --height-text-area="80px" />
 
     {:else if sheet === 'test'}
 

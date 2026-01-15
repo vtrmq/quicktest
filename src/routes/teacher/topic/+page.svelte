@@ -333,7 +333,7 @@ async function handleActionDelete(e: string) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0;
   display: flex;
   flex-direction: column;
 }

@@ -17,6 +17,11 @@
   --font-size: 1.2em;
   --height-text-area: 100px;
   --border-item: #d8e1fb;
+  --border-box-synt: #a5b3b9;
+  --highlight-synt: #f2f8fb;
+  --bg-header-synt: #ededed;
+  --color-svg-synt: #0e0e0e;
+  --bg-btn-disabled-synt: #dfdfdf;
 }
 
 em {
@@ -33,6 +38,9 @@ em > strong {
 }
 ol {
   margin-left: 24px;
+}
+.bold {
+  font-weight: 700;
 }
 
 @media(min-width: 700px) {

@@ -2,6 +2,7 @@ type Words = {
   id: number;
   word: string;
 };
+
 export function barajarArray(array: Words[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -104,4 +105,72 @@ export function extractYouTubeId(urlVideo: string) {
   const match = urlVideo.match(regExp);
   const url = (match && match[2].length === 11) ? match[2] : null;
   return `https://www.youtube.com/embed/${url}`;
+}
+
+export const colorSynt = (numb: number) => {
+  let color = 'red';
+  switch (numb) {
+    case 9:
+    case 0: color = '#4ed573'; break;
+    case 10:
+    case 1: color = '#ffb342'; break;
+    case 11:
+    case 2: color = '#22baff'; break;
+    case 12:
+    case 3: color = '#ff6c61'; break;
+    case 13:
+    case 4: color = '#ebd726'; break;
+    case 14:
+    case 5: color = '#d56ce7'; break;
+    case 15:
+    case 6: color = '#92ebe4'; break;
+    case 16:
+    case 7: color = '#8cb2c5'; break;
+    case 17:
+    case 8: color = '#46e5d6'; break;
+  }
+  return color;
+}
+
+export const bgColorSynt = (numb: number) => {
+  let color = '#ff00001a';
+  switch (numb) {
+    case 9:
+    case 0: color = '#4ed57338'; break;
+    case 10:
+    case 1: color = '#ffb34245'; break;
+    case 11:
+    case 2: color = '#22baff38'; break;
+    case 12:
+    case 3: color = '#ff6c613b'; break;
+    case 13:
+    case 4: color = '#ebd7263b'; break;
+    case 14:
+    case 5: color = '#d56ce740'; break;
+    case 15:
+    case 6: color = '#92ebe459'; break;
+    case 16:
+    case 7: color = '#8cb2c54d'; break;
+    case 17:
+    case 8: color = '#46e5d659'; break;
+  }
+  return color;
+}
+
+export function removeFinalPunctuationMark(cadena: string) {
+  // Expresión regular para eliminar signos de puntuación al final
+  cadena = cadena.trim();
+  return cadena.replace(/[\p{P}+]$/u, '');
+}
+
+export function wordObjects(text: string) {
+  // Usamos una expresión regular para dividir el texto en palabras y signos de puntuación
+  const regex = /([\p{L}\p{N}]+|[^\p{L}\p{N}\s])/gu;
+  const matches = text.match(regex) || [];
+
+  // Mapeamos cada coincidencia a un objeto
+  return matches.map((word: string) => ({
+    word: word,
+    type: /[\p{L}\p{N}]+/u.test(word) ? "word" : "sign"
+  }));
 }
