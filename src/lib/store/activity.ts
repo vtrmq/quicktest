@@ -45,6 +45,24 @@ export const activityLocalstore = {
       localStorage.setItem(act, JSON.stringify(exercises));
     }
   },
+  wordSelect: (indexExercise: number, pos: number, data: any) => {
+    const activities = localStorage.getItem(act);
+    if (activities) {
+      const exercises = JSON.parse(activities);
+      exercises[indexExercise].exercise.words[pos] = data;
+      localStorage.setItem(act, JSON.stringify(exercises));
+    }
+  },
+  character: (indexExercise: number, words: any, options: any) => {
+    const activities = localStorage.getItem(act);
+    if (activities) {
+      const exercises = JSON.parse(activities);
+      exercises[indexExercise].exercise.words = words;
+      exercises[indexExercise].exercise.optionSuboptions = options;
+      localStorage.setItem(act, JSON.stringify(exercises));
+    }
+  }
+
   /*
   push: (data: object) => {
     if (browser) {

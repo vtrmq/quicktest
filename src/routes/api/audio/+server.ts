@@ -1,0 +1,181 @@
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { dbPlatform, selectDB, saveDB, deleteDB } from '$lib/server/db';
+import { FOLDER_AUDIOS } from '$lib/utils';
+import { R2_ACCOUNT_ID, R2_BUCKET_NAME, R2_ACCESS_KEY, R2_SECRET_KEY } from '$env/static/private';
+
+// Configurar cliente S3 para R2
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: R2_ACCESS_KEY,
+    secretAccessKey: R2_SECRET_KEY,
+  },
+});
+
+export const GET: RequestHandler = async ({ url, locals, platform }) => { 
+
+  if (!locals.user) { 
+    return json({
+      success: 'failed',
+    });
+  }
+
+  const page = Number(url.searchParams.get("page") ?? 1);
+  const limit = 4;
+  const offset = (page - 1) * limit;
+
+  try {
+
+    const teacherId = locals.user.id;
+
+    const db = dbPlatform(platform);
+    if (!db) {
+      throw 'DB: servicio no disponible';
+    }
+
+    const totalsQuery = `SELECT COUNT(audio_id) AS total_count FROM audios WHERE user_id = ?`;
+    const stmtPage = db.prepare(totalsQuery);
+    const totals = await stmtPage.bind(teacherId).first();
+    const totalCount = totals?.total_count ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+
+    const query = `SELECT * FROM audios WHERE user_id = ? ORDER BY audio_id DESC LIMIT ? OFFSET ?;`;
+    const audios = await selectDB(db, query, teacherId, limit, offset);
+    if (audios) {
+      return json({
+        success: true,
+        audios,
+        message: '',
+        pagination: {
+          page,
+          totalPages,
+          limit,
+          totalCount,
+        }
+      });
+    } else {
+      return json({
+        success: true,
+        audios: [],
+        message: ''
+      });
+    }
+
+  } catch (err) {
+
+      return json({ 
+        success: false,
+        audios: [],
+        message: err
+      });
+
+  }
+
+}
+
+export const POST: RequestHandler = async ({ request, locals, platform }) => { 
+
+  if (!locals.user) { 
+    return json({
+      success: 'failed',
+    });
+  }
+
+  let fileName = '';
+  const teacherId = locals.user.id;
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file');
+    const audio = formData.get('fileName');
+
+    if (!file || !(file instanceof File)) {
+      throw new Error('No file provided');
+    }
+
+    const name = file.name;
+
+    const db = dbPlatform(platform);
+    if (!db) {
+      throw 'DB: servicio no disponible';
+    }
+
+    fileName = `${teacherId}-${audio}`;
+    const arrayBuffer = await file.arrayBuffer();
+    const key = `${FOLDER_AUDIOS}/${fileName}`;
+
+    const command = new PutObjectCommand({
+      Bucket: R2_BUCKET_NAME,
+      Key: key,
+      Body: Buffer.from(arrayBuffer),
+      ContentType: file.type,
+    });
+    const c2 = await s3Client.send(command);
+
+    if (c2.$metadata.httpStatusCode !== 200) {
+      return json({
+        success: false,
+        message: 'Ocurrió un error en el envio',
+        audios: []
+      });
+    }
+
+    // Insertar audio en la tabla
+    const sv = 'INSERT INTO audios (user_id, name, shadow_audio) VALUES (?, ?, ?)';
+    await saveDB(db, sv, teacherId, name, fileName);
+
+    const query = `SELECT * FROM audios WHERE user_id = ? ORDER BY audio_id DESC;`;
+    const audios = await selectDB(db, query, teacherId);
+
+    return json({
+      success: true,
+      message: 'Audio subido correctamente',
+      audios
+    });
+
+  } catch (error) {
+
+    return json({ 
+      success: false,
+      message: error,
+      audios: []
+    }, { status: 400 });
+
+  }
+}
+
+export const DELETE: RequestHandler = async ({ request, locals, platform }) => { 
+
+  if (!locals.user) { 
+    return json({
+      success: 'failed',
+    });
+  }
+
+  const teacherId = locals.user.id;
+  const { audioId, shadowAudio } = await request.json();
+
+  try {
+
+    const db = dbPlatform(platform);
+    if (!db) {
+      throw 'DB: servicio no disponible';
+    }
+
+    await deleteDB(db, 'DELETE FROM audios WHERE audio_id = ? AND user_id = ?', parseInt(audioId), teacherId);
+    const audio = `${FOLDER_AUDIOS}/${shadowAudio}`;
+    const command = new DeleteObjectCommand({
+      Bucket: R2_BUCKET_NAME,
+      Key: audio,
+    });
+    await s3Client.send(command);
+
+    return json({ success: true });
+
+  } catch (err) {
+    return json({ success: false });
+  }
+}

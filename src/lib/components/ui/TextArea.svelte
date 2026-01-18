@@ -12,6 +12,7 @@ let {
   lowercase = false,
   capitalize = false,
   disabled = false,
+  isError = true,
 } = $props();
 
 function keyup(e: KeyboardEvent) {
@@ -56,11 +57,13 @@ function onInput(e: Event) {
     <line class:display-none={style === 'border'}></line>
 
   </div>
-  <div class="msg-error">
-    {#if input === name}
-      {error}
-    {/if}
-  </div>
+  {#if isError}
+    <div class="msg-error">
+      {#if input === name}
+        {error}
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>

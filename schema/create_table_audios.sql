@@ -1,0 +1,6 @@
+CREATE TABLE audios (
+  audio_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER DEFAULT 0,
+  name TEXT NOT NULL,
+  shadow_audio TEXT NOT NULL
+);

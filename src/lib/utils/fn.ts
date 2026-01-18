@@ -174,3 +174,15 @@ export function wordObjects(text: string) {
     type: /[\p{L}\p{N}]+/u.test(word) ? "word" : "sign"
   }));
 }
+
+export const colors = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"];
+
+export function normalizeToDigit(n: number): number {
+  return ((n % 10) + 10) % 10;
+}
+
+export function removeExtension(filename: string): string {
+  const lastDotIndex = filename.lastIndexOf('.');
+  if (lastDotIndex === -1) return filename; // Sin extensión
+  return filename.substring(0, lastDotIndex);
+}

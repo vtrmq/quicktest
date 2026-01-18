@@ -9,21 +9,21 @@ import chevronRight from '$lib/assets/svg/chevron-right.svg?raw'
 import upload from '$lib/assets/svg/upload.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
 import { Title, Button, BtnX, Dialog } from '$lib/components';
-import { FOLDER_IMAGES, R2_DOMAIN } from '$lib/utils';
+import { FOLDER_AUDIOS, R2_DOMAIN, removeExtension } from '$lib/utils';
 
-type Images = {
-  image_id: number;
+type Audios = {
+  audio_id: number;
   name: string;
-  shadow_image: string;
+  shadow_audio: string;
   user_id: number
 };
 
 let dialog = $state<Dialog | null>(null);
-let { onSelectImage = ()=>{} } = $props();
-let array_ext: string[] = ["jpg", "jpeg", "png", "webp", "avif"];
+let { onSelectAudio = ()=>{} } = $props();
+let array_ext: string[] = ["mp3", "wav", "ogg"];
 let btnSave = $state<Button>();
 let isDisplay = $state(false);
-let images: Images[] = $state([]);
+let audios: Audios[] = $state([]);
 let files: FileList | null;
 let load = $state(false);
 let type = $state(0);
@@ -31,15 +31,15 @@ let message = $state('');
 let fileInput = $state<HTMLInputElement | null>(null);
 let pages = $state(0);
 let totalPages = $state(0);
-let posImage = 0;
+let posAudio = 0;
 
 const isFirst = $derived(pages <= 1);
 const isLast = $derived(pages >= totalPages);
 
-const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 
-async function loadImages(page = 1) {
-  const res = await fetch(`/api/album?page=${page}`);
+async function loadAudios(page = 1) {
+  const res = await fetch(`/api/audio?page=${page}`);
   const response = await res.json();
   if (response.success === 'failed') {
     goto('/');
@@ -52,13 +52,13 @@ async function loadImages(page = 1) {
   } else if (response.success === true) {
     pages = response.pagination.page;
     totalPages = response.pagination.totalPages;
-    images = response.images;
+    audios = response.audios;
     type = 2;
     load = true;
   }
 }
 
-export function handleShowAlbum(load = true) {
+export function handleShowAudios(load = true) {
   isDisplay = !isDisplay;
   files = null;
   const bodyStyle = window.getComputedStyle(document.body);
@@ -73,13 +73,13 @@ export function handleShowAlbum(load = true) {
   if (load) {
     load = false;
     type = 0;
-    loadImages(1);
+    loadAudios(1);
   }
 }
 
-function handleKeyShowAlbum(e:KeyboardEvent) {
+function handleKeyShowAudio(e:KeyboardEvent) {
   if (isDisplay && e.key === 'Escape') {
-    handleShowAlbum(false);
+    handleShowAudios(false);
   }
 }
 
@@ -92,12 +92,12 @@ async function handleChange(event: Event) {
       return;
     }
 
-    const new_image = `${crypto.randomUUID()}.${files[0].type.split('/')[1]}`;
+    const new_audio = `${crypto.randomUUID()}.${files[0].type.split('/')[1]}`;
     const formData = new FormData();
     formData.append('file', files[0]);
-    formData.append('fileName', new_image);
+    formData.append('fileName', new_audio);
     btnSave?.load(true);
-    const response = await fetch('/api/album', {
+    const response = await fetch('/api/audio', {
       method: 'POST',
       body: formData
     });
@@ -107,45 +107,45 @@ async function handleChange(event: Event) {
       return;
     }
     btnSave?.load(false);
-    images = result.images;
+    audios = result.audios;
   }
 }
 
-function handleSelectImage(index: number) {
-  handleShowAlbum(false);
-  onSelectImage(images[index].shadow_image);
+function handleSelectAudio(index: number) {
+  handleShowAudios(false);
+  onSelectAudio(audios[index].shadow_audio);
 }
 
 function handlePage(p: string) {
   pages = p === '-' ? pages - 1 : pages + 1;
-  loadImages(pages);
+  loadAudios(pages);
 }
 
 async function handleActionDelete(e: string) {
   if (e === 'accept') {
-    const imageId = images[posImage].image_id.toString();
-    const shadowImage = images[posImage].shadow_image;
-    const response = await fetch('/api/album', {
+    const audioId = audios[posAudio].audio_id.toString();
+    const shadowAudio = audios[posAudio].shadow_audio;
+    const response = await fetch('/api/audio', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ imageId, shadowImage })
+      body: JSON.stringify({ audioId, shadowAudio })
     });
     const result = await response.json();
     if (result.success === 'failed') {
       goto('/');
       return;
     }
-    loadImages(pages);
+    loadAudios(pages);
   }
 }
 
-function handleSelectImageDelete(index: number) {
-  posImage = index;
+function handleSelectAudioDelete(index: number) {
+  posAudio = index;
   dialog?.show({
     type: 'delete',
-    message: '¿Quieres eliminar la imagen?',
+    message: '¿Quieres eliminar el audio?',
   });
 }
 
@@ -158,46 +158,50 @@ onDestroy(()=>{
 </script>
 
 <Dialog bind:this={dialog} action={handleActionDelete} />
-<svelte:window onkeydown={handleKeyShowAlbum} />
+<svelte:window onkeydown={handleKeyShowAudio} />
 
 {#if isDisplay}
-  <input class="hidden" bind:this={fileInput} type="file" accept="image/*" onchange={handleChange} />
-  <div transition:fade={{ duration: 200 }} class="wr-add-image" onclick={()=>handleShowAlbum(false)} onkeyup={()=>{}} role="button" tabindex="0">
+  <input class="hidden" bind:this={fileInput} type="file" accept="audio/*" onchange={handleChange} />
+  <div transition:fade={{ duration: 200 }} class="wr-add-image" onclick={()=>handleShowAudios(false)} onkeyup={()=>{}} role="button" tabindex="0">
     <div class="win-add-image" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0">
       {#if load === false && type === 0}
         <div class="load-album">{@html refreshCCW}</div>
       {:else if load === false && type === 1}
         <p class="message">{message}</p>
       {:else if type === 2}
-        <BtnX onclick={()=>handleShowAlbum(false)} />
+        <BtnX onclick={()=>handleShowAudios(false)} />
         <div>
           <div class="container-btns-album">
-            <Title --color-title="#fff">Álbum de imágenes</Title>
-            {#if images.length !== 0}
+            <Title --color-title="#fff">Colección de audios</Title>
+            {#if audios.length !== 0}
               <div class="wrapper-btns-album">
                 <button class="btn-arrow-album" onclick={()=>handlePage('-')} disabled={isFirst}>{@html chevronLeft}</button>
                 <button class="btn-arrow-album" onclick={()=>handlePage('+')} disabled={isLast}>{@html chevronRight}</button>
               </div>
             {/if}
           </div>
-          {#if images.length === 0}
-            <div class="album-empty">No tienes imágenes</div>
+          {#if audios.length === 0}
+            <div class="album-empty">No tienes audios</div>
           {:else}
             <div class="images-wrapper">
               <div class="container-images">
-                {#each images as image, index}
-                  <div class="box-image" role="button" tabindex="0" onclick={()=>handleSelectImage(index)} onkeyup={()=>{}}>
-                    <div class="wr-box-btns-actions" onclick={(e)=>e.stopPropagation()} role="button" tabindex="0" onkeyup={()=>{}}>
-                      <button class="btn-action" onclick={()=>handleSelectImageDelete(index)}>{@html trash}</button>
+                {#each audios as audio, index}
+                  <div class="box-image" onclick={(e)=>e.stopPropagation()} role="button" tabindex="0" onkeyup={()=>{}}>
+                    <div>
+                      <audio class="audio" src="{root}/{audio.shadow_audio}" controls></audio>
+                      <div class="label-name-audio">{removeExtension(audio.name)}</div>
                     </div>
-                    <img class="image" src="{root}/{image.shadow_image}" alt="" />
+                    <div class="wr-box-btns-actions">
+                      <button class="btn-action" onclick={()=>handleSelectAudioDelete(index)}>{@html trash}</button>
+                      <button class="btn-action" onclick={()=>handleSelectAudio(index)}>{@html trash}</button>
+                    </div>
                   </div>
                 {/each}
               </div>
             </div>
           {/if}
           <div class="container-btns-image">
-            <Button icon={upload} bg="green" onclick={() => fileInput?.click()} bind:this={btnSave} align="auto">Subir imagen</Button>
+            <Button icon={upload} bg="green" onclick={() => fileInput?.click()} bind:this={btnSave} align="auto">Subir audio</Button>
           </div>
         </div>
       {/if}
@@ -206,15 +210,20 @@ onDestroy(()=>{
 {/if}
 
 <style>
+.label-name-audio {
+  font-family: var(--font-normal);
+  text-align: center;
+  color: #fff;
+  font-size: 0.9em;
+}
+.audio {
+  width: 100%;
+  height: 40px;
+}
 .wr-box-btns-actions {
   display: flex;
   flex-direction: column;
-  height: max-content;
-  position: absolute;
-  right: 0px;
-  top: 0;
-  padding: 5px;
-  gap: 1em;
+  gap: 0.4em;
 }
 .btn-action {
   width: 30px;
@@ -258,37 +267,31 @@ onDestroy(()=>{
   background: #8e7ef3;
 }
 .images-wrapper {
-  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
 }
 .container-images {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1em;
+  gap: 0.5em;
   margin: 1em 0;
-  max-height: 310px;
-  overflow: hidden;
+  max-height: 240px;
   overflow-y: auto;
-  padding: 0.5em;
   background: #806def;
   border-radius: 8px;
+  border: 0.5em solid #806def;
 }
 .box-image {
   width: 100%;
-  height: 250px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 30px;
   border: 1px solid #312767;
   padding: 0.5em;
   border-radius: 8px;
   background: #5443b5;
-  cursor: pointer;
-  position: relative;
-}
-.image {
-  width: 100%;
-  object-fit: scale-down;
-}
-.hidden {
-  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
 }
 .album-empty {
   padding: 1em;

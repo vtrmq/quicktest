@@ -19,9 +19,40 @@
   --border-item: #d8e1fb;
   --border-box-synt: #a5b3b9;
   --highlight-synt: #f2f8fb;
-  --bg-header-synt: #ededed;
+  --bg-header-synt: #62a5ad;
   --color-svg-synt: #0e0e0e;
-  --bg-btn-disabled-synt: #dfdfdf;
+  --bg-btn-disabled-synt: #a7e6ed;
+  --color-svg-synt-disabled: #497d83;
+  --bg-box-sub-opt: #e6eef5;
+  --bg-box-data: #f3f3fd;
+
+/* ====================== */
+/* ********************************* */
+  --bg-sp: #6868a9;
+  --border-word-select: #ffffff;
+  --bg-a: #03a9f4;
+  --color-a: #fff;
+  --bg-b: #d78100;
+  --color-b: #fff;
+  --bg-c: #4caf50;
+  --color-c: #fff;
+  --bg-d: #8f16a4;
+  --color-d: #fff;
+  --bg-e: #bc0040;
+  --color-e: #fff;
+  --bg-f: #ff00ff;
+  --color-f: #fff;
+  --bg-g: #7b68ee;
+  --color-g: #fff;
+  --bg-h: #c661c6;
+  --color-h: #fff;
+  --bg-i: #2b7fa8;
+  --color-i: #fff;
+  --bg-j: #884141;
+  --color-j: #fff;
+/* ====================== */
+
+
 }
 
 em {
@@ -41,6 +72,9 @@ ol {
 }
 .bold {
   font-weight: 700;
+}
+.pointer {
+  cursor: pointer;
 }
 
 @media(min-width: 700px) {

@@ -1,11 +1,11 @@
 <script lang="ts">
-import { FOLDER_IMAGES, R2_DOMAIN, ALFABETO } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
 //import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
-import { Select, Button, Toast, TextArea, Input, Album, OptionSelect, Dialog, HeaderExercise } from '$lib/components';
+import { Select, Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
 import { barajarArray } from '$lib/utils/';
 
@@ -32,23 +32,29 @@ type questionsTestFS = {
   words: Words[];
   value: number;
 };
+type Option = {
+  option: string;
+};
 
 let { items, handleActivity, topic, activity } = $props();
 const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
 let viewBox = $state(true); // false
 let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
 let album = $state<Album | null>(null);
+let audio = $state<Audios | null>(null);
 
 let stateDelete = $state(''); // itemExercise, itemTest, itemAudio
 let stateExercise = $state('new'); // Si la actividad es nuevo (new) o si se está actualizando (update)
 let posImage = 'none';
 let posItem = -1;
-let title = $state('');
+let question = $state('');
 let content = $state('');
-let optionSuboptions = $state([{option: ''}]);
+//let optionSuboptions = $state([{option: ''}]);
+let optionSuboptions: Option[] = $state([]);
 let leftWords = $state([{word: ''}]);
 let rightWords = $state([{word: ''}]);
 let arrayQuestionsTest: questionsTest[] = $state([]);
@@ -58,6 +64,7 @@ let indexExercise = -1;
 let posItemPoint = $state(-1);
 let itemResaltado = $state(-1);
 let itemDelete = -1;
+//let selection_options = $state('');
 
 let arrayQuestionsTestFS: questionsTestFS[] = $state([]);
 let questionTestFS: questionsTestFS = $state( { text: '', image: '', answersFS: [], words: [], value: 0 })
@@ -107,9 +114,10 @@ function reset() {
   posImage = 'none';
   posItem = -1;
   selectType = '';
-  title = '';
+  question = '';
   content = '';
-  optionSuboptions = [{option: ''}];
+  //optionSuboptions = [{option: ''}];
+  optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
   answersTest = [{resp: '', image: '', rst: false, rss: false }];
@@ -167,19 +175,481 @@ function handlePlusMatchWords(box: string) {
   }
 }
 
+
+// ==================================================
+
+let arrWords = [];
+function word_simple(w: string) {
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+    sign: 0,
+  });
+}
+
+function foundStart(charF: string, w: string) {
+  arrWords.push({
+    word: charF, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+  });
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    sign: 1,
+    errors: 0,
+  });
+}
+
+function foundEnd(w: string, char: string) {
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    sign: 2,
+    errors: 0,
+  });
+  arrWords.push({
+    word: char, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+  });
+}
+
+function foundStartChar(charF: string, w: string, sig: string) {
+  arrWords.push({
+    word: charF, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+  });
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+    sign: 4,
+  });
+  arrWords.push({
+    word: sig, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    color: "", 
+    resp_color: "", 
+    selection_word: -1, 
+    errors: 0,
+  });
+}
+
+function splitWordsSelect() {
+  arrWords = [];
+  let chars = [",", ".", ";", ":", "?", "¿", "¡", "!", "(", ")", "[", "]"];
+  let pa = content.split("\n");
+  for (let j = 0; j < pa.length; j++) {
+
+    let arrWord = pa[j].split(" ");
+    for (let i = 0; i < arrWord.length; i++) {
+
+      let char = arrWord[i].slice(-1);
+      const found = chars.find(c => c === char);
+
+      let charF = arrWord[i].slice(0, 1);
+      const foundF = chars.find(c => c === charF);
+
+      let enter = false;
+      if (found !== undefined) {
+        let chr = arrWord[i].slice(arrWord[i].length - 2, -1);
+        const f = chars.find(c => c === chr);
+        if (f !== undefined) {
+          enter = true;
+        }
+      }
+
+      if (enter === false) {
+        if (found === undefined && foundF === undefined) {
+          word_simple(arrWord[i]);
+        } else {
+          if (foundF !== undefined) {
+            if (foundF === '(' || foundF === '[') {
+              let wr = arrWord[i].slice(1, arrWord[i].length);
+              wr = wr.slice(0, wr.length - 1)
+              let sig = arrWord[i].slice(-1);
+              const f = chars.find(c => c === sig);
+              if (f === undefined) {
+                foundStart(charF, arrWord[i].slice(1, arrWord[i].length));
+              } else {
+                foundStartChar(charF, wr, sig);
+              }
+            } else {
+              foundStart(charF, arrWord[i].slice(1, arrWord[i].length));
+            }
+          } else if (found !== undefined) {
+            foundEnd(arrWord[i].slice(0, -1), char);
+          }
+        }
+      } else {
+        // Si hay dos signos juntos. Ej: porque?.
+        let chr = arrWord[i].slice(arrWord[i].length - 2, -1);
+        arrWords.push({
+          word: arrWord[i].slice(0, -2), 
+          type: "w", 
+          resp: false, 
+          value: false, 
+          color: "", 
+          resp_color: "", 
+          selection_word: -1, 
+          sign: 3,
+          errors: 0,
+        });
+        arrWords.push({
+          word: chr, 
+          type: "s", 
+          resp: false, 
+          value: false, 
+          color: "", 
+          resp_color: "", 
+          selection_word: -1, 
+          errors: 0,
+        });
+        arrWords.push({
+          word: char, 
+          type: "s", 
+          resp: false, 
+          value: false, 
+          color: "", 
+          resp_color: "", 
+          selection_word: -1, 
+          errors: 0,
+        });
+      }
+
+    }
+    arrWords.push({word: "\n", type: "x"});
+  }
+
+  const act = {
+    exercise: {
+      words: arrWords,
+      question,
+      content,
+      //selection_options,
+      optionSuboptions,
+    },
+    value: 0,
+    type: "select",
+  };
+  return act;
+}
+
+function word_simple_character(w: string) {
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+    sign: 0,
+  });
+}
+
+function foundStartCharacter(charF: string, w: string) {
+  arrWords.push({
+    word: charF, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+  });
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    sign: 1,
+    errors: 0,
+  });
+}
+
+function foundEndCharacter(w: string, char: string) {
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    sign: 2,
+    errors: 0,
+  });
+  arrWords.push({
+    word: char, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+  });
+}
+
+function foundStartCharCharacter(charF: string, w: string, sig: string) {
+  arrWords.push({
+    word: charF, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+  });
+  arrWords.push({
+    word: w, 
+    type: "w", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+    sign: 4,
+  });
+  arrWords.push({
+    word: sig, 
+    type: "s", 
+    resp: false, 
+    value: false, 
+    selection_word: "", 
+    errors: 0,
+  });
+}
+
+function splitWordsCharacter() {
+  arrWords = [];
+  let chars = [",", ".", ";", ":", "?", "¿", "¡", "!", "(", ")", "[", "]"];
+  let pa = content.split("\n");
+  for (let j = 0; j < pa.length; j++) {
+
+    let arrWord = pa[j].split(" ");
+    for (let i = 0; i < arrWord.length; i++) {
+
+      let char = arrWord[i].slice(-1);
+      const found = chars.find(c => c === char);
+
+      let charF = arrWord[i].slice(0, 1);
+      const foundF = chars.find(c => c === charF);
+
+      let enter = false;
+      if (found !== undefined) {
+        let chr = arrWord[i].slice(arrWord[i].length - 2, -1);
+        const f = chars.find(c => c === chr);
+        if (f !== undefined) {
+          enter = true;
+        }
+      }
+
+      if (enter === false) {
+        if (found === undefined && foundF === undefined) {
+          word_simple_character(arrWord[i]);
+        } else {
+          if (foundF !== undefined) {
+            if (foundF === '(' || foundF === '[') {
+              let wr = arrWord[i].slice(1, arrWord[i].length);
+              wr = wr.slice(0, wr.length - 1)
+              let sig = arrWord[i].slice(-1);
+              const f = chars.find(c => c === sig);
+              if (f === undefined) {
+                foundStartCharacter(charF, arrWord[i].slice(1, arrWord[i].length));
+              } else {
+                foundStartCharCharacter(charF, wr, sig);
+              }
+            } else {
+              foundStartCharacter(charF, arrWord[i].slice(1, arrWord[i].length));
+            }
+          } else if (found !== undefined) {
+            foundEndCharacter(arrWord[i].slice(0, -1), char);
+          }
+        }
+      } else {
+        // Si hay dos signos juntos. Ej: porque?.
+        let chr = arrWord[i].slice(arrWord[i].length - 2, -1);
+        arrWords.push({
+          word: arrWord[i].slice(0, -2), 
+          type: "w", 
+          resp: false, 
+          value: false, 
+          selection_word: "", 
+          sign: 3,
+          errors: 0,
+        });
+        arrWords.push({
+          word: chr, 
+          type: "s", 
+          resp: false, 
+          value: false, 
+          selection_word: "", 
+          errors: 0,
+        });
+        arrWords.push({
+          word: char, 
+          type: "s", 
+          resp: false, 
+          value: false, 
+          selection_word: "", 
+          errors: 0,
+        });
+      }
+
+    }
+    arrWords.push({word: "\n", type: "x"});
+  }
+
+  const act = {
+    exercise: {
+      words: arrWords,
+      question,
+      content,
+      optionSuboptions,
+    },
+    value: 0,
+    type: "character",
+  };
+  return act;
+}
+
+
+// ==================================================
+
 function handleDone() {
-  if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
+
+  // SELECT
+  // ==================================================
+
+  if (sheet === 'select') {
+
+    if (question.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe la pregunta',
+        time: 3000
+      });
+      return;
+    }
+
+    if (content.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe el contenido',
+        time: 3000
+      });
+      return;
+    }
+
+    optionSuboptions = optionSuboptions.filter(item => item.option !== "");
+    if (optionSuboptions.length === 1) {
+      toast?.view({
+        type: 'fail',
+        message: 'Debes tener más de una opción',
+        time: 4000
+      });
+      return;
+    } else if (optionSuboptions.length === 0) {
+      //selection_options = '';
+      optionSuboptions = [];
+    }
+
+    const exercise = splitWordsSelect();
+    console.log(exercise)
+
+    if (stateExercise === 'new') {
+      items.push(exercise);
+    } else if (stateExercise === 'update') {
+      items[indexExercise].exercise = exercise.exercise;
+    }
+
+  // TEST
+  // ==================================================
+
+  } else if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
+
     if (stateExercise === 'new') {
       items.push({type:'test', points: arrayQuestionsTest});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTest;
     }
+
+  // TEST-FS
+  // ==================================================
+
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
     if (stateExercise === 'new') {
       items.push({type:'test-fs', points: arrayQuestionsTestFS});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTestFS;
     }
+
+  // CHARACTER
+  // ==================================================
+
+  } else if (sheet === 'character') {
+
+    if (question.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe la pregunta',
+        time: 3000
+      });
+      return;
+    }
+
+    if (content.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe el contenido',
+        time: 3000
+      });
+      return;
+    }
+
+    const exercise = splitWordsCharacter();
+
+    if (stateExercise === 'new') {
+      items.push(exercise);
+    } else if (stateExercise === 'update') {
+      items[indexExercise].exercise = exercise.exercise;
+    }
+
   } else if (sheet === 'morphosyntax') {
     const exercise = {
       content, 
@@ -197,6 +667,7 @@ function handleDone() {
       items[indexExercise].exercise = exercise;
     }
   }
+
   activityLocalstore.set(items);
   console.log($state.snapshot(items));
   sheet = 'ejercises';
@@ -294,10 +765,16 @@ function handleActionShowWinItem(index: number) {
 }
 
 function handleEditActivity(index: number) {
+  items = activityLocalstore.get();
   indexExercise = index;
   const type = items[index].type;
   stateExercise = 'update';
-  if (type === 'test') {
+  if (type === 'select') {
+    question = items[index].exercise.question;
+    content = items[index].exercise.content;
+    optionSuboptions = items[index].exercise.optionSuboptions;
+    sheet = 'select';
+  } else if (type === 'test') {
     arrayQuestionsTest = items[index].points;
     sheet = 'test';
   } else if (type === 'test-fs') {
@@ -410,10 +887,25 @@ function handleActionShowWinItemFS(index: number) {
   });
 }
 
+let posAudio = '';
+async function handleAudioSelect(_audio: string) {
+  let localText: string = `${root_audio}/${_audio}`;
+  if (posAudio === 'audio-fs') {
+    console.log(localText)
+  }
+}
+
+function handleUploadAudio() {
+  console.log(true)
+  posAudio = 'audio-fs';
+  audio?.handleShowAudios();
+}
+
 </script>
 
 <Toast bind:this={toast} />
 <Album bind:this={album} onSelectImage={handleImageSelect} />
+<Audios bind:this={audio} onSelectAudio={handleAudioSelect} />
 <Dialog bind:this={dialog} action={handleActionDelete} />
 
 <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
@@ -427,12 +919,20 @@ function handleActionShowWinItemFS(index: number) {
     {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
-        <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
       </div>
     {:else if sheet === 'morphosyntax'}
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
-        <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
       </div>
     {:else if sheet === 'test'}
       <div>
@@ -483,7 +983,7 @@ function handleActionShowWinItemFS(index: number) {
       {#each items as item, index}
         <div class="row-link-activity" class:resaltar={itemResaltado === index}>
           <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-            <div class="box-item-link">{index + 1}</div> <span class="label-activity" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
+            <div class="box-item-link">{index + 1}</div> <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
           </button>
           <OptionSelect>
             <button onclick={()=>handleEditActivity(index)}>{@html pencil} <span>Editar</span></button>
@@ -500,10 +1000,12 @@ function handleActionShowWinItemFS(index: number) {
           <option value="select">Seleccionar palabras</option>
           <option value="character">Colocar palabras</option>
           <option value="match">Relacionar conceptos</option>
-          <option value="test-fs">Escuchar audio y construir oración</option>
           <option value="point-out">Señalar partes</option>
-          <option value="test">Test</option>
+          <option value="test-fs">Escuchar audio y formar frase</option>
           <option value="morphosyntax">Morfosintaxis</option>
+          <option value="test">Examen</option>
+          <option value="test">Examen PDF</option>
+          <option value="test">Comprensión de lectura</option>
         </Select>
         <div class="wr-cancel-intro">
           <Button bg="gray" onclick={handleCancelUpdate}>Cancelar</Button>
@@ -514,27 +1016,29 @@ function handleActionShowWinItemFS(index: number) {
     {:else if sheet === 'select'}
 
       <p class="label-type">Seleccionar palabras</p>
-      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
-      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" />
-      <div class="container-type-content">
+      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
+      <div class="container-inputs">
         {#each optionSuboptions as op, i}
           <Input 
             type="text" 
-            label="Palabra {i + 1}" bind:value={op.option} requested={false} />
+            label="Palabra {i + 1}" bind:value={op.option} requested={false} isError={false} />
         {/each}
       </div>
-      <Button onclick={handlePlusOption}>Adicionar palabra</Button>
+      <div class="wr-btn-add">
+        <Button onclick={handlePlusOption}>Adicionar palabra</Button>
+      </div>
 
     {:else if sheet === 'character'}
 
       <p class="label-type">Colocar palabras</p>
-      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
-      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" />
+      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
 
     {:else if sheet === 'match'}
 
       <p class="label-type">Relacionar conceptos</p>
-      <TextArea name="def" label="Pregunta" bind:value={title} --height-text-area="80px" />
+      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
       <div class="wr-words-match">
         <div class="header-match">
           <h1 class="title-wd">Palabras del lado izquierdo</h1>
@@ -542,7 +1046,7 @@ function handleActionShowWinItemFS(index: number) {
         </div>
         <div>
           {#each leftWords as ws}
-            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} />
+            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
           {/each}
         </div>
       </div>
@@ -553,7 +1057,7 @@ function handleActionShowWinItemFS(index: number) {
         </div>
         <div>
           {#each rightWords as ws}
-            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} />
+            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
           {/each}
         </div>
       </div>
@@ -561,7 +1065,7 @@ function handleActionShowWinItemFS(index: number) {
     {:else if sheet === 'morphosyntax'}
 
       <p class="label-type">Morfosintaxis</p>
-      <TextArea name="def" label="Escribe una oración" bind:value={content} --height-text-area="80px" />
+      <TextArea name="def" label="Escribe una oración" bind:value={content} --height-text-area="80px" isError={false} />
 
     {:else if sheet === 'test'}
 
@@ -579,6 +1083,7 @@ function handleActionShowWinItemFS(index: number) {
               </OptionSelect>
             </div>
           </div>
+
           <div class="question">{qs.question}</div>
 
           {#if qs.images.length !== 0}
@@ -628,7 +1133,7 @@ function handleActionShowWinItemFS(index: number) {
         <button class="btn-view-album" onclick={handleUpload}>Imagen</button>
       </div>
 
-      <TextArea name="def" label="Pregunta" bind:value={questionTest.question} --height-text-area="80px" />
+      <TextArea name="def" label="Pregunta" bind:value={questionTest.question} --height-text-area="80px" isError={false} />
 
       {#if questionTest.images.length !== 0}
         <div class="container-images-question">
@@ -730,10 +1235,12 @@ function handleActionShowWinItemFS(index: number) {
       {/if}
 
       <div class="wr-hd">
+        <button class="btn-view-album right-btn" onclick={handleUploadAudio}>Audio</button>
         <button class="btn-view-album" onclick={handleUploadImageItemFS}>Imagen</button>
       </div>
 
-      <TextArea name="def" label="Texto" bind:value={questionTestFS.text} --height-text-area="80px" />
+      <TextArea name="def" label="Texto" bind:value={questionTestFS.text} --height-text-area="80px" isError={false} />
+      <AudioRecorder />
 
     {/if}
   </div>
@@ -751,6 +1258,20 @@ function handleActionShowWinItemFS(index: number) {
     color: #fff;
     stroke-width: 3px;
   }
+}
+.right-btn {
+  right: 70px;
+}
+.container-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+.wr-btn-add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em 0;
 }
 .wr-container-box-fs {
   display: flex;
@@ -791,13 +1312,14 @@ function handleActionShowWinItemFS(index: number) {
   font-size: 1.1em;
   font-weight: 500;
 }
-.label-activity {
+.label-activity-exercise {
   font-family: var(--font-normal);
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
-.label-activity.resaltar {
+.label-activity-exercise.resaltar {
   font-weight: 900;
   font-style: italic;
+  font-size: 1.5em;
 }
 .wr-opt-select {
   right: 0;
@@ -806,17 +1328,21 @@ function handleActionShowWinItemFS(index: number) {
 .row-link-activity {
   display: flex;
   width: 100%;
-  background: #f9f9f9;
+  background: #e1f1f9;
   align-items: center;
   padding-right: 0.3em;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  /*box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;*/
   border-radius: 6px;
+  transition: var(--transition);
+}
+.row-link-activity:hover {
+  background: #cee8f5;
 }
 .row-link-activity.resaltar {
   background: #56d3ce;
 }
 .box-item-link {
-  height: 48px;
+  height: 52px;
   width: 40px;
   display: flex;
   justify-content: center;
@@ -824,6 +1350,7 @@ function handleActionShowWinItemFS(index: number) {
   background: #94ebe8;
   font-family: var(--font-normal);
   font-weight: 900;
+  font-size: 2em;
 }
 .link-activity {
   display: flex;
@@ -939,7 +1466,7 @@ function handleActionShowWinItemFS(index: number) {
   margin: 1em 0;
   display: flex;
   flex-direction: column;
-  gap: 3em;
+  gap: 2.3em;
 }
 .wr-input-item {
   position: relative;
@@ -1106,7 +1633,7 @@ function handleActionShowWinItemFS(index: number) {
   background: azure;
   position: fixed;
   top: 0;
-  right: -510px;
+  right: -530px;
   transition: 0.4s;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }

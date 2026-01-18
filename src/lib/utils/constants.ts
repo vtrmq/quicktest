@@ -6,6 +6,7 @@ export const DOMAIN = "https://192.168.1.3:5173";
 
 export const FOLDER_USER_PHOTOS = 'user-photos';
 export const FOLDER_IMAGES = 'images';
+export const FOLDER_AUDIOS = 'audios';
 export const R2_DOMAIN = "https://pub-5704f7fdaf98447e9d7b7ba7db62af68.r2.dev"
 
 export const CLIENTAUTHINFO = 'client-auth-info';
