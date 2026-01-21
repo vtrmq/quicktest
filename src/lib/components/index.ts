@@ -54,3 +54,6 @@ export { default as Audios } from './ui/Audios.svelte';
 export { default as SelectEdit } from './ui/SelectEdit.svelte';
 export { default as CharacterEdit } from './ui/CharacterEdit.svelte';
 export { default as MorphosyntaxEdit } from './ui/MorphosyntaxEdit.svelte';
+export { default as TestFsEdit } from './ui/TestFsEdit.svelte';
+export { default as TestEdit } from './ui/TestEdit.svelte';
+export { default as MatchEdit } from './ui/MatchEdit.svelte';

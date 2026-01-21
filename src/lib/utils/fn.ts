@@ -113,17 +113,17 @@ export const colorSynt = (numb: number) => {
     case 9:
     case 0: color = '#4ed573'; break;
     case 10:
-    case 1: color = '#ffb342'; break;
+    case 1: color = '#edb305'; break;
     case 11:
     case 2: color = '#22baff'; break;
     case 12:
     case 3: color = '#ff6c61'; break;
     case 13:
-    case 4: color = '#ebd726'; break;
+    case 4: color = '#8090fb'; break;
     case 14:
     case 5: color = '#d56ce7'; break;
     case 15:
-    case 6: color = '#92ebe4'; break;
+    case 6: color = '#0a65a1'; break;
     case 16:
     case 7: color = '#8cb2c5'; break;
     case 17:
@@ -185,4 +185,17 @@ export function removeExtension(filename: string): string {
   const lastDotIndex = filename.lastIndexOf('.');
   if (lastDotIndex === -1) return filename; // Sin extensión
   return filename.substring(0, lastDotIndex);
+}
+
+export function corregirIEnFrase(frase: string): string {
+  return frase
+    .split(' ')
+    .map(palabra => {
+      // Verifica si la palabra es "i" o una contracción como "i'm", "i'll", etc.
+      if (/^i('|’)?(m|ve|ll|d|)?$/i.test(palabra)) {
+        return palabra.replace(/^i/i, 'I');
+      }
+      return palabra.toLowerCase();
+    })
+    .join(' ');
 }

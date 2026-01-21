@@ -1,5 +1,5 @@
 <script lang="ts">
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
 //import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
@@ -14,6 +14,7 @@ type AnswersTest = {
   image: string;
   rst: boolean;
   rss: boolean;
+  value: number;
 };
 type questionsTest = {
   question: string;
@@ -28,6 +29,7 @@ type Words = {
 type questionsTestFS = {
   text: string;
   image: string;
+  audio: string;
   answersFS: Words[];
   words: Words[];
   value: number;
@@ -58,8 +60,8 @@ let optionSuboptions: Option[] = $state([]);
 let leftWords = $state([{word: ''}]);
 let rightWords = $state([{word: ''}]);
 let arrayQuestionsTest: questionsTest[] = $state([]);
-let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false }]);
-let questionTest: questionsTest = $state( { question: '', images: [], answers: [], value: 0 })
+let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false, value: 0 }]);
+let questionTest: questionsTest = $state( { question: '', images: [], answers: [], value: 1 })
 let indexExercise = -1;
 let posItemPoint = $state(-1);
 let itemResaltado = $state(-1);
@@ -67,7 +69,7 @@ let itemDelete = -1;
 //let selection_options = $state('');
 
 let arrayQuestionsTestFS: questionsTestFS[] = $state([]);
-let questionTestFS: questionsTestFS = $state( { text: '', image: '', answersFS: [], words: [], value: 0 })
+let questionTestFS: questionsTestFS = $state( { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 })
 
 /*
 let questionTest: questionsTest = $state(
@@ -116,12 +118,12 @@ function reset() {
   selectType = '';
   question = '';
   content = '';
-  //optionSuboptions = [{option: ''}];
   optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
-  answersTest = [{resp: '', image: '', rst: false, rss: false }];
-  questionTestFS = { text: '', image: '', answersFS: [], words: [], value: 0 };
+  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
+  questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
+  //optionSuboptions = [{option: ''}];
 }
 
 function handleViewBoxExercise() {
@@ -145,6 +147,23 @@ function handleIntro() {
       });
     return;
   }
+  //reset();
+
+  stateDelete = '';
+  posItemPoint = -1;
+  indexExercise = -1;
+  stateExercise = 'new';
+  posImage = 'none';
+  posItem = -1;
+  question = '';
+  content = '';
+
+  optionSuboptions = [];
+  leftWords = [{word: ''}];
+  rightWords = [{word: ''}];
+  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
+  questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
+
   stateExercise = 'new';
   arrayQuestionsTest = [];
   sheet = selectType;
@@ -555,7 +574,6 @@ function handleDone() {
 
   // SELECT
   // ==================================================
-
   if (sheet === 'select') {
 
     if (question.trim().length === 0) {
@@ -590,7 +608,6 @@ function handleDone() {
     }
 
     const exercise = splitWordsSelect();
-    console.log(exercise)
 
     if (stateExercise === 'new') {
       items.push(exercise);
@@ -598,30 +615,53 @@ function handleDone() {
       items[indexExercise].exercise = exercise.exercise;
     }
 
+  // MATCH
+  // ==================================================
+  } else if (sheet === 'match' && (leftWords.length !== 0 && rightWords.length !== 0)) {
+
+    const exercise = {
+      value: 0,
+      exercise: {
+        question, 
+        leftWords, 
+        rightWords,
+        wordConnections: [],
+        wordConnectionsStudent: [],
+        wordConnectionsErrors: [],
+      },
+      type: 'match'
+    }
+    console.log(stateExercise, indexExercise)
+    console.log(exercise)
+
+    if (stateExercise === 'new') {
+      items.push(exercise);
+    } else if (stateExercise === 'update') {
+      //items[indexExercise] = exercise;
+    }
+
   // TEST
   // ==================================================
-
   } else if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
 
     if (stateExercise === 'new') {
-      items.push({type:'test', points: arrayQuestionsTest});
+      items.push({type:'test', points: arrayQuestionsTest, value: 0});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTest;
     }
 
   // TEST-FS
   // ==================================================
-
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
+
     if (stateExercise === 'new') {
-      items.push({type:'test-fs', points: arrayQuestionsTestFS});
+      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTestFS;
     }
 
   // CHARACTER
   // ==================================================
-
   } else if (sheet === 'character') {
 
     if (question.trim().length === 0) {
@@ -650,8 +690,11 @@ function handleDone() {
       items[indexExercise].exercise = exercise.exercise;
     }
 
+  // MORPHOSYNTAX
+  // ==================================================
   } else if (sheet === 'morphosyntax') {
     const exercise = {
+      value: 0,
       content, 
       arrWords: [], 
       syntax: {
@@ -676,8 +719,8 @@ function handleDone() {
 
 function handleAddPoint() {
   sheet = 'new-point';
-  answersTest = [{resp: '', image: '', rst: false, rss: false }];
-  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false }], value: 0 };
+  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
+  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0 }], value: 1 };
   posItemPoint = -1;
 }
 
@@ -687,6 +730,7 @@ function handleDonePoint() {
   } else if (indexExercise !== -1 && posItemPoint !== -1) {
     arrayQuestionsTest[posItemPoint] = questionTest;
   }
+  //console.log($state.snapshot(arrayQuestionsTest))
   sheet = 'test';
 }
 
@@ -715,7 +759,7 @@ function handleRemoveImageItem(index: number) {
 }
 
 function handleAddItem() {
-  questionTest.answers.push({resp: '', image: '', rst: false, rss: false });
+  questionTest.answers.push({resp: '', image: '', rst: false, rss: false, value: 0 });
 }
 
 function handleUploadImageItem(index: number) {
@@ -774,6 +818,10 @@ function handleEditActivity(index: number) {
     content = items[index].exercise.content;
     optionSuboptions = items[index].exercise.optionSuboptions;
     sheet = 'select';
+  } else if (type === 'character') {
+    question = items[index].exercise.question;
+    content = items[index].exercise.content;
+    sheet = 'character';
   } else if (type === 'test') {
     arrayQuestionsTest = items[index].points;
     sheet = 'test';
@@ -795,6 +843,7 @@ function handleCancelUpdate() {
 function handleEditTestPoint(point: number) {
   posItemPoint = point;
   questionTest = arrayQuestionsTest[posItemPoint]
+  console.log($state.snapshot(questionTest))
   sheet = 'new-point';
 }
 
@@ -822,7 +871,7 @@ async function handleActionDelete(e: string) {
 
 function handleAddPointFS() {
   sheet = 'new-point-fs';
-  questionTestFS = { text: '', image: '', answersFS: [], words: [], value: 0 };
+  questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
   posItemPoint = -1;
 }
 
@@ -862,13 +911,10 @@ function handleDonePointFS() {
   //console.log('--> 2', posItemPoint)
 
   if ((indexExercise === -1 || indexExercise !== -1) && posItemPoint === -1) {
-    console.log(1)
     arrayQuestionsTestFS.push(questionTestFS);
   } else if (indexExercise !== -1 && posItemPoint !== -1) {
-    console.log(2)
     arrayQuestionsTestFS[posItemPoint] = questionTestFS;
   }
-  console.log($state.snapshot(arrayQuestionsTestFS));
   sheet = 'test-fs';
 }
 
@@ -887,18 +933,17 @@ function handleActionShowWinItemFS(index: number) {
   });
 }
 
-let posAudio = '';
 async function handleAudioSelect(_audio: string) {
-  let localText: string = `${root_audio}/${_audio}`;
-  if (posAudio === 'audio-fs') {
-    console.log(localText)
-  }
+  let localAudio: string = `${root_audio}/${_audio}`;
+  questionTestFS.audio = localAudio;
 }
 
 function handleUploadAudio() {
-  console.log(true)
-  posAudio = 'audio-fs';
   audio?.handleShowAudios();
+}
+
+function handleRemoveAudioQuestionFS() {
+  questionTestFS.audio = '';
 }
 
 </script>
@@ -979,19 +1024,19 @@ function handleUploadAudio() {
         <h1 class="topic">{topic}</h1>
         <h2 class="activity">{activity}</h2>
       </div>
-
-      {#each items as item, index}
-        <div class="row-link-activity" class:resaltar={itemResaltado === index}>
-          <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-            <div class="box-item-link">{index + 1}</div> <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
-          </button>
-          <OptionSelect>
-            <button onclick={()=>handleEditActivity(index)}>{@html pencil} <span>Editar</span></button>
-            <button onclick={()=>handleActionShowWin(index)}>{@html trash} <span>Eliminar</span></button>
-          </OptionSelect>
-        </div>
-      {/each}
-
+      <div class="row-items">
+        {#each items as item, index}
+          <div class="row-link-activity" class:resaltar={itemResaltado === index}>
+            <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
+              <div class="box-item-link">{index + 1}</div> <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
+            </button>
+            <OptionSelect>
+              <button onclick={()=>handleEditActivity(index)}>{@html pencil} <span>Editar</span></button>
+              <button onclick={()=>handleActionShowWin(index)}>{@html trash} <span>Eliminar</span></button>
+            </OptionSelect>
+          </div>
+        {/each}
+      </div>
     {:else if sheet === 'type'}
 
       <div class="sheet-type">
@@ -1009,21 +1054,25 @@ function handleUploadAudio() {
         </Select>
         <div class="wr-cancel-intro">
           <Button bg="gray" onclick={handleCancelUpdate}>Cancelar</Button>
-          <Button onclick={handleIntro}>Entrar</Button>
+          <Button onclick={handleIntro}>Crear</Button>
         </div>
       </div>
 
     {:else if sheet === 'select'}
 
       <p class="label-type">Seleccionar palabras</p>
-      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
-      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
-      <div class="container-inputs">
-        {#each optionSuboptions as op, i}
-          <Input 
-            type="text" 
-            label="Palabra {i + 1}" bind:value={op.option} requested={false} isError={false} />
-        {/each}
+      <div class="wr-space">
+        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+        <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
+      </div>
+      <div class="container-inputs pd-1-0">
+        <div class="wr-space">
+          {#each optionSuboptions as op, i}
+            <Input 
+              type="text" 
+              label="Palabra {i + 1}" bind:value={op.option} requested={false} isError={false} />
+          {/each}
+        </div>
       </div>
       <div class="wr-btn-add">
         <Button onclick={handlePlusOption}>Adicionar palabra</Button>
@@ -1032,30 +1081,32 @@ function handleUploadAudio() {
     {:else if sheet === 'character'}
 
       <p class="label-type">Colocar palabras</p>
-      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
-      <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
+      <div class="wr-space">
+        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+        <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
+      </div>
 
     {:else if sheet === 'match'}
 
       <p class="label-type">Relacionar conceptos</p>
       <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
       <div class="wr-words-match">
-        <div class="header-match">
-          <h1 class="title-wd">Palabras del lado izquierdo</h1>
-          <button class="add-word" onclick={()=>handlePlusMatchWords('left')}>Adicionar</button>
-        </div>
-        <div>
-          {#each leftWords as ws}
-            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
-          {/each}
-        </div>
+      <div class="header-match">
+        <h1 class="title-wd">Palabras del lado izquierdo</h1>
+        <button class="add-word" onclick={()=>handlePlusMatchWords('left')}>Adicionar</button>
       </div>
+      <div class="wr-space">
+        {#each leftWords as ws}
+          <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
+        {/each}
+      </div>
+    </div>
       <div class="wr-words-match">
         <div class="header-match">
           <h1 class="title-wd">Palabras del lado derecho</h1>
           <button class="add-word" onclick={()=>handlePlusMatchWords('right')}>Adicionar</button>
         </div>
-        <div>
+        <div class="wr-space">
           {#each rightWords as ws}
             <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
           {/each}
@@ -1084,6 +1135,7 @@ function handleUploadAudio() {
             </div>
           </div>
 
+          <div class="wr-value-point">Valor: {qs.value}</div>
           <div class="question">{qs.question}</div>
 
           {#if qs.images.length !== 0}
@@ -1103,7 +1155,6 @@ function handleUploadAudio() {
 
           <div class="container-items-answer">
             {#each qs.answers as answer, index}
-
               <div class="container-answer" onclick={()=>handleSelectItem(point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point={answer.rst}>
                 <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
                 {#if answer.image.length !== 0}
@@ -1130,6 +1181,21 @@ function handleUploadAudio() {
       {/if}
 
       <div class="wr-hd">
+        <div class="wr-select-value">
+          Valor: 
+          <select class="select-value" bind:value={questionTest.value}>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+            <option value={4}>4</option>
+            <option value={5}>5</option>
+            <option value={6}>6</option>
+            <option value={7}>7</option>
+            <option value={8}>8</option>
+            <option value={9}>9</option>
+            <option value={10}>10</option>
+          </select>
+        </div>
         <button class="btn-view-album" onclick={handleUpload}>Imagen</button>
       </div>
 
@@ -1202,10 +1268,16 @@ function handleUploadAudio() {
               </div>
             {/if}
 
+            {#if qs.audio.length !== 0}
+              <div class="wr-audio-edit">
+                <audio class="audio" src={qs.audio} controls></audio>
+              </div>
+            {/if}
+
             {#if qs.words.length !== 0}
               <div class="container-answer-fs">
                 {#each qs.words as word}
-                  <button class="answer-fs">{word.word}</button>
+                  <button class="answer-fs">{corregirIEnFrase(word.word)}</button>
                 {/each}
               </div>
             {/if}
@@ -1234,6 +1306,14 @@ function handleUploadAudio() {
         </div>
       {/if}
 
+      <!--- ================================================ -->
+      {#if questionTestFS.audio.length !== 0}
+        <div class="wr-audio-edit">
+          <audio class="audio" src={questionTestFS.audio} controls></audio>
+          <button class="btn-remove-audio-fs" onclick={handleRemoveAudioQuestionFS}>{@html trash}</button>
+        </div>
+      {/if}
+
       <div class="wr-hd">
         <button class="btn-view-album right-btn" onclick={handleUploadAudio}>Audio</button>
         <button class="btn-view-album" onclick={handleUploadImageItemFS}>Imagen</button>
@@ -1258,6 +1338,65 @@ function handleUploadAudio() {
     color: #fff;
     stroke-width: 3px;
   }
+  .btn-remove-audio-fs > svg {
+    width: 18px;
+    color: #fff;
+    stroke-width: 3px;
+  }
+}
+.pd-1-0 {
+  padding: 1em 0;
+}
+.wr-space {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.wr-value-point {
+  font-family: var(--font-normal);
+  display: flex;
+  justify-content: right;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+.row-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+}
+.wr-select-value {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-normal);
+}
+.select-value {
+  font-family: var(--font-normal);
+  background: #fff;
+  border-radius: 4px;
+}
+.audio {
+  height: 40px;
+}
+.wr-audio-edit {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  justify-content: center;
+}
+.btn-remove-audio-fs {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #ff7d7d;
+  transition: var(--transition);
+}
+.btn-remove-audio-fs:hover {
+  background: #f75c5c;
 }
 .right-btn {
   right: 70px;
@@ -1385,6 +1524,7 @@ function handleUploadAudio() {
 }
 .container-question {
   padding: 0.5em 0;
+  margin-bottom: 2em;
 }
 .wr-point-number {
   display: flex;
@@ -1418,7 +1558,7 @@ function handleUploadAudio() {
 }
 .question {
   font-family: var(--font-normal);
-  padding-bottom: 2em;
+  padding-bottom: 1em;
   line-height: 28px;
   font-size: var(--font-size);
 }
@@ -1442,6 +1582,7 @@ function handleUploadAudio() {
   font-family: var(--font-normal);
   font-weight: 900;
   font-size: 1em;
+  padding-top: 1em;
 }
 .wr-btn-img-item {
   display: flex;
@@ -1452,21 +1593,21 @@ function handleUploadAudio() {
   padding: 0.2em 0.5em;
   border-radius: 4px;
   cursor: pointer;
-  background: #9de1ff;
+  background: #88d4f5;
   font-family: var(--font-normal);
 }
 .btn-remove-item {
   padding: 0.2em 0.5em;
   border-radius: 4px;
   cursor: pointer;
-  background: #ffd8cc;
+  background: #f1baa9;
   font-family: var(--font-normal);
 }
 .container-items-answer {
   margin: 1em 0;
   display: flex;
   flex-direction: column;
-  gap: 2.3em;
+  gap: 2.6em;
 }
 .wr-input-item {
   position: relative;
@@ -1496,18 +1637,18 @@ function handleUploadAudio() {
   line-height: 23px;
 }
 .btn-view-album {
-  position: absolute;
   padding: 0.2em 0.5em;
   border-radius: 4px;
   cursor: pointer;
   background: #c4dcc4;
-  top: 10px;
   font-family: var(--font-normal);
 }
 .wr-hd {
   display: flex;
   justify-content: right;
   position: relative;
+  top: 15px;
+  gap: 1em;
 }
 .box-image-question {
   /*border: 2px solid #333;*/
@@ -1537,15 +1678,16 @@ function handleUploadAudio() {
   display: flex;
   flex-direction: column;
   gap: 1em;
-  padding-bottom: 2em;
+  padding: 1em 0 1em;
 }
 .wr-image-question {
   width: 100%;
-  height: 300px;
+  /*height: 300px;*/
   position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;
   border: 1px solid #b5c7fb;
+  background: #fff;
 }
 .image-question {
   width: 100%;
@@ -1554,7 +1696,7 @@ function handleUploadAudio() {
   display: block;
 }
 .wr-words-match {
-  margin-bottom: 2em;
+  margin: 2em 0 1em;
 }
 .add-word {
   font-family: var(--font-normal);
@@ -1579,6 +1721,7 @@ function handleUploadAudio() {
   font-weight: 600;
   font-size: 1em;
   color: #000000;
+  margin-bottom: 1em;
 }
 .btn-new {
   font-family: var(--font-normal);
@@ -1603,7 +1746,6 @@ function handleUploadAudio() {
   padding: 1em 1em 2em;
   display: flex;
   flex-direction: column;
-  gap: 1em;
 }
 .btn-view-close {
   width: 36px;

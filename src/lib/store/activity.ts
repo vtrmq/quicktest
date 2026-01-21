@@ -61,6 +61,14 @@ export const activityLocalstore = {
       exercises[indexExercise].exercise.optionSuboptions = options;
       localStorage.setItem(act, JSON.stringify(exercises));
     }
+  },
+  connectionsMatch: (indexExercise: number, connections: any) => {
+    const activities = localStorage.getItem(act);
+    if (activities) {
+      const exercises = JSON.parse(activities);
+      exercises[indexExercise].exercise.wordConnections = connections;
+      localStorage.setItem(act, JSON.stringify(exercises));
+    }
   }
 
   /*

@@ -3,3 +3,4 @@ import '$lib/css/themes.css';
 import '$lib/css/content.css';
 import "$lib/css/select.css";
 import "$lib/css/morphosyntax.css";
+import "$lib/css/match.css";

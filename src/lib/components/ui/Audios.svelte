@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
+import check from '$lib/assets/svg/check.svg?raw';
 import refreshCCW from '$lib/assets/svg/refresh-ccw.svg?raw';
 import chevronLeft from '$lib/assets/svg/chevron-left.svg?raw'
 import chevronRight from '$lib/assets/svg/chevron-right.svg?raw'
@@ -193,7 +194,7 @@ onDestroy(()=>{
                     </div>
                     <div class="wr-box-btns-actions">
                       <button class="btn-action" onclick={()=>handleSelectAudioDelete(index)}>{@html trash}</button>
-                      <button class="btn-action" onclick={()=>handleSelectAudio(index)}>{@html trash}</button>
+                      <button class="btn-action-check" onclick={()=>handleSelectAudio(index)}>{@html check}</button>
                     </div>
                   </div>
                 {/each}
@@ -239,6 +240,21 @@ onDestroy(()=>{
 }
 .btn-action:hover {
   background: #fbb4b4;
+}
+.btn-action-check {
+  width: 30px;
+  height: 30px;
+  background: #6ae16f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid #16d71e;
+}
+.btn-action-check:hover {
+  background: #33c93a;
 }
 .container-btns-album {
   display: flex;
@@ -319,6 +335,11 @@ onDestroy(()=>{
   .btn-action > svg {
     width: 20px;
     color: #ab372e;
+    stroke-width: 3px;
+  }
+  .btn-action-check > svg {
+    width: 20px;
+    color: #026f65;
     stroke-width: 3px;
   }
 }
