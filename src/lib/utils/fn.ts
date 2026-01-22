@@ -199,3 +199,12 @@ export function corregirIEnFrase(frase: string): string {
     })
     .join(' ');
 }
+
+export function reemplazarEspacios(frase: string): string {
+  // Verifica si la frase tiene más de una palabra
+  if (frase.trim().split(/\s+/).length > 1) {
+    return frase.replace(/\s/g, '&nbsp;');
+  }
+  // Si es una sola palabra, devuelve la frase sin cambios
+  return frase;
+}

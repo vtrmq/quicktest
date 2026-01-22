@@ -1,13 +1,16 @@
 <script lang="ts">
 import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
+import refresh from '$lib/assets/svg/refresh-cw.svg?raw';
 //import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
+import image from '$lib/assets/svg/image.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
 import { Select, Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
 import { barajarArray } from '$lib/utils/';
+import { goto } from '$app/navigation';
 
 type AnswersTest = {
   resp: string;
@@ -35,10 +38,12 @@ type questionsTestFS = {
   value: number;
 };
 type Option = {
+  id: string;
   option: string;
 };
 
-let { items, handleActivity, topic, activity } = $props();
+let { params, items, handleActivity, topic, activity } = $props();
+
 const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
@@ -54,13 +59,14 @@ let stateExercise = $state('new'); // Si la actividad es nuevo (new) o si se est
 let posImage = 'none';
 let posItem = -1;
 let question = $state('');
+let imagePointOut = $state('');
 let content = $state('');
 //let optionSuboptions = $state([{option: ''}]);
 let optionSuboptions: Option[] = $state([]);
 let leftWords = $state([{word: ''}]);
 let rightWords = $state([{word: ''}]);
 let arrayQuestionsTest: questionsTest[] = $state([]);
-let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false, value: 0 }]);
+//let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false, value: 0 }]);
 let questionTest: questionsTest = $state( { question: '', images: [], answers: [], value: 1 })
 let indexExercise = -1;
 let posItemPoint = $state(-1);
@@ -121,7 +127,7 @@ function reset() {
   optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
-  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
+  //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
   //optionSuboptions = [{option: ''}];
 }
@@ -161,7 +167,7 @@ function handleIntro() {
   optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
-  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
+  //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
 
   stateExercise = 'new';
@@ -170,8 +176,10 @@ function handleIntro() {
 }
 
 function handlePlusOption() {
+  optionSuboptions = [...optionSuboptions, {id: crypto.randomUUID(), option: ''}];
+  /*
   if (optionSuboptions.length < 5) {
-    optionSuboptions = [...optionSuboptions, {option: ''}];
+    optionSuboptions = [...optionSuboptions, {id: crypto.randomUUID(), option: ''}];
   } else {
     toast?.view({
       type: 'fail',
@@ -179,6 +187,7 @@ function handlePlusOption() {
       time: 4000
       });
   }
+  */
 }
 
 function handleCancel() {
@@ -614,12 +623,55 @@ function handleDone() {
     } else if (stateExercise === 'update') {
       items[indexExercise].exercise = exercise.exercise;
     }
+    
+  // POINT-OUT
+  // ==================================================
+  } else if (sheet === 'point-out') {
+
+    if (question.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe la pregunta',
+        time: 3000
+      });
+      return;
+    }
+    optionSuboptions = optionSuboptions.filter(item => item.option !== "");
+    if (optionSuboptions.length === 1) {
+      toast?.view({
+        type: 'fail',
+        message: 'Debes tener más de una opción',
+        time: 4000
+      });
+      return;
+    }
+
+    const activity = {
+      value: 0,
+      exercise: {
+        question, 
+        imagePointOut,
+        optionSuboptions,
+        lines: [],
+        placedOptions: []
+      },
+      type: 'point-out'
+    }
+
+    console.log(indexExercise, stateExercise)
+    console.log(activity)
+
+    if (stateExercise === 'new') {
+      items.push(activity);
+    } else if (stateExercise === 'update') {
+      items[indexExercise].exercise = activity.exercise;
+    }
 
   // MATCH
   // ==================================================
   } else if (sheet === 'match' && (leftWords.length !== 0 && rightWords.length !== 0)) {
 
-    const exercise = {
+    const activity = {
       value: 0,
       exercise: {
         question, 
@@ -631,13 +683,13 @@ function handleDone() {
       },
       type: 'match'
     }
-    console.log(stateExercise, indexExercise)
-    console.log(exercise)
+    //console.log(stateExercise, indexExercise)
+    //console.log(exercise)
 
     if (stateExercise === 'new') {
-      items.push(exercise);
+      items.push(activity);
     } else if (stateExercise === 'update') {
-      //items[indexExercise] = exercise;
+      items[indexExercise].exercise = activity.exercise;
     }
 
   // TEST
@@ -719,7 +771,7 @@ function handleDone() {
 
 function handleAddPoint() {
   sheet = 'new-point';
-  answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
+  //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
   questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0 }], value: 1 };
   posItemPoint = -1;
 }
@@ -747,6 +799,8 @@ async function handleImageSelect(image: string) {
     questionTest.answers[posItem].image = localText;
   } else if (posImage === 'image-question-fs') {
     questionTestFS.image = localText;
+  } else if (posImage === 'image-point-out') {
+    imagePointOut = localText;
   }
 }
 
@@ -818,6 +872,11 @@ function handleEditActivity(index: number) {
     content = items[index].exercise.content;
     optionSuboptions = items[index].exercise.optionSuboptions;
     sheet = 'select';
+  } else if (type === 'point-out') {
+    question = items[index].exercise.question;
+    optionSuboptions = items[index].exercise.optionSuboptions;
+    imagePointOut = items[index].exercise.imagePointOut;
+    sheet = 'point-out';
   } else if (type === 'character') {
     question = items[index].exercise.question;
     content = items[index].exercise.content;
@@ -946,6 +1005,31 @@ function handleRemoveAudioQuestionFS() {
   questionTestFS.audio = '';
 }
 
+function handleUploadPointOut() {
+  posImage = 'image-point-out';
+  album?.handleShowAlbum();
+}
+
+let swSave = $state(false);
+async function handleSaveActivities() {
+  const formData = new FormData();
+  const items = activityLocalstore.get();
+  formData.append('items', JSON.stringify(items));
+  formData.append('topicId', params.topicId);
+  formData.append('activityId', params.activityId);
+
+  swSave = !swSave;
+  const response = await fetch('/api/teacher/save-activity', {
+    method: 'POST',
+    body: formData
+  });
+  const result = await response.json();
+  if (result.success === false) {
+    goto('/');
+  }
+  swSave = !swSave;
+}
+
 </script>
 
 <Toast bind:this={toast} />
@@ -957,11 +1041,26 @@ function handleRemoveAudioQuestionFS() {
 <div class="container-edit-exercise" class:view-box={viewBox}>
   <div class="header-box-exercise">
     {#if sheet === 'ejercises'}
-      <div>
-        <button class="btn-new" onclick={handleNewExercise}>Guardar</button>
+      <div class="wr-btns-actions">
+        <button class="btn-save-exercise" onclick={handleSaveActivities}>
+          {#if !swSave}
+            Guardar
+          {:else}
+            {@html refresh}
+          {/if}
+        </button>
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
       </div>
     {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
+      <div>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
+      </div>
+    {:else if  sheet === 'point-out'}
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
@@ -1065,6 +1164,39 @@ function handleRemoveAudioQuestionFS() {
         <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
         <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
       </div>
+      <div class="container-inputs pd-1-0">
+        <div class="wr-space">
+          {#each optionSuboptions as op, i}
+            <Input 
+              type="text" 
+              label="Palabra {i + 1}" bind:value={op.option} requested={false} isError={false} />
+          {/each}
+        </div>
+      </div>
+      <div class="wr-btn-add">
+        <Button onclick={handlePlusOption}>Adicionar palabra</Button>
+      </div>
+
+    {:else if sheet === 'point-out'}
+
+      <p class="label-type">Seleccionar palabras</p>
+      <div class="wr-space">
+        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+        {#if imagePointOut.length !== 0}
+          <div class="box-image-question">
+            <div class="wr-image-question">
+              <img class="image-question" src={imagePointOut} alt="" />
+              <button class="btn-remove-image-test" onclick={handleUploadPointOut}>{@html image}</button>
+            </div>
+          </div>
+        {:else if imagePointOut.length === 0}
+          <div class="wr-btn-point-out">
+            <button class="btn-point-out" onclick={handleUploadPointOut}>Imagen</button>
+          </div>
+        {/if}
+      </div>
+
+
       <div class="container-inputs pd-1-0">
         <div class="wr-space">
           {#each optionSuboptions as op, i}
@@ -1343,6 +1475,42 @@ function handleRemoveAudioQuestionFS() {
     color: #fff;
     stroke-width: 3px;
   }
+  .btn-save-exercise > svg {
+    width: 18px;
+    color: #414141;
+    stroke-width: 3px;
+    animation: girar 1.5s linear infinite;
+  }
+}
+@keyframes girar {
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
+}
+.wr-btns-actions {
+  display: flex;
+  gap: 1em;
+}
+.wr-btn-point-out {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em 0 0;
+}
+.btn-point-out {
+  padding: 0.6em 1em;
+  border-radius: 6px;
+  background: var(--bg-blue);
+  cursor: pointer;
+  color: #fff;
+  font-family: var(--font-normal);
+  transition: var(--transition);
+}
+.btn-point-out:hover {
+  background: var(--bg-blue-hover);
 }
 .pd-1-0 {
   padding: 1em 0;
@@ -1723,6 +1891,20 @@ function handleRemoveAudioQuestionFS() {
   color: #000000;
   margin-bottom: 1em;
 }
+.btn-save-exercise {
+  font-family: var(--font-normal);
+  padding: 0.4em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: bisque;
+  font-size: 1em;
+  transition: var(--transition);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 32px;
+}
 .btn-new {
   font-family: var(--font-normal);
   padding: 0.4em;
@@ -1783,7 +1965,7 @@ function handleRemoveAudioQuestionFS() {
   right: 0;
 }
 @media (min-width: 500px) {
-  .btn-new {
+  .btn-new, .btn-save-exercise {
     font-size: 0.85em;
   }
   .btn-new:hover {

@@ -69,7 +69,20 @@ export const activityLocalstore = {
       exercises[indexExercise].exercise.wordConnections = connections;
       localStorage.setItem(act, JSON.stringify(exercises));
     }
+  },
+  pointOut: (indexExercise: number, data: any) => {
+    const activities = localStorage.getItem(act);
+    if (activities) {
+      const exercises = JSON.parse(activities);
+      exercises[indexExercise].exercise.lines = data.lines;
+      exercises[indexExercise].exercise.placedOptions = data.placedOptions;
+      localStorage.setItem(act, JSON.stringify(exercises));
+    }
+  },
+  clear: () => {
+    if (browser) localStorage.removeItem(act);
   }
+
 
   /*
   push: (data: object) => {

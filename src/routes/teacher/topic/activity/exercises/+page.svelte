@@ -1,8 +1,10 @@
 <script lang="ts">
 //import { FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
 import { page } from '$app/state';
-import { HeaderExercise, EditExercise, LinkBack, SelectEdit, CharacterEdit, MorphosyntaxEdit, TestFsEdit, TestEdit, MatchEdit } from '$lib/components';
+import { HeaderExercise, EditExercise, LinkBack, SelectEdit, CharacterEdit, MorphosyntaxEdit, TestFsEdit, TestEdit, MatchEdit, PointOutEdit } from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
+import { activityLocalstore } from '$lib/store/activity';
+    import { onDestroy } from 'svelte';
 
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
@@ -64,11 +66,9 @@ console.log(data)
 let items = data.items;
 let type = $state('info');
 let points: Point[] = $state([]);
-//let idPoint = $state(-1);
 
 const root = filtrarParametros(page.url.href, ['topicId']);
 
-//let toast = $state<Toast>();
 let indexExercise = $state(-1);
 let containerBody = $state() as HTMLDivElement;
 
@@ -85,6 +85,9 @@ function handleActivity(index: number, _items: Item[]) {
     type = _items[index].type;
     indexExercise = index;
     if (type === 'select') {
+      activity = _items[index].exercise as Exercise;
+    } else if (type === 'point-out') {
+      intro = true;
       activity = _items[index].exercise as Exercise;
     } else if (type === 'character') {
       activity = _items[index].exercise as Exercise;
@@ -108,11 +111,15 @@ function handleActivity(index: number, _items: Item[]) {
 }
 // ======================================================================
 // ======================================================================
+
+onDestroy(()=>{
+  activityLocalstore.clear();
+});
 </script>
 
 <HeaderExercise>
   <LinkBack href="/teacher/topic/activity?{root}" --color-link="#fff">Actividades</LinkBack>
-  <EditExercise topic={data.topic} activity={data.activity} items={items} {handleActivity} />
+  <EditExercise params={{activityId: data.activityId, topicId: data.topicId}} topic={data.topic} activity={data.activity} items={items} {handleActivity} />
 </HeaderExercise>
 
 <!--Toast bind:this={toast} /-->
@@ -149,6 +156,10 @@ function handleActivity(index: number, _items: Item[]) {
   {:else if type === 'morphosyntax'}
 
     <MorphosyntaxEdit {indexExercise} {activity} {intro} />
+
+  {:else if type === 'point-out'}
+
+    <PointOutEdit {indexExercise} {activity} {intro} />
 
   {/if}
 </div>

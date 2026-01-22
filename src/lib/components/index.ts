@@ -57,3 +57,4 @@ export { default as MorphosyntaxEdit } from './ui/MorphosyntaxEdit.svelte';
 export { default as TestFsEdit } from './ui/TestFsEdit.svelte';
 export { default as TestEdit } from './ui/TestEdit.svelte';
 export { default as MatchEdit } from './ui/MatchEdit.svelte';
+export { default as PointOutEdit } from './ui/PointOutEdit.svelte';
