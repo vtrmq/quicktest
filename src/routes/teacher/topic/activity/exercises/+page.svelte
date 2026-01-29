@@ -1,7 +1,21 @@
 <script lang="ts">
+import { fade } from 'svelte/transition';
+let visible = $state(false);
 //import { FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
 import { page } from '$app/state';
-import { HeaderExercise, EditExercise, LinkBack, SelectEdit, CharacterEdit, MorphosyntaxEdit, TestFsEdit, TestEdit, MatchEdit, PointOutEdit } from '$lib/components';
+import { 
+  HeaderExercise, 
+  EditExercise, 
+  LinkBack, 
+  SelectEdit, 
+  CharacterEdit, 
+  MorphosyntaxEdit, 
+  TestFsEdit, 
+  TestEdit, 
+  MatchEdit, 
+  PointOutEdit, 
+  TestPDFEdit 
+} from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
     import { onDestroy } from 'svelte';
@@ -78,9 +92,11 @@ let intro = $state(true);
 //  Main
 // ======================================================================
 let activity: Exercise | undefined = $state();
+let testPDF = $state();
 
 function handleActivity(index: number, _items: Item[]) {
   if (index !== -1) {
+    visible = false;
     intro = false;
     type = _items[index].type;
     indexExercise = index;
@@ -95,10 +111,17 @@ function handleActivity(index: number, _items: Item[]) {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'test' || type === 'test-fs') {
       points = _items[index].points;
+    } else if (type === 'test-pdf') {
+      testPDF = _items[index].exercise;
+      console.log($state.snapshot(testPDF))
     } else if (type === 'morphosyntax') {
       intro = true;
       activity = _items[index].exercise as Exercise;
     }
+    setTimeout(() => {
+      visible = true;
+    }, 200);
+
   } else if (index === -1) {
     type = 'info';
   }
@@ -124,45 +147,53 @@ onDestroy(()=>{
 
 <!--Toast bind:this={toast} /-->
 
-<div class="container-body" bind:this={containerBody}>
+{#if visible}
+<div class="container-body" bind:this={containerBody} transition:fade>
 
-  {#if type === 'info'}
 
-    <div class="container-info">
-      <h1 class="topic">{data.topic}</h1>
-      <h2 class="activity">{data.activity}</h2>
-    </div>
+    {#if type === 'info'}
 
-  {:else if type === 'select'}
+      <div class="container-info">
+        <h1 class="topic">{data.topic}</h1>
+        <h2 class="activity">{data.activity}</h2>
+      </div>
 
-    <SelectEdit {indexExercise} {activity} />
+    {:else if type === 'select'}
 
-  {:else if type === 'character'}
+      <SelectEdit {indexExercise} {activity} />
 
-    <CharacterEdit {indexExercise} {activity} />
+    {:else if type === 'character'}
 
-  {:else if type === 'test'}
+      <CharacterEdit {indexExercise} {activity} />
 
-    <TestEdit pointsT={points} />
+    {:else if type === 'test'}
 
-  {:else if type === 'match'}
+      <TestEdit pointsT={points} />
 
-    <MatchEdit {indexExercise} {activity} />
+    {:else if type === 'test-pdf'}
 
-  {:else if type === 'test-fs'}
+      <TestPDFEdit {testPDF} />
 
-    <TestFsEdit pointsT={points} />
+    {:else if type === 'match'}
 
-  {:else if type === 'morphosyntax'}
+      <MatchEdit {indexExercise} {activity} />
 
-    <MorphosyntaxEdit {indexExercise} {activity} {intro} />
+    {:else if type === 'test-fs'}
 
-  {:else if type === 'point-out'}
+      <TestFsEdit pointsT={points} />
 
-    <PointOutEdit {indexExercise} {activity} {intro} />
+    {:else if type === 'morphosyntax'}
 
-  {/if}
+      <MorphosyntaxEdit {indexExercise} {activity} {intro} />
+
+    {:else if type === 'point-out'}
+
+      <PointOutEdit {indexExercise} {activity} {intro} />
+
+    {/if}
+
 </div>
+{/if}
 
 <style>
 .container-info {
@@ -183,7 +214,7 @@ onDestroy(()=>{
 
 /* ================================== */
 .container-body {
-  position: fixed;
+  position: absolute;
   top: var(--height-header);
   width: 100%;
   height: calc(100% - var(--height-header));

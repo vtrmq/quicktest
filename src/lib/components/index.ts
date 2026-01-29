@@ -49,6 +49,7 @@ export { default as TextArea } from './ui/TextArea.svelte';
 export { default as BtnAudio } from './ui/BtnAudio.svelte';
 export { default as AudioRecorder } from './ui/AudioRecorder.svelte';
 export { default as Audios } from './ui/Audios.svelte';
+export { default as FilesPDF } from './ui/FilesPDF.svelte';
 
 // Activities
 export { default as SelectEdit } from './ui/SelectEdit.svelte';
@@ -58,3 +59,4 @@ export { default as TestFsEdit } from './ui/TestFsEdit.svelte';
 export { default as TestEdit } from './ui/TestEdit.svelte';
 export { default as MatchEdit } from './ui/MatchEdit.svelte';
 export { default as PointOutEdit } from './ui/PointOutEdit.svelte';
+export { default as TestPDFEdit } from './ui/TestPDFEdit.svelte';

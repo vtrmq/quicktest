@@ -1,0 +1,6 @@
+CREATE TABLE files (
+  file_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER DEFAULT 0,
+  name TEXT NOT NULL,
+  shadow_file TEXT NOT NULL
+);

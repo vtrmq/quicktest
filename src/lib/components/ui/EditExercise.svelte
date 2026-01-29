@@ -1,13 +1,24 @@
 <script lang="ts">
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, FOLDER_FILES } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
+import colocarPalabra from '$lib/assets/images/colocar-palabra.png';
+import colocarPartes from '$lib/assets/images/colocar-partes.png';
+import audioText from '$lib/assets/images/audio-text.png';
+import morfosintaxis from '$lib/assets/images/morfosintaxis.png';
+import checklist from '$lib/assets/images/checklist.png';
+import list from '$lib/assets/images/online-exam.png';
+import seleccionarPalabra from '$lib/assets/images/seleccionar-palabra.png';
+import relacionar from '$lib/assets/images/relacion.png';
 import refresh from '$lib/assets/svg/refresh-cw.svg?raw';
 //import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
+//import rectangleEllipsis from '$lib/assets/svg/rectangle-ellipsis.svg?raw';
+//import baseLine from '$lib/assets/svg/baseline.svg?raw';
+//import pointer from '$lib/assets/svg/pointer.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import image from '$lib/assets/svg/image.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
-import { Select, Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder } from '$lib/components';
+import { Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder, FilesPDF } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
 import { barajarArray } from '$lib/utils/';
 import { goto } from '$app/navigation';
@@ -18,6 +29,7 @@ type AnswersTest = {
   rst: boolean;
   rss: boolean;
   value: number;
+  success: boolean;
 };
 type questionsTest = {
   question: string;
@@ -43,17 +55,18 @@ type Option = {
 };
 
 let { params, items, handleActivity, topic, activity } = $props();
-
 const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
 let viewBox = $state(true); // false
 let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
+
+
 let album = $state<Album | null>(null);
 let audio = $state<Audios | null>(null);
-
 let stateDelete = $state(''); // itemExercise, itemTest, itemAudio
 let stateExercise = $state('new'); // Si la actividad es nuevo (new) o si se está actualizando (update)
 let posImage = 'none';
@@ -66,8 +79,20 @@ let optionSuboptions: Option[] = $state([]);
 let leftWords = $state([{word: ''}]);
 let rightWords = $state([{word: ''}]);
 let arrayQuestionsTest: questionsTest[] = $state([]);
+let fileExam: string = '';
+let fileName: string = $state('');
+let filePDF = $state<FilesPDF | null>(null);
+
+
+type pointTestPDF = {
+  points: { char: string, rst: boolean, rss: boolean }[];
+  value: number;
+  success: boolean;
+};
+let arrayQuestionsTestPDF: pointTestPDF[] = $state([]);
+
 //let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false, value: 0 }]);
-let questionTest: questionsTest = $state( { question: '', images: [], answers: [], value: 1 })
+let questionTest: questionsTest = $state({ question: '', images: [], answers: [], value: 1 })
 let indexExercise = -1;
 let posItemPoint = $state(-1);
 let itemResaltado = $state(-1);
@@ -76,6 +101,7 @@ let itemDelete = -1;
 
 let arrayQuestionsTestFS: questionsTestFS[] = $state([]);
 let questionTestFS: questionsTestFS = $state( { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 })
+const chars = ['A', 'B', 'C', 'D', 'E'];
 
 /*
 let questionTest: questionsTest = $state(
@@ -129,6 +155,7 @@ function reset() {
   rightWords = [{word: ''}];
   //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
+  arrayQuestionsTestPDF = [];
   //optionSuboptions = [{option: ''}];
 }
 
@@ -144,17 +171,9 @@ function handleNewExercise() {
   }
 }
 
-function handleIntro() {
-  if (selectType.length === 0) {
-    toast?.view({
-      type: 'fail',
-      message: 'Selecciona el tipo de ejercicio',
-      time: 4000
-      });
-    return;
-  }
-  //reset();
+function handleIntro(ty: string) {
 
+  selectType = ty;
   stateDelete = '';
   posItemPoint = -1;
   indexExercise = -1;
@@ -190,10 +209,12 @@ function handlePlusOption() {
   */
 }
 
+/*
 function handleCancel() {
   sheet = 'type';
   reset();
 }
+*/
 
 function handlePlusMatchWords(box: string) {
   if (box === 'left') {
@@ -702,6 +723,23 @@ function handleDone() {
       items[indexExercise].points = arrayQuestionsTest;
     }
 
+  // TESTPDF
+  // ==================================================
+  } else if (sheet === 'test-pdf') {
+
+    if (stateExercise === 'new') {
+      const exercise = {
+        name: fileName,
+        file: fileExam, 
+        points: arrayQuestionsTestPDF
+      }
+      items.push({type:'test-pdf', exercise, value: 0});
+    } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
+      items[indexExercise].exercise.name = fileName;
+      items[indexExercise].exercise.file = fileExam;
+      items[indexExercise].exercise.points = arrayQuestionsTestPDF;
+    }
+
   // TEST-FS
   // ==================================================
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
@@ -772,7 +810,7 @@ function handleDone() {
 function handleAddPoint() {
   sheet = 'new-point';
   //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
-  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0 }], value: 1 };
+  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0, success: false }], value: 1 };
   posItemPoint = -1;
 }
 
@@ -804,6 +842,14 @@ async function handleImageSelect(image: string) {
   }
 }
 
+async function handleFileSelect(file_name: string, file_pdf: string) {
+  fileName = file_name;
+  fileExam = `${root_file}/${file_pdf}`;
+  console.log(fileName)
+  console.log(fileExam)
+  //questionTest.images.push(localText);
+}
+
 function handleRemoveImageQuestion(index: number) {
   questionTest.images.splice(index, 1);
 }
@@ -813,7 +859,7 @@ function handleRemoveImageItem(index: number) {
 }
 
 function handleAddItem() {
-  questionTest.answers.push({resp: '', image: '', rst: false, rss: false, value: 0 });
+  questionTest.answers.push({resp: '', image: '', rst: false, rss: false, value: 0, success: false });
 }
 
 function handleUploadImageItem(index: number) {
@@ -867,6 +913,10 @@ function handleEditActivity(index: number) {
   indexExercise = index;
   const type = items[index].type;
   stateExercise = 'update';
+
+  console.log(type)
+  console.log($state.snapshot(items))
+
   if (type === 'select') {
     question = items[index].exercise.question;
     content = items[index].exercise.content;
@@ -884,6 +934,11 @@ function handleEditActivity(index: number) {
   } else if (type === 'test') {
     arrayQuestionsTest = items[index].points;
     sheet = 'test';
+  } else if (type === 'test-pdf') {
+    fileExam = items[index].exercise.file;
+    fileName = items[index].exercise.name;
+    arrayQuestionsTestPDF = items[index].exercise.points;
+    sheet = 'test-pdf';
   } else if (type === 'test-fs') {
     arrayQuestionsTestFS = items[index].points;
     sheet = 'test-fs';
@@ -1030,9 +1085,67 @@ async function handleSaveActivities() {
   swSave = !swSave;
 }
 
+function handleAddPointTestPDF() { 
+  let points = [];
+  for (let i = 0; i < chars.length; i++) {
+    points.push({ char: chars[i], rst: false, rss: false });
+  }
+  arrayQuestionsTestPDF.push({
+    points,
+    value: 1,
+    success: false
+  });
+  //console.log($state.snapshot(arrayQuestionsTestPDF))
+}
+
+function calculateValue() {
+  console.log($state.snapshot(arrayQuestionsTestPDF))
+  let sum = 0;
+  if (arrayQuestionsTestPDF.length !== 0) {
+    for (let i = 0; i < arrayQuestionsTestPDF.length; i++) {
+      sum = sum + arrayQuestionsTestPDF[i].value;
+    }
+  }
+  return sum;
+}
+
+function handleUploadFilePDF() {
+  posImage = 'file-pdf';
+  filePDF?.handleShowAlbum();
+}
+
+function handleChangeCountPoint(e: Event, index: number) {
+  const value = parseInt((e.target as HTMLSelectElement).value);
+  let points = [];
+  for (let i = 0; i < value; i++) {
+    points.push({ char: chars[i], rst: false, rss: false });
+  }
+  arrayQuestionsTestPDF[index].points = points;
+}
+
+let totalValuesPoint = $derived.by(calculateValue);
+$effect(()=>{
+  console.log(totalValuesPoint)
+});
+
+/*
+let totalValuesPoint = $state(0);
+$effect(()=>{
+  if (arrayQuestionsTestPDF.length !== 0) {
+    let sum = 0;
+    for (let i = 0; i < arrayQuestionsTestPDF.length; i++) {
+      sum = sum + arrayQuestionsTestPDF[i].value;
+    }
+    totalValuesPoint = sum;
+  }
+  console.log($state.snapshot(totalValuesPoint))
+});
+*/
+
 </script>
 
 <Toast bind:this={toast} />
+<FilesPDF bind:this={filePDF} onSelectFile={handleFileSelect} />
 <Album bind:this={album} onSelectImage={handleImageSelect} />
 <Audios bind:this={audio} onSelectAudio={handleAudioSelect} />
 <Dialog bind:this={dialog} action={handleActionDelete} />
@@ -1051,11 +1164,13 @@ async function handleSaveActivities() {
         </button>
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
       </div>
+    {:else if sheet === 'type'}
+      <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
     {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
-          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1064,7 +1179,7 @@ async function handleSaveActivities() {
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
-          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1073,7 +1188,7 @@ async function handleSaveActivities() {
       <div>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
-          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1083,7 +1198,17 @@ async function handleSaveActivities() {
         <button class="btn-new" onclick={handleAddPoint}>Nuevo punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
-          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
+        {:else if stateExercise === 'update'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        {/if}
+      </div>
+    {:else if sheet === 'test-pdf'}
+      <div>
+        <button class="btn-new" onclick={handleDone}>Listo</button>
+        <button class="add-point-test" onclick={handleAddPointTestPDF}>Adicionar punto</button>
+        {#if stateExercise === 'new'}
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1093,7 +1218,7 @@ async function handleSaveActivities() {
         <button class="btn-new" onclick={handleAddPointFS}>Nuevo punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
-          <button class="btn-new" onclick={handleCancel}>Cancelar</button>
+          <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1139,22 +1264,71 @@ async function handleSaveActivities() {
     {:else if sheet === 'type'}
 
       <div class="sheet-type">
-        <Select label="Tipos de ejercicios" bind:value={selectType}>
-          <option value="">Selecciona ejercicio</option>
-          <option value="select">Seleccionar palabras</option>
-          <option value="character">Colocar palabras</option>
-          <option value="match">Relacionar conceptos</option>
-          <option value="point-out">Señalar partes</option>
-          <option value="test-fs">Escuchar audio y formar frase</option>
-          <option value="morphosyntax">Morfosintaxis</option>
-          <option value="test">Examen</option>
-          <option value="test">Examen PDF</option>
-          <option value="test">Comprensión de lectura</option>
-        </Select>
-        <div class="wr-cancel-intro">
-          <Button bg="gray" onclick={handleCancelUpdate}>Cancelar</Button>
-          <Button onclick={handleIntro}>Crear</Button>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={seleccionarPalabra} alt="" /></span>
+          </div>
+          <div class="label-figure">Seleccionar palabras</div>
+          <button class="btn-create" onclick={()=>handleIntro("select")}>Crear</button>
         </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
+          </div>
+          <div class="label-figure">Colocar palabras</div>
+          <button class="btn-create" onclick={()=>handleIntro("character")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={relacionar} alt="" /></span>
+          </div>
+          <div class="label-figure">Relacionar conceptos</div>
+          <button class="btn-create" onclick={()=>handleIntro("match")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={colocarPartes} alt="" /></span>
+          </div>
+          <div class="label-figure">Señalar partes</div>
+          <button class="btn-create" onclick={()=>handleIntro("point-out")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={list} alt="" /></span>
+          </div>
+          <div class="label-figure">Examen</div>
+          <button class="btn-create" onclick={()=>handleIntro("test")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={checklist} alt="" /></span>
+          </div>
+          <div class="label-figure">Examen PDF</div>
+          <button class="btn-create" onclick={()=>handleIntro("test-pdf")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={audioText} alt="" /></span>
+          </div>
+          <div class="label-figure">Escuchar audio y formar frase</div>
+          <button class="btn-create" onclick={()=>handleIntro("test-fs")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={morfosintaxis} alt="" /></span>
+          </div>
+          <div class="label-figure">Morfosintaxis</div>
+          <button class="btn-create" onclick={()=>handleIntro("morphosyntax")}>Crear</button>
+        </div>
+
       </div>
 
     {:else if sheet === 'select'}
@@ -1179,11 +1353,11 @@ async function handleSaveActivities() {
 
     {:else if sheet === 'point-out'}
 
-      <p class="label-type">Seleccionar palabras</p>
+      <p class="label-type">Señalar partes</p>
       <div class="wr-space">
         <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
         {#if imagePointOut.length !== 0}
-          <div class="box-image-question">
+          <div>
             <div class="wr-image-question">
               <img class="image-question" src={imagePointOut} alt="" />
               <button class="btn-remove-image-test" onclick={handleUploadPointOut}>{@html image}</button>
@@ -1273,7 +1447,7 @@ async function handleSaveActivities() {
           {#if qs.images.length !== 0}
             <div class="container-images-question">
               {#each qs.images as img, i}
-                <div class="box-image-question">
+                <div>
                   <div class="wr-image-question">
                     <img class="image-question" src={img} alt="" />
                   </div>
@@ -1336,7 +1510,7 @@ async function handleSaveActivities() {
       {#if questionTest.images.length !== 0}
         <div class="container-images-question">
           {#each questionTest.images as image, index}
-            <div class="box-image-question">
+            <div>
               <div class="wr-image-question">
                 <img class="image-question" src={image} alt="" />
                 <button class="btn-remove-image-test" onclick={()=>handleRemoveImageQuestion(index)}>{@html trash}</button>
@@ -1348,6 +1522,8 @@ async function handleSaveActivities() {
           {/each}
         </div>
       {/if}
+
+      <br>
       
       <h1 class="label-response">Respuestas</h1>
 
@@ -1374,6 +1550,65 @@ async function handleSaveActivities() {
         {/each}
       </div>
 
+    {:else if sheet === 'test-pdf'}
+
+      <!-- =========================================================== -->
+      <div class="wr-container-btn-file-pdf">
+        <p class="label-type-test-pdf">Test PDF</p>
+        <button class="btn-point-out" onclick={handleUploadFilePDF}>Archivo</button>
+      </div>
+
+      <div class="wr-file-name">{fileName}</div>
+
+      <div class="wr-label-response">
+        <h1 class="label-response">Respuestas</h1>
+        <div>
+          <span>Punto</span>
+          <span>|</span>
+          <span>Valor</span>
+        </div>
+      </div>
+
+      <div class="container-items-answer-test">
+        {#each arrayQuestionsTestPDF as answer, index}
+          {@const count = answer.points.length}
+          <div class="container-answer-point-test">
+            <button class="label-item" onclick={()=>{ arrayQuestionsTestPDF = arrayQuestionsTestPDF.filter((_, i) => i !== index)}}>{index + 1}</button>
+
+            <div class="wr-row-point-test">
+              {#each answer.points as row}
+                <button class="btn-point-test" onclick={()=>{row.rst = !row.rst}} class:rst-point={row.rst}>{row.char}</button>
+              {/each}
+            </div>
+            
+            <div class="wr-bx-selects">
+              <select class="select-value-test" value={count} 
+                onchange={(e)=>handleChangeCountPoint(e, index)}>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+                <option value={5}>5</option>
+              </select>
+              <select class="select-value-test" 
+                bind:value={answer.value} onchange={(e)=>{answer.value = Number((e.target as HTMLSelectElement).value)}}>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+                <option value={5}>5</option>
+                <option value={6}>6</option>
+                <option value={7}>7</option>
+                <option value={8}>8</option>
+                <option value={9}>9</option>
+                <option value={10}>10</option>
+              </select>
+            </div>
+          </div>
+        {/each}
+      </div>
+
+      <div class="wr-value-total">Valor total: {totalValuesPoint}</div>
+
     {:else if sheet === 'test-fs'}
 
       <p class="label-type">Test FS</p>
@@ -1393,7 +1628,7 @@ async function handleSaveActivities() {
 
           <div class="wr-container-box-fs">
             {#if qs.image.length !== 0}
-              <div class="box-image-question">
+              <div>
                 <div class="wr-image-question">
                   <img class="image-question" src={qs.image} alt="" />
                 </div>
@@ -1429,7 +1664,7 @@ async function handleSaveActivities() {
 
       {#if questionTestFS.image.length !== 0}
         <div class="container-images-question">
-          <div class="box-image-question">
+          <div>
             <div class="wr-image-question">
               <img class="image-question" src={questionTestFS.image} alt="" />
               <button class="btn-remove-image-test" onclick={handleRemoveImageQuestionFS}>{@html trash}</button>
@@ -1460,6 +1695,12 @@ async function handleSaveActivities() {
 
 <style>
 :global {
+  .span-baseline > svg {
+    width: 120px;
+  }
+  .span-pointer > svg {
+    width: 50px;
+  }
   .btn-remove-image-test > svg {
     width: 18px;
     color: #fff;
@@ -1481,6 +1722,163 @@ async function handleSaveActivities() {
     stroke-width: 3px;
     animation: girar 1.5s linear infinite;
   }
+}
+.wr-bx-selects {
+  display: flex;
+  gap: 0.5em;
+}
+.wr-file-name {
+  font-family: var(--font-normal);
+  margin-bottom: 1em;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  padding: 10px 0;
+}
+.wr-container-btn-file-pdf {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+.label-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  font-family: var(--font-normal);
+  text-align: center;
+}
+.btn-create {
+  width: 100%;
+  height: 88%;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-normal);
+  background: #2196F3;
+  color: #fff;
+  font-weight: 800;
+  transition: var(--transition);
+  border-top: 2px solid #333;
+}
+.btn-create:hover {
+  background: #0375cf;
+}
+.span-baseline img {
+  width: 60%;
+  height: 85%;
+  object-fit: contain;
+}
+.span-baseline {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wr-figure {
+  height: 200px;
+  width: 100%;
+  border: 2px solid;
+  display: grid;
+  grid-template-rows: 120px 45px 35px;
+}
+.wr-w-figure {
+  position: relative;
+}
+.wr-value-total {
+  font-family: var(--font-normal);
+  display: flex;
+  justify-content: right;
+}
+.btn-point-test.rst-point {
+  background: #11d511;
+  color: #fff;
+}
+.wr-label-response {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-normal);
+}
+.select-value-test {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  /* Opcional: para IE y Edge */
+  width: 30px;
+  height: 26px;
+  background: #fff;
+  border-radius: 5px;
+  text-align: center;
+  font-family: var(--font-normal);
+  &::-ms-expand {
+    display: none;
+  }
+}
+.wr-row-point-test {
+  display: flex;
+  gap: 0.5em; 
+  width: 100%;
+  justify-content: center;
+}
+.container-items-answer-test {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.label-item {
+  font-family: var(--font-normal);
+  font-weight: 900;
+  font-size: 1.2em;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ff6060;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-point-test {
+  font-family: var(--font-normal);
+  width: 36px;
+  height: 36px;
+  border-radius: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background: #ffffff;
+  font-weight: 900;
+  font-size: 1.1em;
+}
+.container-answer-point-test {
+  display: flex;
+  background: var(--border-item);
+  padding: 8px;
+  border-radius: var(--border-radius);
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: rgb(161 178 225) 0px 3px 0px 0px;
+  justify-content: space-between;
+  align-items: center;
+}
+.add-point-test {
+  font-family: var(--font-normal);
+  background: var(--bg-blue);
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  transition: var(--transition);
+}
+.add-point-test:hover {
+  background: var(--bg-blue-hover);
 }
 @keyframes girar {
 from {
@@ -1750,7 +2148,6 @@ to {
   font-family: var(--font-normal);
   font-weight: 900;
   font-size: 1em;
-  padding-top: 1em;
 }
 .wr-btn-img-item {
   display: flex;
@@ -1818,9 +2215,6 @@ to {
   top: 15px;
   gap: 1em;
 }
-.box-image-question {
-  /*border: 2px solid #333;*/
-}
 .label-image {
   display: flex;
   justify-content: center;
@@ -1884,6 +2278,12 @@ to {
   font-size: 1em;
   color: #000000;
 }
+.label-type-test-pdf {
+  font-family: var(--font-normal);
+  font-weight: 600;
+  font-size: 1em;
+  color: #000000;
+}
 .label-type {
   font-family: var(--font-normal);
   font-weight: 600;
@@ -1916,11 +2316,16 @@ to {
 }
 .sheet-type {
   margin: 2em 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
 }
+/*
 .wr-cancel-intro {
   display: flex;
   gap: 2em;
 }
+*/
 .body-box-exercise {
   background: #fff;
   height: calc(100% - var(--height-header));
@@ -1963,6 +2368,13 @@ to {
 }
 .container-edit-exercise.view-box {
   right: 0;
+}
+@media (min-width: 425px) {
+  .wr-row-point-test {
+    justify-content: left;
+    padding-left: 1em;
+    gap: 1em;
+  }
 }
 @media (min-width: 500px) {
   .btn-new, .btn-save-exercise {
