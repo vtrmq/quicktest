@@ -82,7 +82,8 @@ let arrayQuestionsTest: questionsTest[] = $state([]);
 let fileExam: string = '';
 let fileName: string = $state('');
 let filePDF = $state<FilesPDF | null>(null);
-
+let typeExercise = $state('normal');
+let timeLecture = $state(60);
 
 type pointTestPDF = {
   points: { char: string, rst: boolean, rss: boolean }[];
@@ -141,6 +142,8 @@ let questionTest: questionsTest = $state(
 //console.log(items)
 
 function reset() {
+  timeLecture = 60;
+  typeExercise = 'normal';
   stateDelete = '';
   posItemPoint = -1;
   indexExercise = -1;
@@ -420,6 +423,9 @@ function splitWordsSelect() {
     },
     value: 0,
     type: "select",
+    mode: typeExercise,
+    visible: true,
+    time: timeLecture
   };
   return act;
 }
@@ -593,6 +599,9 @@ function splitWordsCharacter() {
     },
     value: 0,
     type: "character",
+    mode: typeExercise,
+    visible: true,
+    time: timeLecture
   };
   return act;
 }
@@ -676,7 +685,10 @@ function handleDone() {
         lines: [],
         placedOptions: []
       },
-      type: 'point-out'
+      type: 'point-out',
+      mode: typeExercise,
+      visible: true,
+      time: timeLecture
     }
 
     console.log(indexExercise, stateExercise)
@@ -696,13 +708,17 @@ function handleDone() {
       value: 0,
       exercise: {
         question, 
+        content,
         leftWords, 
         rightWords,
         wordConnections: [],
         wordConnectionsStudent: [],
         wordConnectionsErrors: [],
       },
-      type: 'match'
+      type: 'match',
+      mode: typeExercise,
+      visible: true,
+      time: timeLecture
     }
     //console.log(stateExercise, indexExercise)
     //console.log(exercise)
@@ -710,6 +726,8 @@ function handleDone() {
     if (stateExercise === 'new') {
       items.push(activity);
     } else if (stateExercise === 'update') {
+      items[indexExercise].time = timeLecture;
+      items[indexExercise].visible = true;
       items[indexExercise].exercise = activity.exercise;
     }
 
@@ -718,8 +736,10 @@ function handleDone() {
   } else if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
 
     if (stateExercise === 'new') {
-      items.push({type:'test', points: arrayQuestionsTest, value: 0});
+      items.push({type:'test', points: arrayQuestionsTest, value: 0, mode: typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
+      items[indexExercise].time = timeLecture;
+      items[indexExercise].visible = true;
       items[indexExercise].points = arrayQuestionsTest;
     }
 
@@ -733,7 +753,7 @@ function handleDone() {
         file: fileExam, 
         points: arrayQuestionsTestPDF
       }
-      items.push({type:'test-pdf', exercise, value: 0});
+      items.push({type:'test-pdf', exercise, value: 0, mode: typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].exercise.name = fileName;
       items[indexExercise].exercise.file = fileExam;
@@ -745,7 +765,7 @@ function handleDone() {
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
 
     if (stateExercise === 'new') {
-      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0});
+      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0, mode: typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTestFS;
     }
@@ -777,6 +797,8 @@ function handleDone() {
     if (stateExercise === 'new') {
       items.push(exercise);
     } else if (stateExercise === 'update') {
+      items[indexExercise].time = timeLecture;
+      items[indexExercise].visible = true;
       items[indexExercise].exercise = exercise.exercise;
     }
 
@@ -795,7 +817,7 @@ function handleDone() {
       comment_student: []
     }
     if (stateExercise === 'new') {
-      items.push({type:'morphosyntax', exercise});
+      items.push({type:'morphosyntax', exercise, mode: typeExercise, value: 0, visible: true, time: timeLecture }); 
     } else if (stateExercise === 'update') {
       items[indexExercise].exercise = exercise;
     }
@@ -930,10 +952,22 @@ function handleEditActivity(index: number) {
   } else if (type === 'character') {
     question = items[index].exercise.question;
     content = items[index].exercise.content;
+    typeExercise = items[index].mode;
+    timeLecture = items[index].time;
     sheet = 'character';
   } else if (type === 'test') {
     arrayQuestionsTest = items[index].points;
+    typeExercise = items[index].mode;
+    timeLecture = items[index].time;
     sheet = 'test';
+  } else if (type === 'match') { // <<========================== FALTA EL MATCH
+    content = items[index].exercise.content;
+    question = items[index].exercise.question;
+    leftWords = items[index].exercise.leftWords;
+    rightWords = items[index].exercise.rightWords;
+    typeExercise = items[index].mode;
+    timeLecture = items[index].time;
+    sheet = 'match';
   } else if (type === 'test-pdf') {
     fileExam = items[index].exercise.file;
     fileName = items[index].exercise.name;
@@ -1165,9 +1199,18 @@ $effect(()=>{
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
       </div>
     {:else if sheet === 'type'}
-      <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+      <div class="wr-btns-actions">
+        <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
+        <button class="btn-new" onclick={()=> typeExercise = typeExercise === 'normal' ? 'lecture' : 'normal'}>
+          {#if typeExercise === 'normal'}
+            Comprensión de lectura
+          {:else}
+            Todos los ejercicios
+          {/if}
+        </button>
+      </div>
     {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
@@ -1176,7 +1219,7 @@ $effect(()=>{
         {/if}
       </div>
     {:else if  sheet === 'point-out'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
@@ -1185,7 +1228,7 @@ $effect(()=>{
         {/if}
       </div>
     {:else if sheet === 'morphosyntax'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
@@ -1194,7 +1237,7 @@ $effect(()=>{
         {/if}
       </div>
     {:else if sheet === 'test'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleAddPoint}>Nuevo punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
@@ -1204,7 +1247,7 @@ $effect(()=>{
         {/if}
       </div>
     {:else if sheet === 'test-pdf'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
         <button class="add-point-test" onclick={handleAddPointTestPDF}>Adicionar punto</button>
         {#if stateExercise === 'new'}
@@ -1214,7 +1257,7 @@ $effect(()=>{
         {/if}
       </div>
     {:else if sheet === 'test-fs'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleAddPointFS}>Nuevo punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
@@ -1224,13 +1267,13 @@ $effect(()=>{
         {/if}
       </div>
     {:else if sheet === 'new-point'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleBackTest}>Volver</button>
         <button class="btn-new" onclick={handleAddItem}>Adicionar item</button>
         <button class="btn-new" onclick={handleDonePoint}>Listo</button>
       </div>
     {:else if sheet === 'new-point-fs'}
-      <div>
+      <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleBackTestFS}>Volver</button>
         <button class="btn-new" onclick={handleDonePointFS}>Listo</button>
       </div>
@@ -1243,6 +1286,7 @@ $effect(()=>{
   <div class="body-box-exercise">
 
     {#if sheet === 'ejercises' && items}
+
       <!-- ================================================== -->
       <div class="container-info">
         <h1 class="topic">{topic}</h1>
@@ -1261,17 +1305,20 @@ $effect(()=>{
           </div>
         {/each}
       </div>
+
     {:else if sheet === 'type'}
 
       <div class="sheet-type">
 
-        <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={seleccionarPalabra} alt="" /></span>
+        {#if typeExercise === 'normal'}
+          <div class="wr-figure">
+            <div class="wr-w-figure">
+              <span class="span-baseline"><img src={seleccionarPalabra} alt="" /></span>
+            </div>
+            <div class="label-figure">Seleccionar palabras</div>
+            <button class="btn-create" onclick={()=>handleIntro("select")}>Crear</button>
           </div>
-          <div class="label-figure">Seleccionar palabras</div>
-          <button class="btn-create" onclick={()=>handleIntro("select")}>Crear</button>
-        </div>
+        {/if}
 
         <div class="wr-figure">
           <div class="wr-w-figure">
@@ -1289,45 +1336,55 @@ $effect(()=>{
           <button class="btn-create" onclick={()=>handleIntro("match")}>Crear</button>
         </div>
 
-        <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={colocarPartes} alt="" /></span>
+        {#if typeExercise === 'normal'}
+          <div class="wr-figure">
+            <div class="wr-w-figure">
+              <span class="span-baseline"><img src={colocarPartes} alt="" /></span>
+            </div>
+            <div class="label-figure">Señalar partes</div>
+            <button class="btn-create" onclick={()=>handleIntro("point-out")}>Crear</button>
           </div>
-          <div class="label-figure">Señalar partes</div>
-          <button class="btn-create" onclick={()=>handleIntro("point-out")}>Crear</button>
-        </div>
-
+        {/if}
+        
         <div class="wr-figure">
           <div class="wr-w-figure">
             <span class="span-baseline"><img src={list} alt="" /></span>
           </div>
-          <div class="label-figure">Examen</div>
+          <div class="label-figure">
+            {#if typeExercise === 'normal'}
+              Examen
+            {:else}
+              Preguntas
+            {/if}
+          </div>
           <button class="btn-create" onclick={()=>handleIntro("test")}>Crear</button>
         </div>
 
-        <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={checklist} alt="" /></span>
+        {#if typeExercise === 'normal'}
+          <div class="wr-figure">
+            <div class="wr-w-figure">
+              <span class="span-baseline"><img src={checklist} alt="" /></span>
+            </div>
+            <div class="label-figure">Examen PDF</div>
+            <button class="btn-create" onclick={()=>handleIntro("test-pdf")}>Crear</button>
           </div>
-          <div class="label-figure">Examen PDF</div>
-          <button class="btn-create" onclick={()=>handleIntro("test-pdf")}>Crear</button>
-        </div>
 
-        <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={audioText} alt="" /></span>
+          <div class="wr-figure">
+            <div class="wr-w-figure">
+              <span class="span-baseline"><img src={audioText} alt="" /></span>
+            </div>
+            <div class="label-figure">Escuchar audio y formar frase</div>
+            <button class="btn-create" onclick={()=>handleIntro("test-fs")}>Crear</button>
           </div>
-          <div class="label-figure">Escuchar audio y formar frase</div>
-          <button class="btn-create" onclick={()=>handleIntro("test-fs")}>Crear</button>
-        </div>
 
-        <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={morfosintaxis} alt="" /></span>
+          <div class="wr-figure">
+            <div class="wr-w-figure">
+              <span class="span-baseline"><img src={morfosintaxis} alt="" /></span>
+            </div>
+            <div class="label-figure">Morfosintaxis</div>
+            <button class="btn-create" onclick={()=>handleIntro("morphosyntax")}>Crear</button>
           </div>
-          <div class="label-figure">Morfosintaxis</div>
-          <button class="btn-create" onclick={()=>handleIntro("morphosyntax")}>Crear</button>
-        </div>
+        {/if}
 
       </div>
 
@@ -1386,16 +1443,51 @@ $effect(()=>{
 
     {:else if sheet === 'character'}
 
-      <p class="label-type">Colocar palabras</p>
+      <p class="label-type">
+        {#if typeExercise === 'lecture'}
+          Comprensión de lectura (Cloze Test):<br>
+        {/if}
+        Colocar palabras
+      </p>
       <div class="wr-space">
-        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
-        <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
+        <TextArea 
+          name="def" 
+          label={typeExercise === 'normal' ? 'Pregunta' : 'Título de la lectura'} 
+          bind:value={question} --height-text-area={typeExercise === 'normal' ? '80px' : '36px'} isError={false} />
+        <TextArea name="ghi" label={typeExercise === 'normal' ? 'Texto de la actividad' : 'Lectura'} bind:value={content} --height-text-area="150px" isError={false} />
+        {#if typeExercise === 'lecture'}
+          <div>
+            <Input type="number" name="abc" label="Tiempo de lectura (En segundos)" bind:value={timeLecture} />
+          </div>
+        {/if}
       </div>
 
     {:else if sheet === 'match'}
 
-      <p class="label-type">Relacionar conceptos</p>
-      <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+      <p class="label-type">
+        {#if typeExercise === 'lecture'}
+          Comprensión de lectura:<br>
+        {/if}
+        Relacionar conceptos
+      </p>
+
+      <div class="grid-fx">
+        <TextArea 
+          name="def" 
+          label={typeExercise === 'normal' ? 'Pregunta' : 'Título de la lectura'} 
+          bind:value={question} 
+          --height-text-area={typeExercise === 'normal' ? '80px' : '36px'} 
+          isError={false} />
+
+        {#if typeExercise === 'lecture'}
+          <TextArea name="ghi" label='Lectura' bind:value={content} --height-text-area="150px" isError={false} />
+          <div>
+            <Input type="number" name="abc" label="Tiempo de lectura (En segundos)" bind:value={timeLecture} />
+          </div>
+        {/if}
+
+      </div>
+
       <div class="wr-words-match">
       <div class="header-match">
         <h1 class="title-wd">Palabras del lado izquierdo</h1>
@@ -1723,6 +1815,11 @@ $effect(()=>{
     animation: girar 1.5s linear infinite;
   }
 }
+.grid-fx {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
 .wr-bx-selects {
   display: flex;
   gap: 0.5em;
@@ -1750,7 +1847,7 @@ $effect(()=>{
 }
 .btn-create {
   width: 100%;
-  height: 88%;
+  height: 100%;
   outline: none;
   border: none;
   cursor: pointer;
@@ -1759,7 +1856,6 @@ $effect(()=>{
   color: #fff;
   font-weight: 800;
   transition: var(--transition);
-  border-top: 2px solid #333;
 }
 .btn-create:hover {
   background: #0375cf;
@@ -1779,9 +1875,11 @@ $effect(()=>{
 .wr-figure {
   height: 200px;
   width: 100%;
-  border: 2px solid;
   display: grid;
   grid-template-rows: 120px 45px 35px;
+  box-shadow: rgb(99 99 99 / 51%) 0px 2px 8px 0px;
+  border-radius: 6px;
+  overflow: hidden;
 }
 .wr-w-figure {
   position: relative;
@@ -2307,12 +2405,13 @@ to {
 }
 .btn-new {
   font-family: var(--font-normal);
-  padding: 0.4em;
   border-radius: 4px;
   cursor: pointer;
   background: bisque;
   font-size: 1em;
   transition: var(--transition);
+  height: 32px;
+  padding: 0.4em;
 }
 .sheet-type {
   margin: 2em 0;

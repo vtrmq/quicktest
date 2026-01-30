@@ -18,7 +18,7 @@ import {
 } from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
-    import { onDestroy } from 'svelte';
+import { onDestroy } from 'svelte';
 
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
@@ -93,6 +93,7 @@ let intro = $state(true);
 // ======================================================================
 let activity: Exercise | undefined = $state();
 let testPDF = $state();
+let infoData = $state();
 
 function handleActivity(index: number, _items: Item[]) {
   if (index !== -1) {
@@ -100,6 +101,8 @@ function handleActivity(index: number, _items: Item[]) {
     intro = false;
     type = _items[index].type;
     indexExercise = index;
+    infoData = _items[index];
+    console.log($state.snapshot(infoData))
     if (type === 'select') {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'point-out') {
@@ -126,10 +129,12 @@ function handleActivity(index: number, _items: Item[]) {
     type = 'info';
   }
   setTimeout(() => {
-    containerBody.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    if (containerBody) {
+      containerBody.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   }, 200);
 }
 // ======================================================================
@@ -150,7 +155,6 @@ onDestroy(()=>{
 {#if visible}
 <div class="container-body" bind:this={containerBody} transition:fade>
 
-
     {#if type === 'info'}
 
       <div class="container-info">
@@ -164,7 +168,7 @@ onDestroy(()=>{
 
     {:else if type === 'character'}
 
-      <CharacterEdit {indexExercise} {activity} />
+      <CharacterEdit {indexExercise} {activity} {infoData} />
 
     {:else if type === 'test'}
 
@@ -176,7 +180,7 @@ onDestroy(()=>{
 
     {:else if type === 'match'}
 
-      <MatchEdit {indexExercise} {activity} />
+      <MatchEdit {indexExercise} {activity} {infoData} />
 
     {:else if type === 'test-fs'}
 
