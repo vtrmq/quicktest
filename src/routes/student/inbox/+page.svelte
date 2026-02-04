@@ -59,7 +59,7 @@ const result: Result[] = data.activities as Result[];
                   </div>
                   <div class="wr-links">
                     {#if !row.answer_id && isDateEnd(row.date_end)}
-                      <a class="link" href="/student/subject/topic/activity/answer?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}">Realizar actividad</a>
+                      <a class="link" href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox">Ver detalles</a>
                     {:else if !row.answer_id && !isDateEnd(row.date_end)}
                       <p class="none-activity">Ya no puedes realizar la actividad</p>
                     {:else if row.answer_id}
@@ -109,7 +109,7 @@ const result: Result[] = data.activities as Result[];
   color: #636363;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1em 0 2em;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -176,7 +176,7 @@ const result: Result[] = data.activities as Result[];
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -192,7 +192,7 @@ const result: Result[] = data.activities as Result[];
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .wr-none-data {
   padding: 3em 0;
@@ -247,7 +247,7 @@ const result: Result[] = data.activities as Result[];
   padding: 3em 0;
 }
 .container-topics {
-  padding: 1em 0;
+  padding: 0 0 3em;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;

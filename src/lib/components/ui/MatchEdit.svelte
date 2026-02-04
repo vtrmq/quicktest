@@ -306,7 +306,6 @@ function startProgress() {
       </div>
     </div>
 
-
   {/if}
 </div>
 

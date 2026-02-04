@@ -80,9 +80,9 @@ const result: Result = data.result as Result;
                   </div>
                   <div class="wr-links">
                     {#if row.answered === 0 && isDateEnd(row.date_end)}
-                      <a class="link" href="/student/subject/topic/activity/answer?teacherId={row.teacher_id}&courseId={result.course.course_id}&subjectId={result.subject.subject_id}&topicId={result.topic.topic_id}&activityId={row.activity_id}">Realizar actividad</a>
+                      <a class="link" href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={result.course.course_id}&subjectId={result.subject.subject_id}&topicId={result.topic.topic_id}&activityId={row.activity_id}&origin=activity">Ver detalles</a>
                     {:else if row.answered === 0 && !isDateEnd(row.date_end)}
-                      <p class="none-activity">Ya no puedes realizar la actividad</p>
+                      <p class="none-activity">Actividad cerrada</p>
                     {:else if row.answered === 1}
                       <a class="link" href="/student/subject/topic/activity/result?teacherId={row.teacher_id}&courseId={result.course.course_id}&subjectId={result.subject.subject_id}&topicId={result.topic.topic_id}&activityId={row.activity_id}">Ver resultado</a>
                     {/if}

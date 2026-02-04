@@ -72,6 +72,7 @@ type Exercise = {
   question: string;
   words: Word[];
   optionSuboptions: Option[];
+  points: object;
 }
 
 let { data } = $props();
@@ -112,7 +113,9 @@ function handleActivity(index: number, _items: Item[]) {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'match') {
       activity = _items[index].exercise as Exercise;
-    } else if (type === 'test' || type === 'test-fs') {
+    } else if (type === 'test') {
+      activity = _items[index].exercise as Exercise;
+    } else if (type === 'test-fs') {
       points = _items[index].points;
     } else if (type === 'test-pdf') {
       testPDF = _items[index].exercise;
@@ -172,7 +175,7 @@ onDestroy(()=>{
 
     {:else if type === 'test'}
 
-      <TestEdit pointsT={points} />
+      <TestEdit {activity} {infoData} />
 
     {:else if type === 'test-pdf'}
 

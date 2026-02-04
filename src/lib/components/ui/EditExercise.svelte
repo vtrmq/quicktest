@@ -424,6 +424,7 @@ function splitWordsSelect() {
     value: 0,
     type: "select",
     mode: typeExercise,
+    typeExercise,
     visible: true,
     time: timeLecture
   };
@@ -600,6 +601,7 @@ function splitWordsCharacter() {
     value: 0,
     type: "character",
     mode: typeExercise,
+    typeExercise,
     visible: true,
     time: timeLecture
   };
@@ -687,6 +689,7 @@ function handleDone() {
       },
       type: 'point-out',
       mode: typeExercise,
+      typeExercise,
       visible: true,
       time: timeLecture
     }
@@ -717,6 +720,7 @@ function handleDone() {
       },
       type: 'match',
       mode: typeExercise,
+      typeExercise,
       visible: true,
       time: timeLecture
     }
@@ -735,12 +739,29 @@ function handleDone() {
   // ==================================================
   } else if (sheet === 'test' && arrayQuestionsTest.length !== 0) {
 
+    const activity = {
+      type:'test', 
+      exercise: {
+        question,
+        content, 
+        points: arrayQuestionsTest 
+      }, 
+      value: 0, 
+      mode: typeExercise, 
+      typeExercise,
+      visible: true, 
+      time: timeLecture
+    }
+
     if (stateExercise === 'new') {
-      items.push({type:'test', points: arrayQuestionsTest, value: 0, mode: typeExercise, visible: true, time: timeLecture});
+      // ========================================
+      // Cambio aquí
+      items.push(activity);
+      // ========================================
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].time = timeLecture;
       items[indexExercise].visible = true;
-      items[indexExercise].points = arrayQuestionsTest;
+      items[indexExercise].exercise = activity.exercise;
     }
 
   // TESTPDF
@@ -753,7 +774,7 @@ function handleDone() {
         file: fileExam, 
         points: arrayQuestionsTestPDF
       }
-      items.push({type:'test-pdf', exercise, value: 0, mode: typeExercise, visible: true, time: timeLecture});
+      items.push({type:'test-pdf', exercise, value: 0, mode: typeExercise, typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].exercise.name = fileName;
       items[indexExercise].exercise.file = fileExam;
@@ -765,7 +786,7 @@ function handleDone() {
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
 
     if (stateExercise === 'new') {
-      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0, mode: typeExercise, visible: true, time: timeLecture});
+      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0, mode: typeExercise, typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].points = arrayQuestionsTestFS;
     }
@@ -817,7 +838,7 @@ function handleDone() {
       comment_student: []
     }
     if (stateExercise === 'new') {
-      items.push({type:'morphosyntax', exercise, mode: typeExercise, value: 0, visible: true, time: timeLecture }); 
+      items.push({type:'morphosyntax', exercise, mode: typeExercise, typeExercise, value: 0, visible: true, time: timeLecture }); 
     } else if (stateExercise === 'update') {
       items[indexExercise].exercise = exercise;
     }
@@ -952,11 +973,13 @@ function handleEditActivity(index: number) {
   } else if (type === 'character') {
     question = items[index].exercise.question;
     content = items[index].exercise.content;
-    typeExercise = items[index].mode;
+    typeExercise = items[index].typeExercise;
     timeLecture = items[index].time;
     sheet = 'character';
   } else if (type === 'test') {
-    arrayQuestionsTest = items[index].points;
+    question = items[index].exercise.question;
+    content = items[index].exercise.content;
+    arrayQuestionsTest = items[index].exercise.points;
     typeExercise = items[index].mode;
     timeLecture = items[index].time;
     sheet = 'test';
@@ -965,7 +988,7 @@ function handleEditActivity(index: number) {
     question = items[index].exercise.question;
     leftWords = items[index].exercise.leftWords;
     rightWords = items[index].exercise.rightWords;
-    typeExercise = items[index].mode;
+    typeExercise = items[index].typeExercise;
     timeLecture = items[index].time;
     sheet = 'match';
   } else if (type === 'test-pdf') {
@@ -1288,6 +1311,10 @@ $effect(()=>{
     {#if sheet === 'ejercises' && items}
 
       <!-- ================================================== -->
+      <!-- ================================================== -->
+      <!-- ================================================== -->
+      <!-- ================================================== -->
+
       <div class="container-info">
         <h1 class="topic">{topic}</h1>
         <h2 class="activity">{activity}</h2>
@@ -1412,7 +1439,7 @@ $effect(()=>{
 
       <p class="label-type">Señalar partes</p>
       <div class="wr-space">
-        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+        <TextArea name="def" label="Descripción" bind:value={question} --height-text-area="60px" isError={false} />
         {#if imagePointOut.length !== 0}
           <div>
             <div class="wr-image-question">
@@ -1474,9 +1501,9 @@ $effect(()=>{
       <div class="grid-fx">
         <TextArea 
           name="def" 
-          label={typeExercise === 'normal' ? 'Pregunta' : 'Título de la lectura'} 
+          label={typeExercise === 'normal' ? 'Descripción' : 'Título de la lectura'} 
           bind:value={question} 
-          --height-text-area={typeExercise === 'normal' ? '80px' : '36px'} 
+          --height-text-area={typeExercise === 'normal' ? '60px' : '36px'} 
           isError={false} />
 
         {#if typeExercise === 'lecture'}
@@ -1519,6 +1546,16 @@ $effect(()=>{
     {:else if sheet === 'test'}
 
       <p class="label-type">Test</p>
+
+      {#if typeExercise === 'normal'}
+        <TextArea name="ghi" label='Descripción del test' bind:value={question} --height-text-area="60px" isError={false} />
+      {:else if typeExercise === 'lecture'}
+        <div class="grid-fx">
+          <TextArea name="ghix" label='Título de la lectura' bind:value={question} --height-text-area="60px" isError={false} />
+          <TextArea name="ghi" label='Lectura' bind:value={content} --height-text-area="150px" isError={false} />
+          <Input type="number" name="abc" label="Tiempo de lectura (En segundos)" bind:value={timeLecture} />
+        </div>
+      {/if}
 
       {#each arrayQuestionsTest as qs, point}
 
@@ -1581,7 +1618,7 @@ $effect(()=>{
       <div class="wr-hd">
         <div class="wr-select-value">
           Valor: 
-          <select class="select-value" bind:value={questionTest.value}>
+          <select class="select-value" bind:value={questionTest.value} disabled={typeExercise === 'lecture'}>
             <option value={1}>1</option>
             <option value={2}>2</option>
             <option value={3}>3</option>
@@ -1594,7 +1631,9 @@ $effect(()=>{
             <option value={10}>10</option>
           </select>
         </div>
-        <button class="btn-view-album" onclick={handleUpload}>Imagen</button>
+        {#if typeExercise === 'normal'}
+          <button class="btn-view-album" onclick={handleUpload}>Imagen</button>
+        {/if}
       </div>
 
       <TextArea name="def" label="Pregunta" bind:value={questionTest.question} --height-text-area="80px" isError={false} />
@@ -1634,7 +1673,9 @@ $effect(()=>{
             </div>
 
             <div class="wr-btn-img-item">
-              <button class="btn-view-item" onclick={()=>handleUploadImageItem(index)}>Imagen</button>
+              {#if typeExercise === 'normal'}
+                <button class="btn-view-item" onclick={()=>handleUploadImageItem(index)}>Imagen</button>
+              {/if}
               <button class="btn-remove-item" onclick={()=>handleRemoveItem(index)}>Quitar</button>
             </div>
             

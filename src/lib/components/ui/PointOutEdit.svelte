@@ -13,7 +13,8 @@ type PlacedOption = {
   option: string;
   x: number;
   y: number;
-  resp: boolean;
+  resp: string;
+  value: boolean;
 };
 
 type Line = {
@@ -255,9 +256,10 @@ function onPointerDown(e: PointerEvent) {
       //id: crypto.randomUUID(),
       id: selectedOption.id,
       option: selectedOption.option,
+      value: false,
       x,
       y,
-      resp: false
+      resp: ''
     });
     selectedOption = null;
     redraw();

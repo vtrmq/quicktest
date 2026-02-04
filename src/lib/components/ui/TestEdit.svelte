@@ -1,65 +1,310 @@
 <script lang="ts">
+import { fade } from 'svelte/transition';
+import reading from '$lib/assets/images/reading.png';
 import { ALFABETO } from '$lib/utils';
-type Words = {
-  id: number;
-  word: string;
-};
+
 type Point = {
   answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
   images: []; 
-  words: Words[];
   question: '';
-  text: number;
+  value: number;
 }
+type InfoData = {
+  mode: string;
+  visible: boolean;
+  time: number;
+}
+
 let points: Point[] = $state([]);
-let { pointsT = [] } = $props();
+let { activity = {}, infoData } = $props();
+let _infoData: InfoData = $state({mode: '', visible: false, time: 0});
+let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
+let requestID: number = 0;
+let durationInSeconds = 0;
+
 $effect(() => {
-  points = pointsT;
+  _infoData = infoData;
+  points = activity.points;
+  console.log($state.snapshot(activity))
+  console.log($state.snapshot(_infoData))
 });
+
+
+function handleStartLecture() {
+  //console.log($state.snapshot(_infoData))
+  _infoData.visible = false;
+  durationInSeconds = _infoData.time;
+  //startProgress(timeActivity);
+  requestID = requestAnimationFrame(startProgress);
+}
+
+function startProgress() {
+  const durationInMs = durationInSeconds * 1000;
+  const startTime = performance.now();
+
+  function update(currentTime: number) {
+    const elapsed = currentTime - startTime;
+
+    // Calculamos el progreso (de 0 a 1)
+    const progress = Math.min(elapsed / durationInMs, 1);
+
+    // El elemento <progress> usa valores de 0 a 100 (o el 'max' definido)
+    if (!progressElement) {
+      cancelAnimationFrame(requestID); // Detiene la ejecución en el navegador
+      requestID = 0;
+      return;
+    }
+    progressElement.value = progress * 100;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      //console.log("¡Actividad completada!");
+      cancelAnimationFrame(requestID); // Detiene la ejecución en el navegador
+      requestID = 0;
+      _infoData.mode = 'normal';
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
 </script>
 
-<div class="container-activity">
-  {#each points as qs, point}
-    <div class="container-question">
-      <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
-      <div class="question">{qs.question}</div>
 
-      {#if qs.images.length !== 0}
-        <div class="container-images-question">
-          {#each qs.images as img, i}
-            <div class="box-image-question">
-              <div class="wr-image-question">
-                <img class="image-question" src={img} alt="" />
-              </div>
-              {#if qs.images.length > 1}
-                <div class="label-image">Imagen {ALFABETO(i + 1)}</div>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      {/if}
+<div class="rf">
+  {#if infoData.mode === 'normal'}
 
-      <div class="container-items-answer">
-        {#each qs.answers as answer, index}
-          <div class="container-answer" class:rst-point={answer.rst}>
-            <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
-            {#if answer.image.length !== 0}
-              <div class="wr-image-answer">
-                <img class="image-question" src={answer.image} alt="" />
+    <div class="center-exercise">
+
+
+      <div class="container-activity">
+        <h1 class="question-test">{activity.question}</h1>
+        {#each points as qs, point}
+          <div class="container-question">
+            <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
+            <div class="question">{qs.question}</div>
+
+            {#if qs.images.length !== 0}
+              <div class="container-images-question">
+                {#each qs.images as img, i}
+                  <div class="box-image-question">
+                    <div class="wr-image-question">
+                      <img class="image-question" src={img} alt="" />
+                    </div>
+                    {#if qs.images.length > 1}
+                      <div class="label-image">Imagen {ALFABETO(i + 1)}</div>
+                    {/if}
+                  </div>
+                {/each}
               </div>
             {/if}
-            <div class="wr-input-item">
-              <div class="answer-item">{answer.resp}</div>
+
+            <div class="container-items-answer">
+              {#each qs.answers as answer, index}
+                <div class="container-answer" class:rst-point={answer.rst}>
+                  <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
+                  {#if answer.image.length !== 0}
+                    <div class="wr-image-answer">
+                      <img class="image-question" src={answer.image} alt="" />
+                    </div>
+                  {/if}
+                  <div class="wr-input-item">
+                    <div class="answer-item">{answer.resp}</div>
+                  </div>
+                </div>
+              {/each}
             </div>
+
           </div>
         {/each}
       </div>
-
     </div>
-  {/each}
+
+  {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
+
+    <div class="box-info-lecture">
+      <h2 class="label-h2">Comprensión de lectura</h2>
+      <p class="title-lecture">Título: {activity.question}</p>
+      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    </div>
+
+  {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
+
+    <div class="center-exercise">
+      <div class="wrapper-lecture" transition:fade>
+        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture">{activity.question}</h2>
+        <p class="p-lecture">{activity.content}</p>
+        <button class="btn-break" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
+      </div>
+    </div>
+
+  {/if}
 </div>
 
 <style>
+progress {
+  appearance: none;       /* Quita el estilo nativo */
+  -webkit-appearance: none;
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Fondo de la barra (el contenedor) */
+progress::-webkit-progress-bar {
+  background-color: #ffffff; /* Blanco */
+}
+
+/* Color de la barra de carga (Relleno) */
+progress::-webkit-progress-value {
+  background-color: #007bff; /* Azul */
+  transition: width 0.1s ease; /* Suaviza el movimiento */
+}
+
+/* Compatibilidad para Firefox */
+progress::-moz-progress-bar {
+  background-color: #007bff; /* Azul */
+}
+
+.progresbar {
+  position: absolute;
+  top: -3px;
+  background: aqua;
+  width: 100%;
+  left: 0;
+  height: 9px;
+}
+.btn-break {
+  font-family: var(--font-normal);
+  padding: 0.6em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 1em;
+  background: var(--bg-blue);
+  color: #fff;
+  transition: var(--transition);
+  margin-top: 1em;
+}
+.btn-break:hover {
+  background: var(--bg-blue-hover);
+}
+.rf {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.center-exercise {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  top: 0;
+  position: absolute;
+}
+.title-lecture {
+  font-family: var(--font-normal);
+  font-size: 1.2em;
+  padding-bottom: 1em;
+  line-height: 28px;
+}
+.wrapper-lecture {
+  width: 100%;
+  max-width: 500px;
+  border: 2px solid var(--bg-header-synt);
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  border-radius: var(--border-radius);
+  overflow-y: auto;
+  height: calc(100% - calc(var(--height-header) + -60px));
+  top: 0;
+  position: absolute;
+}
+.p-lecture {
+  font-family: var(--font-normal);
+  line-height: 34px;
+  font-size: 1em;
+}
+.box-info-lecture {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  padding-bottom: 2em;
+}
+.label-h2 {
+  font-family: var(--font-normal);
+  font-weight: 800;
+}
+.title-lecture {
+  font-family: var(--font-normal);
+  font-size: 1.2em;
+  padding-bottom: 1em;
+  line-height: 28px;
+}
+.wrapper-lecture {
+  width: 100%;
+  max-width: 500px;
+  border: 2px solid var(--bg-header-synt);
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  border-radius: var(--border-radius);
+  overflow-y: auto;
+  height: calc(100% - calc(var(--height-header) + -60px));
+  top: 0;
+  position: absolute;
+}
+.p-lecture {
+  font-family: var(--font-normal);
+  line-height: 34px;
+  font-size: 1em;
+}
+.box-info-lecture {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  padding-bottom: 2em;
+}
+.label-h2 {
+  font-family: var(--font-normal);
+  font-weight: 800;
+}
+.wr-img-lecture {
+  width: 200px;
+  height: 200px;
+}
+.wr-img-lecture > img {
+  width: 100%;
+  height: 100%;
+}
+.btn-start-lecture {
+  font-family: var(--font-normal);
+  padding: 0.6em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 1em;
+  background: var(--bg-blue);
+  color: #fff;
+  transition: var(--transition);
+}
+.btn-start-lecture:hover {
+  background: var(--bg-blue-hover);
+}
+
+
+/* ================================== */
 
 .wr-input-item {
   position: relative;
@@ -158,9 +403,17 @@ $effect(() => {
   line-height: 28px;
   font-size: var(--font-size);
 }
+.question-test {
+  font-family: var(--font-normal);
+  padding-bottom: 2em;
+  line-height: 28px;
+  font-size: 1.2em;
+}
 .container-activity {
   width: 100%;
   max-width: 500px;
+  padding-bottom: 6em;
+  position: absolute;
 }
 .container-question {
   padding: 0.5em 0;
