@@ -64,6 +64,9 @@ $effect(() => {
   optionSuboptions = activity.optionSuboptions;
   placedOptions = activity.placedOptions ?? [];
   lines = activity.lines ?? [];
+  setTimeout(()=>{
+    paint();
+  }, 100);
 });
 
 /* =======================
@@ -81,13 +84,12 @@ $effect(() => {
   activityLocalstore.pointOut(indexExercise, designExercise);
 });
 
-
-onMount(() => {
+function paint() {
   ctx = canvas.getContext('2d')!;
   resizeCanvas();
   redraw();
   window.addEventListener('resize', resizeCanvas);
-});
+}
 
 /* =======================
    CANVAS CORE

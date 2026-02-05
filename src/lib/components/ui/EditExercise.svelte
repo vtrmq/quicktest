@@ -1156,7 +1156,7 @@ function handleAddPointTestPDF() {
 }
 
 function calculateValue() {
-  console.log($state.snapshot(arrayQuestionsTestPDF))
+  //console.log($state.snapshot(arrayQuestionsTestPDF))
   let sum = 0;
   if (arrayQuestionsTestPDF.length !== 0) {
     for (let i = 0; i < arrayQuestionsTestPDF.length; i++) {

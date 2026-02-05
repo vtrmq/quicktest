@@ -61,7 +61,7 @@ const result: Result[] = data.activities as Result[];
                     {#if !row.answer_id && isDateEnd(row.date_end)}
                       <a class="link" href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox">Ver detalles</a>
                     {:else if !row.answer_id && !isDateEnd(row.date_end)}
-                      <p class="none-activity">Ya no puedes realizar la actividad</p>
+                      <p class="none-activity">Actividad cerrada</p>
                     {:else if row.answer_id}
                       <a class="link" href="/student/subject/topic/activity/result">Ver resultado</a>
                     {/if}

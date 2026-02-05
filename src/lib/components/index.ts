@@ -60,3 +60,10 @@ export { default as TestEdit } from './ui/TestEdit.svelte';
 export { default as MatchEdit } from './ui/MatchEdit.svelte';
 export { default as PointOutEdit } from './ui/PointOutEdit.svelte';
 export { default as TestPDFEdit } from './ui/TestPDFEdit.svelte';
+
+// Activities student
+export { default as ListExercises } from './ui/ListExercises.svelte';
+export { default as Morphosyntax } from './ui/Morphosyntax.svelte';
+export { default as Match } from './ui/Match.svelte';
+export { default as PointOut } from './ui/PointOut.svelte';
+

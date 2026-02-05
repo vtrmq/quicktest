@@ -35,6 +35,16 @@ export function typeActivity(type: string) {
   return type;
 }
 
+export function typeExercise(type: string) {
+  switch(type) {
+    case 'select': type = 'Actividad de selección'; break;
+    case 'point-out': type = 'Colocar palabras'; break;
+    case 'morphosyntax': type = 'Morfosintaxis'; break;
+    case 'match': type = 'Unir conceptos'; break;
+  }
+  return type;
+}
+
 export function filtrarParametros(url: string, parametros: Array<string>): string { // Array<string> -> string[]
   const urlObj = new URL(url);
   const params = new URLSearchParams();

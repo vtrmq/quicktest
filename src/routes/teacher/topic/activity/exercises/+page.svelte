@@ -76,7 +76,7 @@ type Exercise = {
 }
 
 let { data } = $props();
-console.log(data)
+//console.log(data)
 
 let items = data.items;
 let type = $state('info');
@@ -103,7 +103,7 @@ function handleActivity(index: number, _items: Item[]) {
     type = _items[index].type;
     indexExercise = index;
     infoData = _items[index];
-    console.log($state.snapshot(infoData))
+    //console.log($state.snapshot(infoData))
     if (type === 'select') {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'point-out') {
@@ -119,7 +119,6 @@ function handleActivity(index: number, _items: Item[]) {
       points = _items[index].points;
     } else if (type === 'test-pdf') {
       testPDF = _items[index].exercise;
-      console.log($state.snapshot(testPDF))
     } else if (type === 'morphosyntax') {
       intro = true;
       activity = _items[index].exercise as Exercise;
