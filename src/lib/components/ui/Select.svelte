@@ -1,6 +1,6 @@
 <script lang="ts">
   let { 
-    label = 'Label', 
+    label = '', 
     value = $bindable(), 
     name = 'a', 
     error = '', 
@@ -24,7 +24,9 @@
 
 </script>
 <div class="container-input">
-  <div class="label">{label} <span class="requested">{requested ? '*' : ''}</span></div>
+  {#if label.length !== 0}
+    <div class="label">{label} <span class="requested">{requested ? '*' : ''}</span></div>
+  {/if}
   <div class="inputText">
     <div class="wr-input">
       <select 

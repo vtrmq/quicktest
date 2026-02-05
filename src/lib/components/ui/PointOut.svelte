@@ -1,7 +1,6 @@
 <script lang="ts">
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
-import { onMount } from 'svelte';
 let { infoData, indexExercise = -1 } = $props();
 
 type Option = { id: string; option: string };
@@ -31,18 +30,14 @@ let lines = $state<Line[]>([]);
 let selectedOption = $state<Option | null>(null);
 
 $effect(() => {
-  //console.log($state.snapshot(infoData))
   placedOptions = infoData.exercise.placedOptions;
   imagenPointOut = infoData.exercise.imagePointOut;
   optionSuboptions = infoData.exercise.optionSuboptions;
   lines = infoData.exercise.lines;
-  setTimeout(()=>{
-    paint();
-  }, 100);
+  paint();
 });
 
 function resizeCanvas() {
-  //const r = container.getBoundingClientRect();
   if (canvas && canvas.parentElement) {
     const r = canvas.parentElement!.getBoundingClientRect();
     canvas.width = r.width;
@@ -172,7 +167,7 @@ function paint() {
   height: 32px;
 }
 .header {
-  background: #fff;
+  background: #fffede;
   display: flex;
   justify-content: center;
   align-items: center;

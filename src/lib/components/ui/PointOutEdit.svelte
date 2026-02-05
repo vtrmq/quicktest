@@ -64,9 +64,8 @@ $effect(() => {
   optionSuboptions = activity.optionSuboptions;
   placedOptions = activity.placedOptions ?? [];
   lines = activity.lines ?? [];
-  setTimeout(()=>{
-    paint();
-  }, 100);
+  paint();
+  //setTimeout(()=>{ paint(); }, 100);
 });
 
 /* =======================

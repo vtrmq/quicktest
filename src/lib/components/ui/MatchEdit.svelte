@@ -42,6 +42,7 @@ let _infoData: InfoData = $state({mode: '', visible: false, time: 0});
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
 let durationInSeconds = 0;
+let swHeight = false;
 
 $effect(() => {
   _infoData = infoData;
@@ -50,7 +51,6 @@ $effect(() => {
   wordConnections = activity.wordConnections;
 });
 
-let swHeight = false;
 function updateCanvasSize() {
   if (containerMatch !== null && containerMatch !== undefined) {
     canvasMatch.width = containerMatch.offsetWidth - 5;

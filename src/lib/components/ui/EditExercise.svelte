@@ -20,7 +20,7 @@ import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
 import { Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder, FilesPDF } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
-import { barajarArray } from '$lib/utils/';
+import { barajarArray, typeExerc } from '$lib/utils/';
 import { goto } from '$app/navigation';
 
 type AnswersTest = {
@@ -64,6 +64,7 @@ let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
 
+console.log(items)
 
 let album = $state<Album | null>(null);
 let audio = $state<Audios | null>(null);
@@ -1323,7 +1324,15 @@ $effect(()=>{
         {#each items as item, index}
           <div class="row-link-activity" class:resaltar={itemResaltado === index}>
             <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-              <div class="box-item-link">{index + 1}</div> <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>Actividad: {item.type}</span>
+              <div class="box-item-link">{index + 1}</div> 
+              <div class="container-info-exerc">
+                <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
+                {#if item.type === 'morphosyntax'}
+                  <div class="text-left">{item.exercise.content}</div>
+                {:else}
+                  <div class="text-left">{item.exercise.question}</div>
+                {/if}
+              </div>
             </button>
             <OptionSelect>
               <button onclick={()=>handleEditActivity(index)}>{@html pencil} <span>Editar</span></button>
@@ -1856,6 +1865,16 @@ $effect(()=>{
     animation: girar 1.5s linear infinite;
   }
 }
+
+.container-info-exerc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.text-left {
+  text-align: left;
+  font-size: 1.05em;
+}
 .grid-fx {
   display: flex;
   flex-direction: column;
@@ -2186,8 +2205,8 @@ to {
   background: #56d3ce;
 }
 .box-item-link {
-  height: 52px;
-  width: 40px;
+  height: 90px;
+  width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -2197,7 +2216,8 @@ to {
   font-size: 2em;
 }
 .link-activity {
-  display: flex;
+  display: grid;
+  grid-template-columns: 50px 1fr;
   font-family: var(--font-normal);
   cursor: pointer;
   border-radius: 6px;

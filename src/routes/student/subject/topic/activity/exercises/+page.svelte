@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
 
 import { 
@@ -10,70 +10,14 @@ import {
   PointOut,
 } from '$lib/components';
 
-
 let { data } = $props();
 let visible = $state(false);
-//console.log(data)
 
 type Item = {
   exercise: {};
   points: [];
   type: string;
 };
-/*
-type ArrWordBox = {
-  label: {"morphosyntax": string, "description": string};
-  response: {"morphosyntax": string, "value": boolean};
-  width: string; 
-  sw: boolean; 
-  min: number; 
-  max: number; 
-  size: number; 
-  border: boolean;
-  resaltar: boolean;
-  type: string;
-}
-type Words = {
-  id: number;
-  word: string;
-};
-type Point = {
-  answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
-  images: []; 
-  image: ''; 
-  words: Words[];
-  question: '';
-  answersFS: [{id: number, word: string;}];
-  text: number;
-  audio: string;
-}
-type Word = {
-  color: string;
-  errors: number;
-  resp: boolean;
-  resp_color: string;
-  selection_word: number;
-  sign: number;
-  type: string;
-  value: boolean;
-  word: string;
-};
-type Option = {
-  option: string;
-};
-type Exercise = {
-  arrWords: [];
-  content: string;
-  syntax: {arrWordsBox: ArrWordBox[][], isGrid: boolean};
-  question: string;
-  words: Word[];
-  optionSuboptions: Option[];
-  points: object;
-}
-*/
-
-
-
 
 type Info = {
   activity: string;
@@ -92,12 +36,7 @@ let containerBody = $state() as HTMLDivElement;
 let info: Info = data.info as Info;
 let indexExercise = $state(-1);
 
-//let activity: Exercise | undefined = $state();
-//let testPDF = $state();
 let infoData = $state();
-//let points: Point[] = $state([]);
-
-//console.log(items)
 
 onMount(()=>{
   visible = true;
@@ -126,6 +65,10 @@ function handleActivity(index: number, _items: Item[]) {
   }, 200);
 }
 
+onDestroy(()=>{
+  //activityLocalstore.clear();
+});
+
 </script>
 
 
@@ -145,17 +88,23 @@ function handleActivity(index: number, _items: Item[]) {
         <h2 class="activity">{info.activity}</h2>
       </div>
 
-    {:else if type === 'match'}
+    {:else}
 
-      <Match {indexExercise} {infoData} />
+      {#key indexExercise}
+        {#if type === 'match'}
 
-    {:else if type === 'morphosyntax'}
+          <Match {indexExercise} {infoData} />
 
-      <Morphosyntax {indexExercise} {infoData} />
+        {:else if type === 'morphosyntax'}
 
-    {:else if type === 'point-out'}
+          <Morphosyntax {indexExercise} {infoData} />
 
-      <PointOut {indexExercise} {infoData} />
+        {:else if type === 'point-out'}
+
+          <PointOut {indexExercise} {infoData} />
+
+        {/if}
+      {/key}
 
     {/if}
   </div>

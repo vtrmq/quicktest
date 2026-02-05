@@ -13,4 +13,7 @@ export const activityLocalstore = {
   set: (data: object) => {
     if (browser) localStorage.setItem(act, JSON.stringify(data));
   },
+  clear: () => {
+    if (browser) localStorage.removeItem(act);
+  }
 }

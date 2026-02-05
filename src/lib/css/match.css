@@ -12,7 +12,9 @@
   overflow-y: auto;
   /*background: var(--bg-box-data);*/
   transition: var(--transition);
-  border-radius: var(--border-radius);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 10px;
 }
 .word-mt {
   padding: 0.5em 0.6em;
@@ -40,6 +42,7 @@
   display: flex;
   justify-content: space-between;
   gap: 4em;
+  padding-bottom: 20px;
 }
 .question-match {
   font-family: var(--font-normal);
@@ -62,6 +65,7 @@
 }
 .mg-center {
   margin: 0 auto;
+  width: 100%;
 }
 .pd1 {
   /*background: var(--bg-box-data);*/

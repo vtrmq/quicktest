@@ -1,5 +1,5 @@
 <script lang="ts">
-import { typeExercise } from "$lib/utils"
+import { typeExerc } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
 let { info, items, handleActivity } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
@@ -42,7 +42,15 @@ function handleSelectActivity(index: number) {
       {#each items as item, index}
         <div class="row-link-activity" class:resaltar={itemResaltado === index}>
           <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-            <div class="box-item-link">{index + 1}</div> <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExercise(item.type)}</span>
+            <div class="box-item-link">{index + 1}</div>
+            <div class="container-info-exerc">
+              <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
+              {#if item.type === 'morphosyntax'}
+                <div class="text-left">{item.exercise.content}</div>
+              {:else}
+                <div class="text-left">{item.exercise.question}</div>
+              {/if}
+            </div>
           </button>
         </div>
       {/each}
@@ -59,6 +67,15 @@ function handleSelectActivity(index: number) {
     stroke-width: 3px;
   }
 }
+.container-info-exerc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.text-left {
+  text-align: left;
+  font-size: 1.05em;
+}
 .label-activity-exercise {
   font-family: var(--font-normal);
   font-size: 1.3em;
@@ -69,8 +86,8 @@ function handleSelectActivity(index: number) {
   font-size: 1.5em;
 }
 .box-item-link {
-  height: 52px;
-  width: 40px;
+  height: 90px;
+  width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -80,7 +97,8 @@ function handleSelectActivity(index: number) {
   font-size: 2em;
 }
 .link-activity {
-  display: flex;
+  display: grid;
+  grid-template-columns: 50px 1fr;
   font-family: var(--font-normal);
   cursor: pointer;
   border-radius: 6px;

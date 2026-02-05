@@ -164,39 +164,44 @@ onDestroy(()=>{
         <h2 class="activity">{data.activity}</h2>
       </div>
 
-    {:else if type === 'select'}
+    {:else}
 
-      <SelectEdit {indexExercise} {activity} />
+      {#key indexExercise}
+        {#if type === 'select'}
 
-    {:else if type === 'character'}
+          <SelectEdit {indexExercise} {activity} />
 
-      <CharacterEdit {indexExercise} {activity} {infoData} />
+        {:else if type === 'character'}
 
-    {:else if type === 'test'}
+          <CharacterEdit {indexExercise} {activity} {infoData} />
 
-      <TestEdit {activity} {infoData} />
+        {:else if type === 'test'}
 
-    {:else if type === 'test-pdf'}
+          <TestEdit {activity} {infoData} />
 
-      <TestPDFEdit {testPDF} />
+        {:else if type === 'test-pdf'}
 
-    {:else if type === 'match'}
+          <TestPDFEdit {testPDF} />
 
-      <MatchEdit {indexExercise} {activity} {infoData} />
+        {:else if type === 'match'}
 
-    {:else if type === 'test-fs'}
+          <MatchEdit {indexExercise} {activity} {infoData} />
 
-      <TestFsEdit pointsT={points} />
+        {:else if type === 'test-fs'}
 
-    {:else if type === 'morphosyntax'}
+          <TestFsEdit pointsT={points} />
 
-      <MorphosyntaxEdit {indexExercise} {activity} {intro} />
+        {:else if type === 'morphosyntax'}
 
-    {:else if type === 'point-out'}
+          <MorphosyntaxEdit {indexExercise} {activity} {intro} />
 
-      <PointOutEdit {indexExercise} {activity} {intro} />
+        {:else if type === 'point-out'}
 
-    {/if}
+          <PointOutEdit {indexExercise} {activity} {intro} />
+
+        {/if}
+      {/key}
+  {/if}
 
 </div>
 {/if}

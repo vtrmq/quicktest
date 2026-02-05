@@ -35,7 +35,7 @@ export function typeActivity(type: string) {
   return type;
 }
 
-export function typeExercise(type: string) {
+export function typeExerc(type: string) {
   switch(type) {
     case 'select': type = 'Actividad de selección'; break;
     case 'point-out': type = 'Colocar palabras'; break;
