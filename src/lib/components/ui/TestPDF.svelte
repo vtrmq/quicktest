@@ -1,12 +1,24 @@
 <script lang="ts">
-let { testPDF } = $props();
+type Point = {
+  points: [{char: string; rss: boolean; rst: boolean}];
+}
 let modeSheet = $state(false);
+
+let { infoData, indexExercise = -1 } = $props();
+
+let points: Point[] = $state([]);
+points = infoData.exercise.points;
+
 function handleModeSheet() {
   modeSheet = !modeSheet;
 }
+
+function handleSelectPoint(point: number, item: number) {
+  points[point].points[item].rss = !points[point].points[item].rss
+}
 </script>
 
-<iframe title="" class="iframe" src={testPDF.file} frameborder="0"></iframe>
+<iframe title="" class="iframe" src={infoData.exercise.file} frameborder="0"></iframe>
 
 <button class="btn-sheet" onclick={handleModeSheet}>Hoja de respuesta</button>
 
@@ -16,12 +28,12 @@ function handleModeSheet() {
     <button class="btn-close-sheet" onclick={handleModeSheet}>Ocultar</button>
   </div>
   <div class="container-points">
-    {#each testPDF.points as _points, index}
+    {#each points as _points, point}
       <div class="row-points">
-        <div class="label-item">{index + 1}</div>
+        <div class="label-item">{point + 1}</div>
         <div class="row-pts">
-          {#each _points.points as points}
-            <button class="btn-point" class:rst-point={points.rst}>{points.char}</button>
+          {#each _points.points as points, item}
+            <button class="btn-point" onclick={()=>handleSelectPoint(point, item)} class:rst-point={points.rss}>{points.char}</button>
           {/each}
         </div>
       </div>
@@ -103,7 +115,7 @@ function handleModeSheet() {
   gap: 1em;
   overflow-y: auto;
   height: calc(100% - var(--height-header));
-  padding: 1em 1em 3em;
+  padding: 1em 0.5em 3em;
 }
 .sheet-response {
   position: fixed;

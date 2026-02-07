@@ -771,12 +771,14 @@ function handleDone() {
 
     if (stateExercise === 'new') {
       const exercise = {
+        content: content,
         name: fileName,
         file: fileExam, 
         points: arrayQuestionsTestPDF
       }
       items.push({type:'test-pdf', exercise, value: 0, mode: typeExercise, typeExercise, visible: true, time: timeLecture});
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
+      items[indexExercise].exercise.content = content;
       items[indexExercise].exercise.name = fileName;
       items[indexExercise].exercise.file = fileExam;
       items[indexExercise].exercise.points = arrayQuestionsTestPDF;
@@ -993,11 +995,13 @@ function handleEditActivity(index: number) {
     timeLecture = items[index].time;
     sheet = 'match';
   } else if (type === 'test-pdf') {
+    content = items[index].exercise.content;
     fileExam = items[index].exercise.file;
     fileName = items[index].exercise.name;
     arrayQuestionsTestPDF = items[index].exercise.points;
     sheet = 'test-pdf';
   } else if (type === 'test-fs') {
+    content = items[index].exercise.content;
     arrayQuestionsTestFS = items[index].points;
     sheet = 'test-fs';
   } else if (type === 'morphosyntax') {
@@ -1273,7 +1277,8 @@ $effect(()=>{
     {:else if sheet === 'test-pdf'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
-        <button class="add-point-test" onclick={handleAddPointTestPDF}>Adicionar punto</button>
+        <button class="add-point-test" onclick={handleAddPointTestPDF}>Punto</button>
+        <button class="add-point-test" onclick={handleUploadFilePDF}>Archivo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
@@ -1327,7 +1332,7 @@ $effect(()=>{
               <div class="box-item-link">{index + 1}</div> 
               <div class="container-info-exerc">
                 <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
-                {#if item.type === 'morphosyntax'}
+                {#if item.type === 'morphosyntax' || item.type === 'test-pdf' || item.type === 'test-fs'}
                   <div class="text-left">{item.exercise.content}</div>
                 {:else}
                   <div class="text-left">{item.exercise.question}</div>
@@ -1697,7 +1702,7 @@ $effect(()=>{
       <!-- =========================================================== -->
       <div class="wr-container-btn-file-pdf">
         <p class="label-type-test-pdf">Test PDF</p>
-        <button class="btn-point-out" onclick={handleUploadFilePDF}>Archivo</button>
+        <TextArea name="def" label="Descripción" bind:value={content} --height-text-area="60px" isError={false} />
       </div>
 
       <div class="wr-file-name">{fileName}</div>
@@ -1893,9 +1898,9 @@ $effect(()=>{
 }
 .wr-container-btn-file-pdf {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1em;
+  gap: 1em;
+  flex-direction: column;
 }
 .label-figure {
   display: flex;
@@ -2028,15 +2033,13 @@ $effect(()=>{
 }
 .add-point-test {
   font-family: var(--font-normal);
-  background: var(--bg-blue);
-  padding: 0.5em 1em;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  color: #fff;
+  background: bisque;
+  font-size: 1em;
   transition: var(--transition);
-}
-.add-point-test:hover {
-  background: var(--bg-blue-hover);
+  height: 32px;
+  padding: 0.4em;
 }
 @keyframes girar {
 from {

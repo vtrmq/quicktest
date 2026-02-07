@@ -45,7 +45,7 @@ function handleSelectActivity(index: number) {
             <div class="box-item-link">{index + 1}</div>
             <div class="container-info-exerc">
               <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
-              {#if item.type === 'morphosyntax'}
+              {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
                 <div class="text-left">{item.exercise.content}</div>
               {:else}
                 <div class="text-left">{item.exercise.question}</div>

@@ -10,6 +10,8 @@ import {
   PointOut,
   SelectWord,
   Character,
+  Test,
+  TestPDF,
 } from '$lib/components';
 
 let { data } = $props();
@@ -112,6 +114,14 @@ onDestroy(()=>{
         {:else if type === 'character'}
 
           <Character {indexExercise} {infoData} />
+
+        {:else if type === 'test'}
+
+          <Test {indexExercise} {infoData} />
+
+        {:else if type === 'test-pdf'}
+
+          <TestPDF {indexExercise} {infoData} />
 
         {/if}
       {/key}

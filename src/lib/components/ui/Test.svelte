@@ -9,29 +9,27 @@ type Point = {
   question: '';
   value: number;
 }
-type InfoData = {
-  mode: string;
-  visible: boolean;
-  time: number;
-}
 
 let points: Point[] = $state([]);
-let { activity = {}, infoData } = $props();
-let _infoData: InfoData = $state({mode: '', visible: false, time: 0});
+
+let { infoData, indexExercise = -1 } = $props();
+
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
 let durationInSeconds = 0;
 
-$effect(() => {
-  _infoData = infoData;
-  points = activity.points;
-});
+let visible = $state(false);
+let time = $state(-1);
+let mode = $state('');
+
+points = infoData.exercise.points;
+visible = infoData.visible;
+time = infoData.time;
+mode = infoData.mode;
 
 function handleStartLecture() {
-  //console.log($state.snapshot(_infoData))
-  _infoData.visible = false;
-  durationInSeconds = _infoData.time;
-  //startProgress(timeActivity);
+  visible = false;
+  durationInSeconds = time;
   requestID = requestAnimationFrame(startProgress);
 }
 
@@ -59,24 +57,30 @@ function startProgress() {
       //console.log("¡Actividad completada!");
       cancelAnimationFrame(requestID); // Detiene la ejecución en el navegador
       requestID = 0;
-      _infoData.mode = 'normal';
+      mode = 'normal';
     }
   }
 
   requestAnimationFrame(update);
 }
 
+function handleSelectItem(point: number, index: number) {
+  console.log(point, index)
+  console.log($state.snapshot(points))
+  points[point].answers[index].rss = !points[point].answers[index].rss;
+}
+
 </script>
 
 
 <div class="rf">
-  {#if infoData.mode === 'normal'}
+  {#if mode === 'normal'}
 
     <div class="center-exercise">
 
 
       <div class="container-activity">
-        <h1 class="question-test">{activity.question}</h1>
+        <h1 class="question-test">{infoData.exercise.question}</h1>
         {#each points as qs, point}
           <div class="container-question">
             <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
@@ -99,8 +103,12 @@ function startProgress() {
 
             <div class="container-items-answer">
               {#each qs.answers as answer, index}
-                <div class="container-answer" class:rst-point={answer.rst}>
-                  <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
+                <div 
+                  class="container-answer" 
+                  class:rst-point={answer.rss} 
+                  onclick={()=>handleSelectItem(point, index)} 
+                  onkeyup={()=>{}} role="button" tabindex="0">
+                  <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rss}>Respuesta {index + 1}</div></div>
                   {#if answer.image.length !== 0}
                     <div class="wr-image-answer">
                       <img class="image-question" src={answer.image} alt="" />
@@ -118,23 +126,22 @@ function startProgress() {
       </div>
     </div>
 
-  {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
+  {:else if mode === 'lecture' && visible} <!-- Mensaje inicio de lectura -->
 
     <div class="box-info-lecture">
       <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {activity.question}</p>
+      <p class="title-lecture">Título: {infoData.exercise.question}</p>
       <div class="wr-img-lecture"><img src={reading} alt="" /></div>
       <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
-  {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
+  {:else if mode === 'lecture' && !visible} <!-- Muestra la lectura -->
 
     <div class="center-exercise">
       <div class="wrapper-lecture" transition:fade>
         <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{activity.question}</h2>
-        <p class="p-lecture">{activity.content}</p>
-        <button class="btn-break" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
+        <h2 class="title-lecture">{infoData.exercise.question}</h2>
+        <p class="p-lecture">{infoData.exercise.content}</p>
       </div>
     </div>
 
@@ -174,21 +181,6 @@ progress::-moz-progress-bar {
   width: 100%;
   left: 0;
   height: 9px;
-}
-.btn-break {
-  font-family: var(--font-normal);
-  padding: 0.6em 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  background: var(--bg-blue);
-  color: #fff;
-  transition: var(--transition);
-  margin-top: 1em;
-}
-.btn-break:hover {
-  background: var(--bg-blue-hover);
 }
 .rf {
   width: 100%;
