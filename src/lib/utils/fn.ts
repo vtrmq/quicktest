@@ -38,9 +38,13 @@ export function typeActivity(type: string) {
 export function typeExerc(type: string) {
   switch(type) {
     case 'select': type = 'Actividad de selección'; break;
-    case 'point-out': type = 'Colocar palabras'; break;
+    case 'point-out': type = 'Señalar partes'; break;
     case 'morphosyntax': type = 'Morfosintaxis'; break;
     case 'match': type = 'Unir conceptos'; break;
+    case 'character': type = 'Completar espacios'; break;
+    case 'test': type = 'Test'; break;
+    case 'test-pdf': type = 'Test PDF'; break;
+    case 'test-fs': type = 'Audio'; break;
   }
   return type;
 }

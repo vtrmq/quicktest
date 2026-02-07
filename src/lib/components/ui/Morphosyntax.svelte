@@ -208,11 +208,11 @@ loadSintax();
 
 <style>
 .board-morpho-bx {
-    position: relative;
-    display: flex;
-    margin: auto;
-    height: calc(100% - 10px);
-    overflow-y: auto;
+  position: relative;
+  display: flex;
+  /*margin: auto;*/
+  max-height: calc(100% - 10px);
+  overflow-y: auto;
 }
 .wrapper-board-morpho-bx {
   width: 100%;
@@ -223,7 +223,7 @@ loadSintax();
   padding: 2em 1em 1em;
   border-radius: var(--border-radius);
   background: #fff;
-  border: 2px solid #333;
+  border: 2px solid var(--bg-header-synt);
 }
 .wr-btns {
   display: flex;

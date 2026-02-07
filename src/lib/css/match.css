@@ -12,7 +12,7 @@
   overflow-y: auto;
   /*background: var(--bg-box-data);*/
   transition: var(--transition);
-  border: 2px solid #333;
+  border: 2px solid var(--bg-header-synt);
   border-radius: 8px;
   padding: 10px;
 }
@@ -62,6 +62,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 1em;
+  width: 40%;
 }
 .mg-center {
   margin: 0 auto;

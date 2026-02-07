@@ -8,6 +8,8 @@ import {
   Match,
   Morphosyntax,
   PointOut,
+  SelectWord,
+  Character,
 } from '$lib/components';
 
 let { data } = $props();
@@ -102,6 +104,14 @@ onDestroy(()=>{
         {:else if type === 'point-out'}
 
           <PointOut {indexExercise} {infoData} />
+
+        {:else if type === 'select'}
+
+          <SelectWord {indexExercise} {infoData} />
+
+        {:else if type === 'character'}
+
+          <Character {indexExercise} {infoData} />
 
         {/if}
       {/key}

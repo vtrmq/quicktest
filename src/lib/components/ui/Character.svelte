@@ -18,81 +18,64 @@ type Word = {
   value: boolean;
   word: string;
 };
-type InfoData = {
-  mode: string;
-  visible: boolean;
-  time: number;
-}
 
-let { activity, indexExercise = -1, infoData } = $props();
+let { indexExercise = -1, infoData } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
 let indexOptWord = $state(-1);
 let words: Word[] = $state([]);
-let _infoData: InfoData = $state({mode: '', visible: false, time: 0});
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
 let durationInSeconds = 0;
+let visible = $state(false);
+let time = $state(-1);
+let mode = $state('');
 
-$effect(() => {
-  _infoData = infoData;
-  question = activity.question;
-  words = activity.words;
-  options = activity.optionSuboptions;
-  indexOptWord = -1;
-});
+question = infoData.exercise.question;
+words = infoData.exercise.words;
+options = infoData.exercise.optionSuboptions;
+visible = infoData.visible;
+time = infoData.time;
+mode = infoData.mode;
+
+indexOptWord = -1;
 
 // =============================================
 
-function barajarWords(array: Option[]) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function canAddWord(arr: Option[], word: string): boolean {
-  const normalized = word.trim().toLowerCase();
-  return !arr.some(
-    item => item.option.trim().toLowerCase() === normalized
-  );
-}
-
-function removeWord(arr: Option[], word: string): Option[] {
-  const normalized = word.trim().toLowerCase();
-  return arr.filter(
-    item => item.option.trim().toLowerCase() !== normalized
-  );
-}
-
 function handleSelectWord(index: number) {
-  if (words[index].value === false) {
-    words[index].value = !words[index].value;
-    const word = words[index].word;
-    if (canAddWord(options, word)) {
-      options.push({option: word.toLowerCase()});
-      options = barajarWords(options);
-    }
-  } else if (words[index].value === true) {
-    words[index].value = !words[index].value;
-    const word = words[index].word;
-    let sw = true;
-    for (let i = 0; i < words.length; i++) {
-      if (words[i].value && words[i].word.toLowerCase() === word.toLowerCase()) {
-        sw = false;
-        break;
+  if (indexOptWord === -1 && words[index].selection_word === '') {
+    toast?.view({
+      type: 'fail',
+      message: 'Selecciona una opción',
+      time: 3500
+    });
+    return;
+  }
+
+  console.log(indexOptWord)
+  if (indexOptWord !== -1) {
+    let word = words[index].word.toLowerCase();
+    let option = options[indexOptWord].option.toLowerCase();
+    console.log(word)
+    console.log($state.snapshot(option))
+    if (word === option && words[index].selection_word === '') {
+      words[index].selection_word = words[index].word;
+    } else if (word !== option && words[index].selection_word === '') {
+      // Verificar si la primera letra de word es mayúscula si lo es colocar la primera letra en mayúscula a option para que parezca igual
+      words[index].selection_word = option;
+    } else if (words[index].selection_word !== '') {
+      let copy = words[index].selection_word;
+      words[index].selection_word = '';
+      if (copy.toLowerCase() !== option) {
+        words[index].selection_word = option;
       }
     }
-    if (sw) {
-      // Quitar palabra de options
-      options = removeWord(options, word);
-    }
+    console.log($state.snapshot(words))
+  } else {
+    words[index].selection_word = '';
   }
-  let _words = JSON.parse(JSON.stringify(words))
-  let _options = JSON.parse(JSON.stringify(options))
-  activityLocalstore.character(indexExercise, _words, _options);
+
 }
 
 function handleSelectOptWord(index: number) {
@@ -101,8 +84,8 @@ function handleSelectOptWord(index: number) {
 
 function handleStartLecture() {
   //console.log($state.snapshot(_infoData))
-  _infoData.visible = false;
-  durationInSeconds = _infoData.time;
+  visible = false;
+  durationInSeconds = time;
   //startProgress(timeActivity);
   requestID = requestAnimationFrame(startProgress);
 }
@@ -131,7 +114,7 @@ function startProgress() {
       //console.log("¡Actividad completada!");
       cancelAnimationFrame(requestID); // Detiene la ejecución en el navegador
       requestID = 0;
-      _infoData.mode = 'normal';
+      mode = 'normal';
     }
   }
 
@@ -143,7 +126,7 @@ function startProgress() {
 <Toast bind:this={toast} />
 
 <div class="rf">
-  {#if infoData.mode === 'normal'}
+  {#if mode === 'normal'}
 
     <div class="center-exercise">
       <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
@@ -159,7 +142,7 @@ function startProgress() {
                 {#if w.type === "w" && w.sign === 0}
                   <button 
                     class="word-character pointer" class:raya-character={w.value}
-                    onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : ''}</button>
+                    onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                 {:else if type === "s" && w.type === "w" && w.sign === 3}
                   <div class="flex-select word-character">
                     <button 
@@ -173,7 +156,7 @@ function startProgress() {
                     <div class="flex-select word-character">
                       <button 
                         class="fnt-select pointer last-word-character" class:raya-character={w.value}
-                        onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : ''}</button>
+                        onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                       <span class="sign-select">{!words[index + 1].value ? words[index + 1].word : ''}</span>
                     </div>
                   {/if}
@@ -204,7 +187,7 @@ function startProgress() {
             <div class="bx-select">
               {#each options as opt, index}
                 {@const num = normalizeToDigit(index)}
-                <button class="w-opt-select {colors[num]}" 
+                <button class="w-opt-select {colors[num]}" class:resaltar={index === indexOptWord}
                   onclick={()=>handleSelectOptWord(index)}>{opt.option}</button>
               {/each}
             </div>
@@ -215,23 +198,23 @@ function startProgress() {
 
     </div>
 
-  {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
+  {:else if mode === 'lecture' && visible === true} <!-- Mensaje inicio de lectura -->
 
     <div class="box-info-lecture">
       <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {activity.question}</p>
+      <p class="title-lecture">Título: {infoData.exercise.question}</p>
       <div class="wr-img-lecture"><img src={reading} alt="" /></div>
       <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
-  {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
+  {:else if mode === 'lecture' && visible === false} <!-- Muestra la lectura -->
 
     <div class="center-exercise">
       <div class="wrapper-lecture" transition:fade>
         <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{activity.question}</h2>
-        <p class="p-lecture">{activity.content}</p>
-        <button class="btn-break" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
+        <h2 class="title-lecture">{infoData.exercise.question}</h2>
+        <p class="p-lecture">{infoData.exercise.content}</p>
+        <button class="btn-break" onclick={()=>mode = 'normal'}>Saltar</button>
       </div>
     </div>
 

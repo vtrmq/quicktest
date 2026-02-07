@@ -1360,7 +1360,7 @@ $effect(()=>{
           <div class="wr-w-figure">
             <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
           </div>
-          <div class="label-figure">Colocar palabras</div>
+          <div class="label-figure">Completar espacios</div>
           <button class="btn-create" onclick={()=>handleIntro("character")}>Crear</button>
         </div>
 
@@ -1428,7 +1428,7 @@ $effect(()=>{
 
       <p class="label-type">Seleccionar palabras</p>
       <div class="wr-space">
-        <TextArea name="def" label="Pregunta" bind:value={question} --height-text-area="80px" isError={false} />
+        <TextArea name="def" label="Descripción" bind:value={question} --height-text-area="80px" isError={false} />
         <TextArea name="ghi" label="Texto de la actividad" bind:value={content} --height-text-area="150px" isError={false} />
       </div>
       <div class="container-inputs pd-1-0">
@@ -1483,12 +1483,12 @@ $effect(()=>{
         {#if typeExercise === 'lecture'}
           Comprensión de lectura (Cloze Test):<br>
         {/if}
-        Colocar palabras
+        Completar espacios
       </p>
       <div class="wr-space">
         <TextArea 
           name="def" 
-          label={typeExercise === 'normal' ? 'Pregunta' : 'Título de la lectura'} 
+          label={typeExercise === 'normal' ? 'Descripción' : 'Título de la lectura'} 
           bind:value={question} --height-text-area={typeExercise === 'normal' ? '80px' : '36px'} isError={false} />
         <TextArea name="ghi" label={typeExercise === 'normal' ? 'Texto de la actividad' : 'Lectura'} bind:value={content} --height-text-area="150px" isError={false} />
         {#if typeExercise === 'lecture'}
@@ -2178,6 +2178,7 @@ to {
 .label-activity-exercise {
   font-family: var(--font-normal);
   font-size: 1.3em;
+  font-weight: 600;
 }
 .label-activity-exercise.resaltar {
   font-weight: 900;

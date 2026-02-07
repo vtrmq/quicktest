@@ -4,8 +4,9 @@
   gap: 0.5em;
 }
 .raya-character {
-  width: 35px;
   border-bottom: 2px solid #333;
+  min-width: 35px;
+  top: 1px;
 }
 .word-character {
   margin-bottom: 0.2em;
@@ -17,7 +18,7 @@
   height: 25.38px;
 }
 .last-word-character {
-  padding: 0.2em 0 0.2em 0.2em;
+  /*padding: 0.2em 0 0.2em 0.2em;*/
   position: relative;
   font-family: var(--font-normal);
   background: transparent;
@@ -528,7 +529,8 @@
 }
 .body-exercise-select {
   display: flex;
-  height: 100%;
+  /*height: 100%;*/
+  /*max-height: calc(100% - 0px);*/
   overflow: hidden;
   /*background: var(--bg-box-data);*/
   transition: var(--transition);
@@ -703,6 +705,10 @@
   font-size: 1em;
   font-family: var(--font-normal);
   transition: var(--transition);
+}
+.w-opt-select.resaltar {
+  border: 2px solid var(--border-word-select);
+  box-shadow: #000000 0px 0px 0px 4px;
 }
 .w-opt-select-sub-select {
   padding: 0.3em 1em;

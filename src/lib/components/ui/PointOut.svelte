@@ -147,7 +147,7 @@ function paint() {
   overflow-x: auto;
   padding: 3px 10px;
   gap: 0.6em;
-  border-top: 2px solid #333;
+  border-top: 2px solid var(--bg-header-synt);
   align-items: center;
 }
 
@@ -167,12 +167,12 @@ function paint() {
   height: 32px;
 }
 .header {
-  background: #fffede;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1em;
-  border-bottom: 2px solid #333;
+  border-bottom: 2px solid var(--bg-header-synt);
   height: 50px;
   font-family: var(--font-normal);
   text-align: center;
@@ -185,7 +185,7 @@ function paint() {
   background: #fff;
   display: grid;
   grid-template-rows: 50px 1fr 60px;
-  border: 2px solid #333;
+  border: 2px solid var(--bg-header-synt);
   border-radius: 8px;
   overflow: hidden;
 }

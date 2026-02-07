@@ -443,6 +443,11 @@ function handleDraw() {
   border: none;
   cursor: pointer;
   width: 100px;
+  background: #bee6ff;
+  transition: var(--transition);
+}
+.btn-option-menu:hover {
+  background: #a6d9f9;
 }
 .btn-word-option {
   font-family: var(--font-normal);
@@ -549,7 +554,7 @@ function handleDraw() {
   color: #fff;
 }
 .toolbar {
-  background: #68c7f5;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;

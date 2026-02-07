@@ -79,6 +79,7 @@ function handleSelectActivity(index: number) {
 .label-activity-exercise {
   font-family: var(--font-normal);
   font-size: 1.3em;
+  font-weight: 700;
 }
 .label-activity-exercise.resaltar {
   font-weight: 900;

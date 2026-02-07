@@ -19,6 +19,7 @@
   overflow-y: hidden;
   border-radius: var(--border-radius);
   border: 2px solid var(--bg-header-synt);
+  /*max-height: calc(100% - 10px);*/
 }
 .resaltar-bx-morpho {
   background: var(--highlight-synt);

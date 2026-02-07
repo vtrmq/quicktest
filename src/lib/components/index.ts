@@ -66,4 +66,6 @@ export { default as ListExercises } from './ui/ListExercises.svelte';
 export { default as Morphosyntax } from './ui/Morphosyntax.svelte';
 export { default as Match } from './ui/Match.svelte';
 export { default as PointOut } from './ui/PointOut.svelte';
+export { default as SelectWord } from './ui/SelectWord.svelte';
+export { default as Character } from './ui/Character.svelte';
 
