@@ -14,11 +14,28 @@ import {
   TestEdit, 
   MatchEdit, 
   PointOutEdit, 
-  TestPDFEdit 
+  TestPDFEdit,
 } from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 import { onDestroy } from 'svelte';
+
+/*
+type Words = {
+  id: number;
+  word: string;
+};
+type Point = {
+  answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
+  images: []; 
+  image: ''; 
+  words: Words[];
+  question: '';
+  answersFS: [{id: number, word: string;}];
+  text: number;
+  audio: string;
+}
+ */
 
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
@@ -37,20 +54,6 @@ type Item = {
   points: [];
   type: string;
 };
-type Words = {
-  id: number;
-  word: string;
-};
-type Point = {
-  answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
-  images: []; 
-  image: ''; 
-  words: Words[];
-  question: '';
-  answersFS: [{id: number, word: string;}];
-  text: number;
-  audio: string;
-}
 type Word = {
   color: string;
   errors: number;
@@ -80,7 +83,6 @@ let { data } = $props();
 
 let items = data.items;
 let type = $state('info');
-let points: Point[] = $state([]);
 
 const root = filtrarParametros(page.url.href, ['topicId']);
 
@@ -116,7 +118,7 @@ function handleActivity(index: number, _items: Item[]) {
     } else if (type === 'test') {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'test-fs') {
-      points = _items[index].points;
+      activity = _items[index].exercise as Exercise;
     } else if (type === 'test-pdf') {
       testPDF = _items[index].exercise;
     } else if (type === 'morphosyntax') {
@@ -189,7 +191,7 @@ onDestroy(()=>{
 
         {:else if type === 'test-fs'}
 
-          <TestFsEdit pointsT={points} />
+          <TestFsEdit {activity} />
 
         {:else if type === 'morphosyntax'}
 

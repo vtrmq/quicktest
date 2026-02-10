@@ -1,7 +1,6 @@
 <script lang="ts">
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
-import { onMount } from 'svelte';
 
 /* =======================
    TIPOS

@@ -1,8 +1,8 @@
 <script lang="ts">
-//import { activityLocalstore } from '$lib/store/activity';
-import { colorSynt, bgColorSynt, removeFinalPunctuationMark, wordObjects } from '$lib/utils';
+import { activityLocalstore } from "$lib/store/activity_student";
+import { colorSynt, bgColorSynt, wordObjects } from '$lib/utils';
 import { Select } from "$lib/components";
-let { infoData, indexExercise = -1 } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 
 type ArrWord = {
   type: string;
@@ -43,7 +43,6 @@ arrWordsBox = infoData.exercise.syntax.arrWordsBox;
 
 function selectSynt(e: any, row: number, column: number) {
   e.stopPropagation();
-  console.log(row, column)
   numRow = row;
   numColumn = column;
   arrWordsBox[numRow][numColumn];
@@ -94,15 +93,14 @@ function handleCancel() {
 
 function storeWordsBox() {
   let copyArrWordsBox = JSON.parse(JSON.stringify(arrWordsBox));
-  console.log(copyArrWordsBox)
-  //activityLocalstoreStudent.morphosyntax(store.data.index, copyArrWordsBox);
+  activityLocalstore.morphosyntax(indexExercise, JSON.stringify(copyArrWordsBox), scales);
 }
 
 function handleAcceptBox() {
   let _morphosyntax = select_morphosyntax;
   if (_morphosyntax.length === 0) {
-    const info = { message: 'Selecciona una opción' };
-    console.log(info)
+    //const info = { message: 'Selecciona una opción' };
+    //console.log(info)
     return;
   }
   let morphosyntax = arrWordsBox[numRow][numColumn].label.morphosyntax;

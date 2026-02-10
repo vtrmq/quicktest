@@ -1,8 +1,7 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
+import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
-import { activityLocalstore } from '$lib/store/activity';
-import { onMount } from 'svelte';
 import { colorSynt } from '$lib/utils';
 
 type Side = 'left' | 'right';
@@ -16,7 +15,7 @@ type SelectedWord = {
   side: Side;
 }
 
-let { infoData, indexExercise = -1 } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
@@ -35,25 +34,22 @@ let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
 let durationInSeconds = 0;
 let ctx: CanvasRenderingContext2D | null = null;
-let connections: Connection[] = [];
 let swHeight = false;
 let IdMatch = '';
 
-$effect(() => {
-  console.log($state.snapshot(infoData))
-  leftWords = infoData.exercise.leftWords;
-  rightWords = infoData.exercise.rightWords;
-  wordConnections = infoData.exercise.wordConnectionsStudent;
-  mode = infoData.mode;
-  time = infoData.time;
+leftWords = infoData.exercise.leftWords;
+rightWords = infoData.exercise.rightWords;
+wordConnections = infoData.exercise.wordConnectionsStudent;
+mode = infoData.mode;
+time = infoData.time;
+
+setTimeout(()=>{
   viewConnections();
-});
+}, 500);
 
 function saveConnections() {
-  wordConnections = connections;
-  let arrConnections = JSON.parse(JSON.stringify(connections))
-  console.log(arrConnections)
-  //activityLocalstore.connectionsMatch(indexExercise, arrConnections);
+  let arrConnections = JSON.parse(JSON.stringify(wordConnections))
+  activityLocalstore.match(indexExercise, JSON.stringify(arrConnections), scales);
 }
 
 function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
@@ -61,13 +57,13 @@ function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
     left: leftWord.id,
     right: rightWord.id
   };
-  const existingConnection = connections.find((c: Connection) => 
+  const existingConnection = wordConnections.find((c: Connection) => 
     c.left === connection.left && c.right === connection.right);
 
   if (existingConnection) {
-    connections = connections.filter((c: Connection) => c !== existingConnection);
+    wordConnections = wordConnections.filter((c: Connection) => c !== existingConnection);
   } else {
-    connections.push(connection);
+    wordConnections.push(connection);
   }
   saveConnections();
   drawConnections();
@@ -148,7 +144,7 @@ function drawConnections() {
   if (ctx) {
     ctx.clearRect(0, 0, canvasMatch.width, canvasMatch.height);
 
-    connections.forEach((connection: Connection, index: number) => {
+    wordConnections.forEach((connection: Connection, index: number) => {
 
       //const leftWord: any = Array.from(leftColumn.children).find(el => el.id === connection.left);
       //const rightWord: any = Array.from(rightColumn.children).find(el => el.id === connection.right);
@@ -200,7 +196,7 @@ function viewConnections() {
   updateCanvasSize();
   if (mode === 'normal') {
     ctx = canvasMatch.getContext('2d');
-    connections = infoData.exercise.wordConnectionsStudent;
+    wordConnections = infoData.exercise.wordConnectionsStudent;
     drawConnections();
     window.addEventListener('resize', updateCanvasSize);
   }
@@ -243,10 +239,6 @@ function startProgress() {
 
   requestAnimationFrame(update);
 }
-
-onMount(()=>{
-  //viewConnections();
-});
 
 </script>
 

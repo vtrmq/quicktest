@@ -1,7 +1,7 @@
 <script lang="ts">
 import { reemplazarEspacios } from '$lib/utils';
-import { activityLocalstore } from '$lib/store/activity';
-let { infoData, indexExercise = -1 } = $props();
+import { activityLocalstore } from "$lib/store/activity_student";
+let { infoData, indexExercise = -1, scales } = $props();
 
 type Option = { id: string; option: string };
 type Line = {
@@ -85,15 +85,13 @@ function externalPoint(a: { x: number; y: number }, b: { x: number; y: number })
 }
 
 function handlePlaceWord(index: number, id: string) {
-  console.log(index, id)
-  console.log($state.snapshot(placedOptions))
-  console.log($state.snapshot(selectedOption))
   placedOptions[index].resp = selectedOption?.option as string;
-  if (id === placedOptions[index].id) {
-    console.log(true)
+  if (id === selectedOption?.id) {
+    placedOptions[index].value = true;
   } else {
-    console.log(false)
+    placedOptions[index].value = false;
   }
+  activityLocalstore.pointOut(indexExercise, JSON.stringify(placedOptions), scales);
 }
 
 function paint() {

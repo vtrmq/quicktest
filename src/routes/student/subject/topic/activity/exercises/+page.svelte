@@ -12,10 +12,13 @@ import {
   Character,
   Test,
   TestPDF,
+  TestFS,
 } from '$lib/components';
 
 let { data } = $props();
 let visible = $state(false);
+//console.log(data)
+let scales = data.info?.scales;
 
 type Item = {
   exercise: {};
@@ -97,15 +100,15 @@ onDestroy(()=>{
       {#key indexExercise}
         {#if type === 'match'}
 
-          <Match {indexExercise} {infoData} />
+          <Match {scales} {indexExercise} {infoData} />
 
         {:else if type === 'morphosyntax'}
 
-          <Morphosyntax {indexExercise} {infoData} />
+          <Morphosyntax {scales} {indexExercise} {infoData} />
 
         {:else if type === 'point-out'}
 
-          <PointOut {indexExercise} {infoData} />
+          <PointOut {scales} {indexExercise} {infoData} />
 
         {:else if type === 'select'}
 
@@ -122,6 +125,10 @@ onDestroy(()=>{
         {:else if type === 'test-pdf'}
 
           <TestPDF {indexExercise} {infoData} />
+
+        {:else if type === 'test-fs'}
+
+          <TestFS {indexExercise} {infoData} />
 
         {/if}
       {/key}

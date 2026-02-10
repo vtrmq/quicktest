@@ -222,3 +222,40 @@ export function reemplazarEspacios(frase: string): string {
   // Si es una sola palabra, devuelve la frase sin cambios
   return frase;
 }
+
+export function handleResultNota(
+  totalPoints: number,
+  sumPoints: number,
+  scale: { scale: string; min_value: number; max_value: number }[]
+): { nota: number; scale: string; percentage: string } {
+  // Obtener rango de notas
+  const minNota = Math.min(...scale.map(s => s.min_value));
+  const maxNota = Math.max(...scale.map(s => s.max_value));
+
+  let nota: number;
+
+  if (sumPoints === 0) {
+    nota = minNota; // Si no tiene puntos, nota mínima (1)
+  } else {
+    // Regla de tres simple: sumPoints → nota
+    nota = (sumPoints * maxNota) / totalPoints;
+  }
+
+  // Asegurar que la nota no supere el máximo
+  if (nota > maxNota) nota = maxNota;
+
+  // Formatear nota
+  const notaFinal = nota % 1 === 0 ? nota : Math.floor(nota * 10) / 10;
+
+  // Porcentaje = nota × 10 (si nota=1 → 10%, nota=5 → 50%, etc.)
+  const percentage = (notaFinal * 10).toFixed(0);
+
+  // Determinar escala
+  const nivel = scale.find(r => notaFinal >= r.min_value && notaFinal <= r.max_value);
+
+  return {
+    nota: notaFinal,
+    scale: nivel?.scale || 'Fuera de rango',
+    percentage
+  };
+}   

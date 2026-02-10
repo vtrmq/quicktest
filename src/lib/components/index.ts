@@ -70,4 +70,5 @@ export { default as SelectWord } from './ui/SelectWord.svelte';
 export { default as Character } from './ui/Character.svelte';
 export { default as Test } from './ui/Test.svelte';
 export { default as TestPDF } from './ui/TestPDF.svelte';
+export { default as TestFS } from './ui/TestFS.svelte';
 

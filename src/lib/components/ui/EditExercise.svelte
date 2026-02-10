@@ -160,6 +160,7 @@ function reset() {
   //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
   arrayQuestionsTestPDF = [];
+  arrayQuestionsTestFS = [];
   //optionSuboptions = [{option: ''}];
 }
 
@@ -771,12 +772,20 @@ function handleDone() {
 
     if (stateExercise === 'new') {
       const exercise = {
-        content: content,
+        content,
         name: fileName,
         file: fileExam, 
         points: arrayQuestionsTestPDF
       }
-      items.push({type:'test-pdf', exercise, value: 0, mode: typeExercise, typeExercise, visible: true, time: timeLecture});
+      items.push({
+        type:'test-pdf', 
+        exercise, 
+        value: 0, 
+        mode: typeExercise, 
+        typeExercise, 
+        visible: true, 
+        time: timeLecture
+      });
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].exercise.content = content;
       items[indexExercise].exercise.name = fileName;
@@ -789,9 +798,18 @@ function handleDone() {
   } else if (sheet === 'test-fs' && arrayQuestionsTestFS.length !== 0) {
 
     if (stateExercise === 'new') {
-      items.push({type:'test-fs', points: arrayQuestionsTestFS, value: 0, mode: typeExercise, typeExercise, visible: true, time: timeLecture});
+      items.push({
+        type:'test-fs', 
+        exercise: {content, points: arrayQuestionsTestFS}, 
+        value: 0, 
+        mode: typeExercise, 
+        typeExercise, 
+        visible: true, 
+        time: timeLecture
+      });
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
-      items[indexExercise].points = arrayQuestionsTestFS;
+      items[indexExercise].exercise.content = content;
+      items[indexExercise].exercise.points = arrayQuestionsTestFS;
     }
 
   // CHARACTER
@@ -1002,7 +1020,7 @@ function handleEditActivity(index: number) {
     sheet = 'test-pdf';
   } else if (type === 'test-fs') {
     content = items[index].exercise.content;
-    arrayQuestionsTestFS = items[index].points;
+    arrayQuestionsTestFS = items[index].exercise.points;
     sheet = 'test-fs';
   } else if (type === 'morphosyntax') {
     content = items[index].exercise.content;
@@ -1758,7 +1776,10 @@ $effect(()=>{
 
     {:else if sheet === 'test-fs'}
 
-      <p class="label-type">Test FS</p>
+      <div class="wr-container-btn-file-pdf">
+        <p class="label-type-test-pdf">Test FS</p>
+        <TextArea name="def" label="Descripción" bind:value={content} --height-text-area="60px" isError={false} />
+      </div>
 
       {#each arrayQuestionsTestFS as qs, point}
 

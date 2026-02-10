@@ -1,5 +1,6 @@
 <script lang="ts">
 import { corregirIEnFrase } from '$lib/utils';
+
 type Words = {
   id: number;
   word: string;
@@ -11,10 +12,10 @@ type Point = {
   audio: string;
 }
 
-let { activity } = $props();
+let { infoData, indexExercise = -1 } = $props();
 let points: Point[] = $state([]);
 
-points = activity.points;
+points = infoData.exercise.points;
 
 function handleSelectWordFS(point: number, index: number) {
   points[point].answersFS.push(points[point].words[index]);
@@ -24,26 +25,26 @@ function handleSelectWordFSRemove(point: number, index: number) {
 }
 </script>
 
-<div class="container-activity">
+<div class="container-activity-fs">
 
-  <h1 class="title-fs">{activity.content}</h1>
+  <h1 class="title-fs">{infoData.exercise.content}</h1>
 
   {#each points as qs, point}
-    <div class="container-question">
-      <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
+    <div class="container-question-fs">
+      <div class="wr-point-number-fs"><div class="point-number-fs">{point + 1}</div></div>
 
       <div class="wr-container-box-fs">
         {#if qs.image.length !== 0}
-          <div class="box-image-question">
-            <div class="wr-image-question">
-              <img class="image-question" src={qs.image} alt="" />
+          <div>
+            <div class="wr-image-question-fs">
+              <img class="image-question-fs" src={qs.image} alt="" />
             </div>
           </div>
         {/if}
 
         {#if qs.audio.length !== 0}
-          <div class="wr-audio">
-            <audio class="audio" src={qs.audio} controls></audio>
+          <div class="wr-audio-fs">
+            <audio class="audio-fs" src={qs.audio} controls></audio>
           </div>
         {/if}
 
@@ -76,10 +77,10 @@ function handleSelectWordFSRemove(point: number, index: number) {
   padding-bottom: 1em;
   line-height: 28px;
 }
-.container-question {
+.container-question-fs {
   padding: 0.5em 0;
 }
-.wr-point-number {
+.wr-point-number-fs {
   display: flex;
   justify-content: center;
   background: #93deff;
@@ -88,7 +89,7 @@ function handleSelectWordFSRemove(point: number, index: number) {
   margin: 1em 0 2em;
   position: relative;
 }
-.point-number {
+.point-number-fs {
   background: #93deff;
   width: 30px;
   height: 30px;
@@ -99,27 +100,27 @@ function handleSelectWordFSRemove(point: number, index: number) {
   font-family: var(--font-normal);
   font-weight: 600;
 }
-.container-activity {
+.container-activity-fs {
   width: 100%;
   max-width: 500px;
 }
-.wr-image-question {
+.wr-image-question-fs {
   width: 100%;
   position: relative;
   border-radius: var(--border-radius);
   overflow: hidden;
   border: 1px solid #b5c7fb;
 }
-.image-question {
+.image-question-fs {
   width: 100%;
   height: 100%;
   object-fit: fill;
   display: block;
 }
-.audio {
+.audio-fs {
   height: 40px;
 }
-.wr-audio {
+.wr-audio-fs {
   display: flex;
   justify-content: center;
   align-items: end;
