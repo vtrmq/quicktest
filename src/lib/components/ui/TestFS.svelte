@@ -1,4 +1,5 @@
 <script lang="ts">
+import { activityLocalstore } from "$lib/store/activity_student";
 import { corregirIEnFrase } from '$lib/utils';
 
 type Words = {
@@ -12,16 +13,18 @@ type Point = {
   audio: string;
 }
 
-let { infoData, indexExercise = -1 } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 let points: Point[] = $state([]);
 
 points = infoData.exercise.points;
 
 function handleSelectWordFS(point: number, index: number) {
   points[point].answersFS.push(points[point].words[index]);
+  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 function handleSelectWordFSRemove(point: number, index: number) {
   points[point].answersFS.splice(index, 1);
+  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 </script>
 

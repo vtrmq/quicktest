@@ -2,6 +2,7 @@
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
 import { ALFABETO } from '$lib/utils';
+import { activityLocalstore } from "$lib/store/activity_student";
 
 type Point = {
   answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string }]; 
@@ -12,7 +13,7 @@ type Point = {
 
 let points: Point[] = $state([]);
 
-let { infoData, indexExercise = -1 } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
@@ -65,9 +66,8 @@ function startProgress() {
 }
 
 function handleSelectItem(point: number, index: number) {
-  console.log(point, index)
-  console.log($state.snapshot(points))
   points[point].answers[index].rss = !points[point].answers[index].rss;
+  activityLocalstore.test(indexExercise, JSON.stringify(points), scales);
 }
 
 </script>

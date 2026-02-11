@@ -1,10 +1,13 @@
 <script lang="ts">
+import { activityLocalstore } from "$lib/store/activity_student";
+
 type Point = {
   points: [{char: string; rss: boolean; rst: boolean}];
 }
+
 let modeSheet = $state(false);
 
-let { infoData, indexExercise = -1 } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 
 let points: Point[] = $state([]);
 points = infoData.exercise.points;
@@ -15,6 +18,7 @@ function handleModeSheet() {
 
 function handleSelectPoint(point: number, item: number) {
   points[point].points[item].rss = !points[point].points[item].rss
+  activityLocalstore.testPDF(indexExercise, JSON.stringify(points), scales);
 }
 </script>
 

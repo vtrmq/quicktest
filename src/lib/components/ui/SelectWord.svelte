@@ -1,8 +1,9 @@
 <script lang="ts">
 import { Toast } from '$lib/components';
 import { colors } from '$lib/utils';
-import { activityLocalstore } from '$lib/store/activity';
-let { infoData, indexExercise = -1 } = $props();
+import { activityLocalstore } from "$lib/store/activity_student";
+
+let { infoData, indexExercise = -1, scales } = $props();
 
 type Option = {
   option: string;
@@ -47,13 +48,17 @@ function handleSelectWord(index: number) {
       words[index].resp_color = "";
     }
 
-    let wd = JSON.parse(JSON.stringify(words[index]))
-    console.log(wd)
-    //activityLocalstore.wordSelect(indexExercise, index, wd);
+    activityLocalstore.select(indexExercise, JSON.stringify(words), scales);
 
   } else {
     // Si tiene opciones para elegir
     // Si no se ha seleccionado una de las opciones y la palabra tiene información
+    if (indexOptWord === -1 && words[index].resp_color.length !== 0) {
+      words[index].resp_color = "";
+      words[index].resp = false;
+      activityLocalstore.select(indexExercise, JSON.stringify(words), scales);
+      return;
+    }
 
     if (indexOptWord === -1 && words[index].resp === false) {
       toast?.view({
@@ -62,27 +67,22 @@ function handleSelectWord(index: number) {
         time: 3500
       });
       return;
-    } else if (indexOptWord === -1 && words[index].resp === true) {
+    }
+
+    if (indexOptWord === -1 && words[index].value === false && words[index].resp === true) {
       words[index].resp_color = "";
-      words[index].selection_word = -1;
       words[index].resp = false;
-      let wd = JSON.parse(JSON.stringify(words[index]))
-      console.log(wd)
-      //activityLocalstore.wordSelect(indexExercise, index, wd);
+      activityLocalstore.select(indexExercise, JSON.stringify(words), scales);
       return;
     }
 
-    words[index].resp = !words[index].resp;
-    if (words[index].resp) {
-      words[index].resp_color = colors[indexOptWord];
-      words[index].selection_word = indexOptWord;
-    } else {
-      words[index].resp_color = "";
-      words[index].selection_word = -1;
+    if (indexOptWord !== -1 && indexOptWord === words[index].selection_word) {
+      words[index].resp = true;
+    } else if (indexOptWord !== -1 && indexOptWord !== words[index].selection_word) {
+      words[index].resp = false;
     }
-    let wd = JSON.parse(JSON.stringify(words[index]))
-    //activityLocalstore.wordSelect(indexExercise, index, wd);
-    console.log(wd)
+    words[index].resp_color = colors[indexOptWord];
+    activityLocalstore.select(indexExercise, JSON.stringify(words), scales);
 
   }
 }

@@ -55,7 +55,6 @@ function handleActivity(index: number, _items: Item[]) {
     type = _items[index].type;
     indexExercise = index;
     infoData = _items[index];
-    //console.log($state.snapshot(infoData))
     setTimeout(() => {
       visible = true;
     }, 200);
@@ -112,23 +111,23 @@ onDestroy(()=>{
 
         {:else if type === 'select'}
 
-          <SelectWord {indexExercise} {infoData} />
+          <SelectWord {scales} {indexExercise} {infoData} />
 
         {:else if type === 'character'}
 
-          <Character {indexExercise} {infoData} />
+          <Character {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test'}
 
-          <Test {indexExercise} {infoData} />
+          <Test {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-pdf'}
 
-          <TestPDF {indexExercise} {infoData} />
+          <TestPDF {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-fs'}
 
-          <TestFS {indexExercise} {infoData} />
+          <TestFS {scales} {indexExercise} {infoData} />
 
         {/if}
       {/key}

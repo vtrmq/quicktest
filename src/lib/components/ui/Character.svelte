@@ -3,7 +3,7 @@ import { fade } from 'svelte/transition';
 import { Toast } from '$lib/components';
 import reading from '$lib/assets/images/reading.png';
 import { colors, normalizeToDigit } from '$lib/utils';
-import { activityLocalstore } from '$lib/store/activity';
+import { activityLocalstore } from "$lib/store/activity_student";
 
 type Option = {
   option: string;
@@ -19,7 +19,7 @@ type Word = {
   word: string;
 };
 
-let { indexExercise = -1, infoData } = $props();
+let { infoData, indexExercise = -1, scales } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -53,28 +53,33 @@ function handleSelectWord(index: number) {
     return;
   }
 
-  console.log(indexOptWord)
   if (indexOptWord !== -1) {
     let word = words[index].word.toLowerCase();
     let option = options[indexOptWord].option.toLowerCase();
-    console.log(word)
-    console.log($state.snapshot(option))
+
     if (word === option && words[index].selection_word === '') {
+      words[index].resp = !words[index].resp;
       words[index].selection_word = words[index].word;
     } else if (word !== option && words[index].selection_word === '') {
       // Verificar si la primera letra de word es mayúscula si lo es colocar la primera letra en mayúscula a option para que parezca igual
-      words[index].selection_word = option;
+      words[index].resp = false;
+      words[index].selection_word = options[indexOptWord].option;
     } else if (words[index].selection_word !== '') {
-      let copy = words[index].selection_word;
-      words[index].selection_word = '';
-      if (copy.toLowerCase() !== option) {
-        words[index].selection_word = option;
+
+      if (word === option) {
+        words[index].resp = true;
+        words[index].selection_word = words[index].word;
+      } else {
+        words[index].resp = false;
+        words[index].selection_word = options[indexOptWord].option;
       }
     }
-    console.log($state.snapshot(words))
   } else {
+    words[index].resp = false;
     words[index].selection_word = '';
   }
+  
+  activityLocalstore.character(indexExercise, JSON.stringify(words), scales);
 
 }
 

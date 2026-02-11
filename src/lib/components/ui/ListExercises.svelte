@@ -9,9 +9,6 @@ import circleX from '$lib/assets/svg/circle-x.svg?raw';
 let viewBox = $state(false); // false
 let itemResaltado = $state(-1);
 let scales = info.scales;
-
-console.log(info)
-console.log(items)
 console.log(scales)
 
 function handleViewBoxExercise() {
