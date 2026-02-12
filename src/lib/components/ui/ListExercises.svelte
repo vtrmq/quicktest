@@ -1,14 +1,16 @@
 <script lang="ts">
-import { typeExerc } from "$lib/utils"
+import { typeExerc, scaleNota } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
-let { info, items, handleActivity } = $props();
+let { info, items, handleActivity, handleViewResult } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
+console.log(info)
 
 let viewBox = $state(false); // false
 let itemResaltado = $state(-1);
 let scales = info.scales;
+let viewResult = $state(0);
 console.log(scales)
 
 function handleViewBoxExercise() {
@@ -19,7 +21,13 @@ function handleSelectActivity(index: number) {
   itemResaltado = index;
   viewBox = !viewBox;
   const _items = activityLocalstore.get();
-  handleActivity(index, _items);
+  handleActivity(index, _items, viewResult);
+}
+
+function handleViewResultX(option: string) {
+  viewResult = option === 'result' ? 1 : 0;
+  items = activityLocalstore.get();
+  handleViewResult(viewResult);
 }
 
 </script>
@@ -27,7 +35,16 @@ function handleSelectActivity(index: number) {
 <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
 <div class="container-edit-exercise" class:view-box={viewBox}>
   <div class="header-box-exercise">
-    <h2 class="label-header">Lista de actividades</h2>
+    <div class="in-header">
+      <h2 class="label-header">Actividades</h2>
+      {#if info.result.type_general === 'R'}
+        {#if viewResult === 0}
+          <button class="btn-result" onclick={()=>handleViewResultX('result')}>Resultados</button>
+        {:else}
+          <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Seguir trabajando</button>
+        {/if}
+      {/if}
+    </div>
     <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html circleX}</button>
   </div>
 
@@ -38,21 +55,30 @@ function handleSelectActivity(index: number) {
       <h2 class="activity">{info.activity}</h2>
     </div>
     <div class="row-items">
-      {#each items as item, index}
-        <div class="row-link-activity" class:resaltar={itemResaltado === index}>
-          <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-            <div class="box-item-link">{index + 1}</div>
-            <div class="container-info-exerc">
-              <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
-              {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
-                <div class="text-left">{item.exercise.content}</div>
-              {:else}
-                <div class="text-left">{item.exercise.question}</div>
-              {/if}
-            </div>
-          </button>
-        </div>
-      {/each}
+      {#if viewResult === 0 || viewResult === 1}
+        {#each items as item, index}
+          <div class="row-link-activity" class:resaltar={itemResaltado === index}>
+            <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
+              <div class="box-item-link">{index + 1}</div>
+              <div class="container-info-exerc">
+                <div class="wr-info-result">
+                  <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
+                  {#if viewResult === 1}
+                    <span class="item-value">Nota: {item.value} {scaleNota(scales, item.value).scale}</span>
+                  {/if}
+                </div>
+                {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
+                  <div class="text-left">{item.exercise.content}</div>
+                {:else}
+                  <div class="text-left">{item.exercise.question}</div>
+                {/if}
+              </div>
+            </button>
+          </div>
+        {/each}
+      {:else if viewResult === 2}
+        Enviar test
+      {/if}
     </div>
 
   </div>
@@ -65,6 +91,35 @@ function handleSelectActivity(index: number) {
     color: #fff;
     stroke-width: 3px;
   }
+}
+.item-value {
+  font-weight: 800;
+  color: #393939;
+}
+.wr-info-result {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+.in-header {
+  display: flex;
+  justify-content: space-between;
+  width: 86%;
+  gap: 1em;
+}
+.btn-result {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  background: #7b68ee;
+  color: #fff;
 }
 .container-info-exerc {
   display: flex;

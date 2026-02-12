@@ -19,7 +19,7 @@ type Word = {
   word: string;
 };
 
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -44,6 +44,8 @@ indexOptWord = -1;
 // =============================================
 
 function handleSelectWord(index: number) {
+  if (viewResult === 1) return;
+
   if (indexOptWord === -1 && words[index].selection_word === '') {
     toast?.view({
       type: 'fail',
@@ -84,6 +86,7 @@ function handleSelectWord(index: number) {
 }
 
 function handleSelectOptWord(index: number) {
+  if (viewResult === 1) return;
   indexOptWord = indexOptWord === -1 || indexOptWord !== index ? index : -1;
 }
 
@@ -147,6 +150,7 @@ function startProgress() {
                 {#if w.type === "w" && w.sign === 0}
                   <button 
                     class="word-character pointer" class:raya-character={w.value}
+                    class:item-bad={(w.value === true && w.resp === false) && viewResult === 1}
                     onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                 {:else if type === "s" && w.type === "w" && w.sign === 3}
                   <div class="flex-select word-character">
@@ -161,6 +165,7 @@ function startProgress() {
                     <div class="flex-select word-character">
                       <button 
                         class="fnt-select pointer last-word-character" class:raya-character={w.value}
+                        class:item-bad={(w.value === true && w.resp === false) && viewResult === 1}
                         onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                       <span class="sign-select">{!words[index + 1].value ? words[index + 1].word : ''}</span>
                     </div>
@@ -227,6 +232,11 @@ function startProgress() {
 </div>
 
 <style>
+.item-bad {
+  background: #c70101;
+  color: #fff;
+  border: 1px solid #9d0303;
+}
 progress {
   appearance: none;       /* Quita el estilo nativo */
   -webkit-appearance: none;

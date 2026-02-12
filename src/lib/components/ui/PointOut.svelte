@@ -1,7 +1,8 @@
 <script lang="ts">
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
-let { infoData, indexExercise = -1, scales } = $props();
+import { onMount } from 'svelte';
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 
 type Option = { id: string; option: string };
 type Line = {
@@ -29,11 +30,12 @@ let optionSuboptions = $state<Option[]>([]);
 let lines = $state<Line[]>([]);
 let selectedOption = $state<Option | null>(null);
 
-$effect(() => {
-  placedOptions = infoData.exercise.placedOptions;
-  imagenPointOut = infoData.exercise.imagePointOut;
-  optionSuboptions = infoData.exercise.optionSuboptions;
-  lines = infoData.exercise.lines;
+placedOptions = infoData.exercise.placedOptions;
+imagenPointOut = infoData.exercise.imagePointOut;
+optionSuboptions = infoData.exercise.optionSuboptions;
+lines = infoData.exercise.lines;
+
+onMount(()=>{
   paint();
 });
 
@@ -85,6 +87,7 @@ function externalPoint(a: { x: number; y: number }, b: { x: number; y: number })
 }
 
 function handlePlaceWord(index: number, id: string) {
+  if (viewResult === 1) return;
   placedOptions[index].resp = selectedOption?.option as string;
   if (id === selectedOption?.id) {
     placedOptions[index].value = true;
@@ -120,7 +123,9 @@ function paint() {
       {#each placedOptions as item, index (item.id)}
         <button
           class="placed"
-          style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.id)}><span>{item.resp}</span>
+          style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.id)} 
+          class:item-bad={item.value === false && viewResult === 1}>
+          <span>{item.resp}</span>
         </button>
       {/each}
     </div>
@@ -131,7 +136,7 @@ function paint() {
     {#each optionSuboptions as opt}
       <button
         class="btn-word-option"
-        onclick={() => {selectedOption = opt}}
+        onclick={() => {viewResult === 0 ? selectedOption = opt : ()=>{}}}
         class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
     {/each}
   </div>
@@ -231,5 +236,10 @@ function paint() {
   white-space: nowrap;
   min-width: 50px;
   height: 30px;
+}
+.placed.item-bad {
+  background: #c70101;
+  color: #fff;
+  border: 1px solid #9d0303;
 }
 </style>

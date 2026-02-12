@@ -17,7 +17,7 @@ import {
 
 let { data } = $props();
 let visible = $state(false);
-//console.log(data)
+
 let scales = data.info?.scales;
 
 type Item = {
@@ -27,6 +27,7 @@ type Item = {
 };
 
 type Info = {
+  result: object;
   activity: string;
   activityId: number;
   courseId: number;
@@ -44,12 +45,16 @@ let info: Info = data.info as Info;
 let indexExercise = $state(-1);
 
 let infoData = $state();
+let viewResult = $state(0);
+
 
 onMount(()=>{
   visible = true;
 });
 
-function handleActivity(index: number, _items: Item[]) {
+function handleActivity(index: number, _items: Item[], _viewResult: number) {
+
+  viewResult = _viewResult;
   if (index !== -1) {
     visible = false;
     type = _items[index].type;
@@ -75,6 +80,10 @@ onDestroy(()=>{
   //activityLocalstore.clear();
 });
 
+function handleViewResult(_viewResult: number) {
+  viewResult = _viewResult;
+}
+
 </script>
 
 
@@ -82,7 +91,7 @@ onDestroy(()=>{
 
   <HeaderExercise>
     <span>&nbsp;</span>
-    <ListExercises {info} items={items} {handleActivity} />
+    <ListExercises {info} items={items} {handleActivity} {handleViewResult} />
   </HeaderExercise>
 
   <div class="container-body" bind:this={containerBody} transition:fade>
@@ -99,27 +108,27 @@ onDestroy(()=>{
       {#key indexExercise}
         {#if type === 'match'}
 
-          <Match {scales} {indexExercise} {infoData} />
+          <Match {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'morphosyntax'}
 
-          <Morphosyntax {scales} {indexExercise} {infoData} />
+          <Morphosyntax {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'point-out'}
 
-          <PointOut {scales} {indexExercise} {infoData} />
+          <PointOut {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'select'}
 
-          <SelectWord {scales} {indexExercise} {infoData} />
+          <SelectWord {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'character'}
 
-          <Character {scales} {indexExercise} {infoData} />
+          <Character {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test'}
 
-          <Test {scales} {indexExercise} {infoData} />
+          <Test {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-pdf'}
 

@@ -2,7 +2,7 @@
 import { activityLocalstore } from "$lib/store/activity_student";
 import { colorSynt, bgColorSynt, wordObjects } from '$lib/utils';
 import { Select } from "$lib/components";
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 
 type ArrWord = {
   type: string;
@@ -43,6 +43,7 @@ arrWordsBox = infoData.exercise.syntax.arrWordsBox;
 
 function selectSynt(e: any, row: number, column: number) {
   e.stopPropagation();
+  if (viewResult === 1) return;
   numRow = row;
   numColumn = column;
   arrWordsBox[numRow][numColumn];
@@ -188,12 +189,20 @@ loadSintax();
                 class:border-morpho={w.type === "word" ? rs.border : false} 
                 class:resaltar-bx-morpho={rs.resaltar} 
                 style="width: {w.type === "word" ? w.width : w.width - 1}px;" >
-
                 <div 
                   class="bloque-morpho" 
                   class:line-morpho={rs.sw}  
-                  style="width: {rs.width}; border-top: 2px solid {colorSynt(index)}; background: {bgColorSynt(index)}; font-size: {rs.size}px;" 
-                  onclick={(e)=>selectSynt(e, index, bx)} role="button" tabindex="0" onkeyup={()=>{}}>{rs.response.morphosyntax}</div>
+                  style="
+                    width: {rs.width}; 
+                    border-top: 2px solid {colorSynt(index)}; 
+                    background: {rs.label.morphosyntax.length !== 0 ? bgColorSynt(index) : ''}; 
+                    background: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#bf0000' : ''}; 
+                    color: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#fff' : ''}; 
+                    border-top: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '2px solid #bf0000' : ''};
+                    font-size: {rs.size}px;" 
+                  onclick={(e)=>selectSynt(e, index, bx)} role="button" tabindex="0" onkeyup={()=>{}}>
+                  {rs.response.morphosyntax}
+                </div>
               </div>
             {/each}
           </div>

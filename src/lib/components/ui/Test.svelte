@@ -13,7 +13,7 @@ type Point = {
 
 let points: Point[] = $state([]);
 
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
@@ -27,6 +27,8 @@ points = infoData.exercise.points;
 visible = infoData.visible;
 time = infoData.time;
 mode = infoData.mode;
+
+console.log($state.snapshot(points))
 
 function handleStartLecture() {
   visible = false;
@@ -66,6 +68,7 @@ function startProgress() {
 }
 
 function handleSelectItem(point: number, index: number) {
+  if (viewResult === 1) return;
   points[point].answers[index].rss = !points[point].answers[index].rss;
   activityLocalstore.test(indexExercise, JSON.stringify(points), scales);
 }
@@ -105,10 +108,16 @@ function handleSelectItem(point: number, index: number) {
               {#each qs.answers as answer, index}
                 <div 
                   class="container-answer" 
-                  class:rst-point={answer.rss} 
+                  class:rst-point={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                  class:item-bad={(answer.rss === true && answer.rst === false && viewResult === 1)} 
                   onclick={()=>handleSelectItem(point, index)} 
                   onkeyup={()=>{}} role="button" tabindex="0">
-                  <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rss}>Respuesta {index + 1}</div></div>
+                  <div class="wr-label-point">
+                    <div class="label-resp" 
+                      class:rst-point={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                      class:item-bad={(answer.rss === true && answer.rst === false && viewResult === 1)} 
+                    >Respuesta {index + 1}</div>
+                  </div>
                   {#if answer.image.length !== 0}
                     <div class="wr-image-answer">
                       <img class="image-question" src={answer.image} alt="" />
@@ -149,6 +158,10 @@ function handleSelectItem(point: number, index: number) {
 </div>
 
 <style>
+.container-answer.item-bad {
+  background: #ecacac;
+  box-shadow: rgb(207 109 109) 0px 7px 0px 0px;
+}
 progress {
   appearance: none;       /* Quita el estilo nativo */
   -webkit-appearance: none;
@@ -324,7 +337,7 @@ progress::-moz-progress-bar {
   left: 0;
 }
 .label-resp {
-  background: var(--border-item);
+  /*background: var(--border-item);*/
   font-family: var(--font-normal);
   font-size: 0.88em;
   padding: 5px 10px;
@@ -334,6 +347,9 @@ progress::-moz-progress-bar {
 }
 .label-resp.rst-point {
   background: #11d511;
+}
+.label-resp.item-bad {
+  background: #ecacac;
 }
 .container-answer {
   display: flex;

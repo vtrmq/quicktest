@@ -3,6 +3,7 @@ import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
+import { onMount } from 'svelte';
 
 type Side = 'left' | 'right';
 type Words = { word: string; };
@@ -15,7 +16,7 @@ type SelectedWord = {
   side: Side;
 }
 
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
@@ -25,6 +26,7 @@ let columnsContainer = $state() as HTMLDivElement;
 let containerMatch = $state() as HTMLDivElement;
 let leftWords: Words[] = $state([]);
 let rightWords: Words[] = $state([]);
+let wordConnectionsTeacher: Connection[] = $state([]);
 let wordConnections: Connection[] = $state([]);
 let box_match = $state('');
 let mode = $state('normal');
@@ -39,13 +41,14 @@ let IdMatch = '';
 
 leftWords = infoData.exercise.leftWords;
 rightWords = infoData.exercise.rightWords;
-wordConnections = infoData.exercise.wordConnectionsStudent;
 mode = infoData.mode;
 time = infoData.time;
 
-setTimeout(()=>{
+$effect(()=>{
+  wordConnections = infoData.exercise.wordConnectionsStudent;
+  wordConnectionsTeacher = infoData.exercise.wordConnections;
   viewConnections();
-}, 500);
+});
 
 function saveConnections() {
   let arrConnections = JSON.parse(JSON.stringify(wordConnections))
@@ -70,6 +73,9 @@ function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
 }
 
 function selectWordMatch(wordElement: Event, side: Side, index: number) {
+
+  if (viewResult === 1) return;
+
   const element  = wordElement.target as HTMLButtonElement;
 
   let sw = false;
@@ -136,6 +142,7 @@ function getWordEdge(wordElement: HTMLButtonElement, side: string) {
   };
 }
 
+let isEntry = false;
 function drawConnections() {
 
   canvasMatch.width = columnsContainer.offsetWidth;
@@ -161,6 +168,14 @@ function drawConnections() {
       if (leftWord && rightWord) {
         const start = getWordEdge(leftWord, 'right');
         const end = getWordEdge(rightWord, 'left');
+
+        const resp = wordConnectionsTeacher.some((conn: Connection) =>
+          conn.left === leftWord.id && conn.right === rightWord.id
+        )
+        document.getElementById(leftWord.id)?.classList.remove('error');
+        if (resp === false && viewResult === 1) {
+          document.getElementById(leftWord.id)?.classList.add('error');
+        }
 
         if (!ctx) return;
         ctx.beginPath();

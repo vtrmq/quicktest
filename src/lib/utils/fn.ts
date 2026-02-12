@@ -259,3 +259,14 @@ export function handleResultNota(
     percentage
   };
 }   
+
+export function scaleNota(scale: { scale: string; min_value: number; max_value: number }[], notaFinal: number) {
+  const minNota = Math.min(...scale.map(s => s.min_value));
+  const nivel =  scale.find(r => notaFinal >= r.min_value && notaFinal <= r.max_value);
+  const percentage = (notaFinal * 10).toFixed(0);
+  return {
+    nota: notaFinal,
+    scale: nivel?.scale || minNota,
+    percentage
+  };
+}
