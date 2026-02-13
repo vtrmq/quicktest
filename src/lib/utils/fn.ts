@@ -260,6 +260,7 @@ export function handleResultNota(
   };
 }   
 
+/*
 export function scaleNota(scale: { scale: string; min_value: number; max_value: number }[], notaFinal: number) {
   const minNota = Math.min(...scale.map(s => s.min_value));
   const nivel =  scale.find(r => notaFinal >= r.min_value && notaFinal <= r.max_value);
@@ -269,4 +270,53 @@ export function scaleNota(scale: { scale: string; min_value: number; max_value: 
     scale: nivel?.scale || minNota,
     percentage
   };
+}
+export function formatearNota(valor: number): string {
+  if (valor >= 10 && Number.isInteger(valor)) {
+    return valor.toString();
+  } else if (Number.isInteger(valor)) {
+    return `${valor}.0`;
+  } else {
+    return valor.toString();
+  }
+}
+*/
+
+
+
+export function formatearNota(valor: number): string {
+  // Truncar a un decimal sin redondear
+  const truncado = Math.floor(valor * 10) / 10;
+  
+  if (Number.isInteger(truncado)) {
+    return truncado >= 10 ? truncado.toString() : `${truncado}.0`;
+  }
+  
+  return truncado.toString();
+}
+
+export function scaleNota(
+  scale: { scale: string; min_value: number; max_value: number }[],
+  notaFinal: number
+) {
+  const minNota = Math.min(...scale.map((s) => s.min_value));
+  const nivel = scale.find((r) => notaFinal >= r.min_value && notaFinal <= r.max_value);
+  const percentage = (notaFinal * 10).toFixed(0);
+
+  return {
+    nota: formatearNota(notaFinal) || String(minNota),
+    scale: nivel?.scale || '',
+    percentage,
+  };
+}
+
+export function extractParams(search: string, param: string[]): Record<string, string | number> {
+  const urlParams = new URLSearchParams(search);
+  return param.reduce((acc, key) => {
+    const value = urlParams.get(key);
+    if (value !== null) {
+      acc[key] = isNaN(Number(value)) ? value : Number(value);
+    }
+    return acc;
+  }, {} as Record<string, string | number>);
 }

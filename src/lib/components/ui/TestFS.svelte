@@ -13,16 +13,18 @@ type Point = {
   audio: string;
 }
 
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 let points: Point[] = $state([]);
 
 points = infoData.exercise.points;
 
 function handleSelectWordFS(point: number, index: number) {
+  if (viewResult === 1) return;
   points[point].answersFS.push(points[point].words[index]);
   activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 function handleSelectWordFSRemove(point: number, index: number) {
+  if (viewResult === 1) return;
   points[point].answersFS.splice(index, 1);
   activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
@@ -52,7 +54,8 @@ function handleSelectWordFSRemove(point: number, index: number) {
         {/if}
 
         {#if qs.answersFS}
-          <div class="container-answer-fs-rs">
+          {@const orden = qs.answersFS.every((obj, i) => i === 0 || obj.id >= qs.answersFS[i - 1].id)}
+          <div class="container-answer-fs-rs" class:rst-bad={!orden && viewResult === 1}>
             {#each qs.answersFS as word, index}
               <button class="answer-fs-rs" onclick={()=>handleSelectWordFSRemove(point, index)}>{word.word}</button>
             {/each}
@@ -145,6 +148,10 @@ function handleSelectWordFSRemove(point: number, index: number) {
   border-radius: var(--border-radius);
   flex-wrap: wrap;
   min-height: 62px;
+}
+.container-answer-fs-rs.rst-bad {
+  background: #f16f6f;
+  box-shadow: #a72c2c 0px 7px 0px 0px;
 }
 .container-answer-fs {
   display: flex;

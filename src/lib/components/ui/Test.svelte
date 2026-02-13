@@ -28,8 +28,6 @@ visible = infoData.visible;
 time = infoData.time;
 mode = infoData.mode;
 
-console.log($state.snapshot(points))
-
 function handleStartLecture() {
   visible = false;
   durationInSeconds = time;

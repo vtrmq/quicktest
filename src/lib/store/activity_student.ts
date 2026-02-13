@@ -2,18 +2,29 @@ import { browser } from "$app/environment";
 import { handleResultNota } from "$lib/utils/fn";
 
 const act = "activities_student";
+const activity_store = "activity";
+const time_test = "time_test"
 
 type WordItem = {
   id: number;
   word: string;
 };
 
-const isEqual = (arr1: WordItem[], arr2: WordItem[]): boolean => {
-  if (arr1.length !== arr2.length) return false;
-  const sorted1 = [...arr1].sort((a, b) => a.id - b.id);
-  const sorted2 = [...arr2].sort((a, b) => a.id - b.id);
-  return JSON.stringify(sorted1) === JSON.stringify(sorted2);
-};
+function isEqual(words: WordItem[], answersFS: WordItem[]): boolean {
+  return words.slice().sort((a, b) => a.id - b.id).every((obj, i) => obj.id === answersFS[i]?.id);
+}
+
+type Activity = {
+  activity: string;
+  activity_id: number;
+  file: string;
+  shadow_file: string;
+  teacher_id: number;
+  time: number;
+  topic_id: number;
+  topic: string;
+  type_general: string; 
+}
 
 export const activityLocalstore = {
   get: () => {
@@ -23,8 +34,26 @@ export const activityLocalstore = {
     }
     return null;
   },
-  set: (data: object) => {
-    if (browser) localStorage.setItem(act, JSON.stringify(data));
+  set: (data: object, activity: Activity) => {
+    if (browser) {
+      localStorage.setItem(act, JSON.stringify(data));
+      localStorage.setItem(activity_store, JSON.stringify(activity));
+      if (activity.time !== null) {
+        localStorage.setItem(time_test, String(activity.time));
+      }
+    }
+  },
+  getActivity: () => {
+    if (browser) {
+      const activity = localStorage.getItem(activity_store);
+      const time = localStorage.getItem(time_test);
+      const result = {
+        activity: activity ? JSON.parse(activity) : null,
+        time
+      }
+      return result;
+    }
+    return null;
   },
 
   pointOut: (indexExercise: number, data: any, scales: { scale: string; min_value: number; max_value: number }[]) => {
@@ -220,7 +249,6 @@ export const activityLocalstore = {
     if (activities) {
       const exercises = JSON.parse(activities);
       const _data = JSON.parse(data);
-
       let sumPoints = 0;
       let totalPoints = _data.length;
 

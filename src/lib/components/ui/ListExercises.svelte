@@ -1,17 +1,21 @@
 <script lang="ts">
-import { typeExerc, scaleNota } from "$lib/utils"
+import { typeExerc, scaleNota, formatearNota } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
 let { info, items, handleActivity, handleViewResult } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
-console.log(info)
+type NotaFinal = {
+  nota: string;
+  percentage: string;
+  scale: string;
+}
 
 let viewBox = $state(false); // false
 let itemResaltado = $state(-1);
 let scales = info.scales;
 let viewResult = $state(0);
-console.log(scales)
+let notaFinal: NotaFinal = $state({nota: '', percentage: '', scale: ''}) as NotaFinal;
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
@@ -27,6 +31,15 @@ function handleSelectActivity(index: number) {
 function handleViewResultX(option: string) {
   viewResult = option === 'result' ? 1 : 0;
   items = activityLocalstore.get();
+  let values = 0;
+  let max = items.length;
+  for (let i = 0; i < max; i++) {
+    values = values + items[i].value;
+  }
+  let notaTotal = values / max;
+
+  notaFinal = scaleNota(scales, notaTotal)
+
   handleViewResult(viewResult);
 }
 
@@ -36,12 +49,19 @@ function handleViewResultX(option: string) {
 <div class="container-edit-exercise" class:view-box={viewBox}>
   <div class="header-box-exercise">
     <div class="in-header">
-      <h2 class="label-header">Actividades</h2>
-      {#if info.result.type_general === 'R'}
+      {#if info.activity.type_general === 'R'}
         {#if viewResult === 0}
-          <button class="btn-result" onclick={()=>handleViewResultX('result')}>Resultados</button>
+          <div class="wr-btns-resul-save">
+            <button class="btn-result" onclick={()=>handleViewResultX('result')}>Resultados</button>
+            <button class="btn-save" onclick={()=>handleViewResultX('result')}>Guardar</button>
+          </div>
         {:else}
-          <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Seguir trabajando</button>
+          <div class="wr-btns-resul-save">
+            <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Continuar</button>
+            <div class="info-nota">
+              Nota: {notaFinal.nota} {notaFinal.scale}
+            </div>
+          </div>
         {/if}
       {/if}
     </div>
@@ -52,7 +72,7 @@ function handleViewResultX(option: string) {
 
     <div class="container-info">
       <h1 class="topic">{info.topic}</h1>
-      <h2 class="activity">{info.activity}</h2>
+      <h2 class="activity">{info.activity.activity}</h2>
     </div>
     <div class="row-items">
       {#if viewResult === 0 || viewResult === 1}
@@ -64,7 +84,7 @@ function handleViewResultX(option: string) {
                 <div class="wr-info-result">
                   <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
                   {#if viewResult === 1}
-                    <span class="item-value">Nota: {item.value} {scaleNota(scales, item.value).scale}</span>
+                    <span class="item-value">Nota: {formatearNota(item.value)} {scaleNota(scales, item.value).scale}</span>
                   {/if}
                 </div>
                 {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
@@ -92,6 +112,31 @@ function handleViewResultX(option: string) {
     stroke-width: 3px;
   }
 }
+.info-nota {
+  font-family: var(--font-normal);
+  font-size: 1.2em;
+  font-weight: 800;
+  color: #fff;
+}
+.btn-save {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  background: #03ad03;
+  color: #fff;
+  height: 100%;
+}
+.wr-btns-resul-save {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
 .item-value {
   font-weight: 800;
   color: #393939;
@@ -105,7 +150,8 @@ function handleViewResultX(option: string) {
 .in-header {
   display: flex;
   justify-content: space-between;
-  width: 86%;
+  width: 90%;
+  height: 35px;
   gap: 1em;
 }
 .btn-result {
@@ -120,6 +166,7 @@ function handleViewResultX(option: string) {
   font-size: 1em;
   background: #7b68ee;
   color: #fff;
+  height: 100%;
 }
 .container-info-exerc {
   display: flex;
@@ -204,10 +251,6 @@ function handleViewResultX(option: string) {
   padding: 1em 1em 2em;
   display: flex;
   flex-direction: column;
-}
-.label-header {
-  font-family: var(--font-bold);
-  color: #fff;
 }
 .header-box-exercise {
   height: var(--height-header);

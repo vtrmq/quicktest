@@ -7,7 +7,7 @@ type Point = {
 
 let modeSheet = $state(false);
 
-let { infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
 
 let points: Point[] = $state([]);
 points = infoData.exercise.points;
@@ -17,6 +17,7 @@ function handleModeSheet() {
 }
 
 function handleSelectPoint(point: number, item: number) {
+  if (viewResult === 1) return;
   points[point].points[item].rss = !points[point].points[item].rss
   activityLocalstore.testPDF(indexExercise, JSON.stringify(points), scales);
 }
@@ -37,7 +38,15 @@ function handleSelectPoint(point: number, item: number) {
         <div class="label-item">{point + 1}</div>
         <div class="row-pts">
           {#each _points.points as points, item}
-            <button class="btn-point" onclick={()=>handleSelectPoint(point, item)} class:rst-point={points.rss}>{points.char}</button>
+            <button 
+              class="btn-point" 
+              onclick={()=>handleSelectPoint(point, item)} 
+              class:rst-point={points.rss && viewResult === 0}
+              class:rst-good={(points.rss === true && points.rst === true) && viewResult === 1}
+              class:rst-bad={(points.rss === true && points.rst === false) && viewResult === 1}
+            >
+              {points.char}
+            </button>
           {/each}
         </div>
       </div>
@@ -46,6 +55,14 @@ function handleSelectPoint(point: number, item: number) {
 </div>
 
 <style>
+.btn-point.rst-good {
+  background: #11d511;
+  color: #fff;
+}
+.btn-point.rst-bad {
+  background: red;
+  color: #fff;
+}
 .btn-close-sheet {
   padding: 0.5em 1em;
   cursor: pointer;

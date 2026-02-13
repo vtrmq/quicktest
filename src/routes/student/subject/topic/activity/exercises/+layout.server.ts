@@ -23,8 +23,8 @@ export const load: LayoutServerLoad = async ({ locals, url, platform }) => {
     db.prepare('SELECT * FROM activities WHERE activity_id = ? AND topic_id = ?').bind(activityId, topicId),
     db.prepare('SELECT scale, min_value, max_value FROM scales WHERE teacher_id = ?').bind(teacherId)
   ]);
+
   return { 
-    result: activity.results[0] || null,
     scales: scales.results || [],
     topic: topic.results[0].topic || null,
     activity: activity.results[0] || null,

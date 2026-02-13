@@ -1,6 +1,8 @@
 <script lang="ts">
+import { page } from '$app/state';
 import { onMount, onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
+import { filtrarParametros } from "$lib/utils";
 
 import { 
   HeaderExercise, 
@@ -13,10 +15,15 @@ import {
   Test,
   TestPDF,
   TestFS,
+  LinkBack
 } from '$lib/components';
 
 let { data } = $props();
 let visible = $state(false);
+const search = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
+console.log(page)
+
+console.log(data.info?.activity.type_general)
 
 let scales = data.info?.scales;
 
@@ -27,11 +34,11 @@ type Item = {
 };
 
 type Info = {
-  result: object;
-  activity: string;
+  activity: {activity: string;};
   activityId: number;
   courseId: number;
   origin: string;
+  scales: object;
   subjectId: number;
   teacherId: number;
   topic: string;
@@ -46,7 +53,6 @@ let indexExercise = $state(-1);
 
 let infoData = $state();
 let viewResult = $state(0);
-
 
 onMount(()=>{
   visible = true;
@@ -90,7 +96,11 @@ function handleViewResult(_viewResult: number) {
 {#if visible}
 
   <HeaderExercise>
-    <span>&nbsp;</span>
+    {#if data.info?.activity.type_general === 'E'}
+      <span>&nbsp;</span>
+    {:else if data.info?.activity.type_general === 'R'}
+      <LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack>
+    {/if}
     <ListExercises {info} items={items} {handleActivity} {handleViewResult} />
   </HeaderExercise>
 
@@ -100,7 +110,7 @@ function handleViewResult(_viewResult: number) {
 
       <div class="container-info">
         <h1 class="topic">{info.topic}</h1>
-        <h2 class="activity">{info.activity}</h2>
+        <h2 class="activity">{info.activity.activity}</h2>
       </div>
 
     {:else}
@@ -132,11 +142,11 @@ function handleViewResult(_viewResult: number) {
 
         {:else if type === 'test-pdf'}
 
-          <TestPDF {scales} {indexExercise} {infoData} />
+          <TestPDF {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-fs'}
 
-          <TestFS {scales} {indexExercise} {infoData} />
+          <TestFS {viewResult} {scales} {indexExercise} {infoData} />
 
         {/if}
       {/key}
