@@ -8,6 +8,12 @@ export const load: LayoutLoad = async ({ data }) => {
     if (_items === null) {
       const _items = JSON.parse(data.activity.items);
       delete data.activity.items;
+      //console.log(data)
+
+      data.activity.subject_id = data.subjectId;
+      data.activity.course_id = data.courseId;
+
+      //console.log(data.activity)
       activityLocalstore.set(_items, data.activity);
       return {
         info: data,

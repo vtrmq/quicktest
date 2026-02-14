@@ -320,3 +320,13 @@ export function extractParams(search: string, param: string[]): Record<string, s
     return acc;
   }, {} as Record<string, string | number>);
 }
+
+export function compareDates(fechaStr: string): boolean {
+  // Crear fecha a partir del string en formato local
+  const [year, month, day] = fechaStr.split("-").map(Number);
+  const fechaDada = new Date(year, month - 1, day);
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  return hoy <= fechaDada;
+}

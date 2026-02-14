@@ -1,8 +1,11 @@
 <script lang="ts">
 import { page } from '$app/state';
 import plus from '$lib/assets/svg/plus.svg?raw';
-import { typeActivity, formatDate, filtrarParametros } from '$lib/utils';
-import { LinkBack, LinkBtn } from '$lib/components';
+import { typeActivity, formatDate, filtrarParametros, extractParams, compareDates } from '$lib/utils';
+import { LinkBack, LinkBtn, FooterMsg } from '$lib/components';
+import { activityLocalstore } from '$lib/store/activity_student';
+import { onMount } from 'svelte';
+import { goto } from '$app/navigation';
 
 type Info = {
   activity: {activity_id: number; activity: string; time: string, type_general: string};
@@ -13,46 +16,113 @@ type Info = {
   topic: {topic: string; topic_id: number};
   origin: string;
 }
+
 let { data } = $props();
 let info: Info = data.result as Info;
 
+//console.log(data)
+//console.log(page)
+
 const root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId']);
+type Item = {
+  activity: object | null;
+  item: object | null;
+  time: object | null;
+} | null
+let items: Item = $state({}) as Item;
+let isEqualActivity = $state(false);
+type Activity = {
+  activity_id: number;
+  course_id: number;
+  subject_id: number;
+  teacher_id: number;
+  topic_id: number;
+} | null;
+let isVisible = $state(false);
+
+onMount(()=>{
+  //console.log(info)
+  //console.log($state.snapshot(items))
+  //console.log($state.snapshot(isEqualActivity))
+
+  const date_end = info.inbox.date_end;
+  //console.log(date_end)
+  if (!compareDates(date_end)) {
+    activityLocalstore.clear();
+    goto("/student/inbox");
+  }
+
+  if (info.activity.type_general === 'R') {
+    items = activityLocalstore.getActivity();
+    const activity: Activity = items?.activity as Activity;
+    //console.log($state.snapshot(activity))
+    const params = extractParams(page.url.search, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId']);
+    if (activity?.activity_id === params.activityId && 
+      activity?.course_id === params.courseId && 
+      activity?.subject_id === params.subjectId && 
+      activity?.teacher_id === params.teacherId && 
+      activity?.topic_id === params.topicId) {
+      isEqualActivity = true;
+    }
+  } else if (info.activity.type_general === 'E' && items !== null) {
+    const _root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
+    goto(`/student/subject/topic/activity/exercises?${_root}`);
+    return;
+  }
+  isVisible = true;
+  
+});
 
 </script>
 
-<div class="container-topics">
-  <div class="wrapper">
-    <div class="info-subject">
-      <div>
-        {#if info.origin === 'inbox'}
-          <LinkBack href="/student/inbox">Bandeja</LinkBack>
-        {:else}
-          <LinkBack href="/student/subject/topic/activity?{root}">Actividades del tema</LinkBack>
-        {/if}
-        <div class="hd">
-          <h1 class="name-subject">{info.subject.name}</h1>
-          <p class="name-teacher">{info.teacher.name} {info.teacher.surnames}</p>
-        </div>
-        <div class="wr-content-activity">
-          <div class="info">{info.activity.activity}</div>
-          <p class="info">{typeActivity(info.activity.type_general)}</p>
-          {#if info.activity.time}
-            <p class="info">
-              Tiempo: <span>{info.activity.time} min</span>
-            </p>
+{#if isVisible}
+  <div class="container-topics">
+    <div class="wrapper">
+      <div class="info-subject">
+        <div>
+          {#if info.origin === 'inbox'}
+            <LinkBack href="/student/inbox">Bandeja</LinkBack>
+          {:else}
+            <LinkBack href="/student/subject/topic/activity?{root}">Actividades del tema</LinkBack>
           {/if}
-          <p class="info">
-            <span>Fecha final: {formatDate(info.inbox.date_end)}</span>
-          </p>
-        </div>
+          <div class="hd">
+            <h1 class="name-subject">{info.subject.name}</h1>
+            <p class="name-teacher">{info.teacher.name} {info.teacher.surnames}</p>
+          </div>
+          <div class="wr-content-activity">
+            <div class="info">{info.activity.activity}</div>
+            <p class="info">{typeActivity(info.activity.type_general)}</p>
+            {#if info.activity.time}
+              <p class="info">
+                Tiempo: <span>{info.activity.time} min</span>
+              </p>
+            {/if}
+            <p class="info">
+              <span>Fecha final: {formatDate(info.inbox.date_end)}</span>
+            </p>
+          </div>
 
-        <div class="wr-link-btn">
-          <LinkBtn href="/student/subject/topic/activity/exercises?teacherId={info.teacher.id}&courseId={info.course.course_id}&subjectId={info.subject.subject_id}&topicId={info.topic.topic_id}&activityId={info.activity.activity_id}&origin={info.origin}" --max-width-link-btn="230px">{@html plus} Realizar actividad</LinkBtn>
+          {#if items?.item !== null &&  isEqualActivity === true}
+            <div class="wr-link-btn">
+              <LinkBtn href="/student/subject/topic/activity/exercises?teacherId={info.teacher.id}&courseId={info.course.course_id}&subjectId={info.subject.subject_id}&topicId={info.topic.topic_id}&activityId={info.activity.activity_id}&origin={info.origin}" --max-width-link-btn="230px">{@html plus} Realizar actividad</LinkBtn>
+            </div>
+          {:else if items?.item === null}
+            <div class="wr-link-btn">
+              <LinkBtn href="/student/subject/topic/activity/exercises?teacherId={info.teacher.id}&courseId={info.course.course_id}&subjectId={info.subject.subject_id}&topicId={info.topic.topic_id}&activityId={info.activity.activity_id}&origin={info.origin}" --max-width-link-btn="230px">{@html plus} Realizar actividad</LinkBtn>
+            </div>
+          {:else}
+            <br />
+          {/if}
+
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  {#if items?.item !== null && isEqualActivity === false}
+    <FooterMsg />
+  {/if}
+{/if}
 
 <style>
 .wr-link-btn {

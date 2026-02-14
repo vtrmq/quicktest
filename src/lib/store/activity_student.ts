@@ -25,6 +25,11 @@ type Activity = {
   topic: string;
   type_general: string; 
 }
+type Item = {
+  activity: object | null;
+  item: object | null;
+  time: object | null;
+}
 
 export const activityLocalstore = {
   get: () => {
@@ -45,11 +50,13 @@ export const activityLocalstore = {
   },
   getActivity: () => {
     if (browser) {
+      const item = localStorage.getItem(act);
       const activity = localStorage.getItem(activity_store);
       const time = localStorage.getItem(time_test);
-      const result = {
+      const result: Item = {
+        item: item ? JSON.parse(item) : null,
         activity: activity ? JSON.parse(activity) : null,
-        time
+        time: time ? JSON.parse(time) : null
       }
       return result;
     }
@@ -270,7 +277,11 @@ export const activityLocalstore = {
   },
 
   clear: () => {
-    if (browser) localStorage.removeItem(act);
+    if (browser) {
+      localStorage.removeItem(act);
+      localStorage.removeItem(activity_store);
+      localStorage.removeItem(time_test);
+    }
   }
 }
 

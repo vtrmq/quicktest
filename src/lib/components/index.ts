@@ -50,6 +50,7 @@ export { default as BtnAudio } from './ui/BtnAudio.svelte';
 export { default as AudioRecorder } from './ui/AudioRecorder.svelte';
 export { default as Audios } from './ui/Audios.svelte';
 export { default as FilesPDF } from './ui/FilesPDF.svelte';
+export { default as FooterMsg } from './ui/FooterMsg.svelte';
 
 // Activities
 export { default as SelectEdit } from './ui/SelectEdit.svelte';
