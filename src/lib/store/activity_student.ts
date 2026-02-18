@@ -9,6 +9,10 @@ type WordItem = {
   id: number;
   word: string;
 };
+type Time = {
+  min: number;
+  seg: number;
+};
 
 function isEqual(words: WordItem[], answersFS: WordItem[]): boolean {
   return words.slice().sort((a, b) => a.id - b.id).every((obj, i) => obj.id === answersFS[i]?.id);
@@ -44,7 +48,8 @@ export const activityLocalstore = {
       localStorage.setItem(act, JSON.stringify(data));
       localStorage.setItem(activity_store, JSON.stringify(activity));
       if (activity.time !== null) {
-        localStorage.setItem(time_test, String(activity.time));
+        const time = {min: activity.time - 1, seg: 59}
+        localStorage.setItem(time_test, JSON.stringify(time));
       }
     }
   },
@@ -274,6 +279,21 @@ export const activityLocalstore = {
       exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
       localStorage.setItem(act, JSON.stringify(exercises));
     }
+  },
+
+  timeActivity: (time: Time) => {
+    if (browser) {
+      localStorage.setItem(time_test, JSON.stringify(time));
+    }
+    return null;
+  },
+
+  getTime: () => {
+    if (browser) {
+      const time = localStorage.getItem(time_test);
+      return time ? JSON.parse(time) : null;
+    }
+    return null;
   },
 
   clear: () => {

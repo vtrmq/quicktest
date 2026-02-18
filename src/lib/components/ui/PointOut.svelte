@@ -2,7 +2,7 @@
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 type Option = { id: string; option: string };
 type Line = {
@@ -87,6 +87,12 @@ function externalPoint(a: { x: number; y: number }, b: { x: number; y: number })
 }
 
 function handlePlaceWord(index: number, id: string) {
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
   if (viewResult === 1) return;
   placedOptions[index].resp = selectedOption?.option as string;
   if (id === selectedOption?.id) {
@@ -103,6 +109,23 @@ function paint() {
   redraw();
   window.addEventListener('resize', resizeCanvas);
 };
+
+type Opt = {
+  id: string;
+  option: string;
+};
+function handleSelectOption(opt: Opt) {
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
+  if (viewResult === 0) {
+    selectedOption = opt
+  }
+  //{viewResult === 0 ? selectedOption = opt : ()=>{}}
+}
 
 </script>
 
@@ -136,7 +159,7 @@ function paint() {
     {#each optionSuboptions as opt}
       <button
         class="btn-word-option"
-        onclick={() => {viewResult === 0 ? selectedOption = opt : ()=>{}}}
+        onclick={() => handleSelectOption(opt)}
         class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
     {/each}
   </div>

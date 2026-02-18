@@ -2,7 +2,9 @@
 import { page } from '$app/state';
 let { data } = $props();
 import { NoneData, LinkBack } from '$lib/components';
-import { filtrarParametros, typeActivity, formatDate, isDateEnd } from '$lib/utils';
+import { filtrarParametros, typeActivity, formatDate, isDateEnd, compareDates } from '$lib/utils';
+import { onMount } from 'svelte';
+import { activityLocalstore } from '$lib/store/activity_student';
 
 //console.log(data)
 
@@ -31,8 +33,44 @@ type Result = {
   topic: {topic_id: number; topic: string;};
   activities: Array<Activities>;
 };
+type Activity = {
+  activity_id: number;
+  course_id: number;
+  subject_id: number;
+  teacher_id: number;
+  topic_id: number;
+} | null;
+type Course = {
+  course_id: number;
+} | null;
+type Subject = {
+  subject_id: number;
+} | null;
 
 const result: Result = data.result as Result;
+onMount(()=>{
+  if (result.activities.length !== 0) {
+    const activity_store = activityLocalstore.getActivity();
+    const activity: Activity = activity_store?.activity as Activity;
+    const course: Course = result.course as Course;
+    const subject: Subject = result.subject as Subject;
+
+    if (activity !== null) {
+      for (let i = 0; i < result.activities.length; i++) {
+        const activity_id = result.activities[i].activity_id;
+        const topic_id = result.activities[i].topic_id;
+        const date_end = result.activities[i].date_end;
+        const course_id = course?.course_id;
+        const subject_id = subject?.subject_id;
+        if (activity_id === activity.activity_id && course_id === activity.course_id && subject_id === activity.course_id && topic_id === activity.topic_id) {
+          if (!compareDates(date_end)) {
+            activityLocalstore.clear();
+          }
+        }
+      }
+    }
+  }
+});
 
 </script>
 

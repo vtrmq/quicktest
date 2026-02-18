@@ -29,8 +29,9 @@ type Item = {
   item: object | null;
   time: object | null;
 } | null
-let items: Item = $state({}) as Item;
+//let items: Item = $state({}) as Item;
 let isEqualActivity = $state(false);
+/*
 type Activity = {
   activity_id: number;
   course_id: number;
@@ -38,7 +39,9 @@ type Activity = {
   teacher_id: number;
   topic_id: number;
 } | null;
+*/
 let isVisible = $state(false);
+let activity_store: Item = $state(null);
 
 onMount(()=>{
   //console.log(info)
@@ -51,20 +54,24 @@ onMount(()=>{
     activityLocalstore.clear();
     goto("/student/inbox");
   }
+  //console.log(info.activity.type_general)
+  activity_store = activityLocalstore.getActivity();
+  //console.log($state.snapshot(activity_store))
 
   if (info.activity.type_general === 'R') {
-    items = activityLocalstore.getActivity();
-    const activity: Activity = items?.activity as Activity;
-    //console.log($state.snapshot(activity))
+    // teacherId=5&courseId=6&subjectId=6&topicId=1&activityId=1
+    //const activity: Activity = items?.activity as Activity;
+    //console.log($state.snapshot(info))
     const params = extractParams(page.url.search, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId']);
-    if (activity?.activity_id === params.activityId && 
-      activity?.course_id === params.courseId && 
-      activity?.subject_id === params.subjectId && 
-      activity?.teacher_id === params.teacherId && 
-      activity?.topic_id === params.topicId) {
+    if (info.activity.activity_id === params.activityId && 
+      info.course.course_id === params.courseId && 
+      info.subject.subject_id === params.subjectId && 
+      info.teacher.id === params.teacherId && 
+      info.topic.topic_id === params.topicId) {
       isEqualActivity = true;
     }
-  } else if (info.activity.type_general === 'E' && items !== null) {
+    //console.log(isEqualActivity)
+  } else if (info.activity.type_general === 'V' && activity_store?.item !== null) {
     const _root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
     goto(`/student/subject/topic/activity/exercises?${_root}`);
     return;
@@ -102,11 +109,11 @@ onMount(()=>{
             </p>
           </div>
 
-          {#if items?.item !== null &&  isEqualActivity === true}
+          {#if activity_store?.item !== null &&  isEqualActivity === true}
             <div class="wr-link-btn">
               <LinkBtn href="/student/subject/topic/activity/exercises?teacherId={info.teacher.id}&courseId={info.course.course_id}&subjectId={info.subject.subject_id}&topicId={info.topic.topic_id}&activityId={info.activity.activity_id}&origin={info.origin}" --max-width-link-btn="230px">{@html plus} Realizar actividad</LinkBtn>
             </div>
-          {:else if items?.item === null}
+          {:else if activity_store?.item === null}
             <div class="wr-link-btn">
               <LinkBtn href="/student/subject/topic/activity/exercises?teacherId={info.teacher.id}&courseId={info.course.course_id}&subjectId={info.subject.subject_id}&topicId={info.topic.topic_id}&activityId={info.activity.activity_id}&origin={info.origin}" --max-width-link-btn="230px">{@html plus} Realizar actividad</LinkBtn>
             </div>
@@ -119,7 +126,7 @@ onMount(()=>{
     </div>
   </div>
 
-  {#if items?.item !== null && isEqualActivity === false}
+  {#if activity_store?.item !== null && isEqualActivity === false}
     <FooterMsg />
   {/if}
 {/if}

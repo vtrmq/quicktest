@@ -13,7 +13,7 @@ type Point = {
 
 let points: Point[] = $state([]);
 
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
@@ -66,6 +66,12 @@ function startProgress() {
 }
 
 function handleSelectItem(point: number, index: number) {
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
   if (viewResult === 1) return;
   points[point].answers[index].rss = !points[point].answers[index].rss;
   activityLocalstore.test(indexExercise, JSON.stringify(points), scales);
@@ -335,7 +341,7 @@ progress::-moz-progress-bar {
   left: 0;
 }
 .label-resp {
-  /*background: var(--border-item);*/
+  background: var(--border-item);
   font-family: var(--font-normal);
   font-size: 0.88em;
   padding: 5px 10px;

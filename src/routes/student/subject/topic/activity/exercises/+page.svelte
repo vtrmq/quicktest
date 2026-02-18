@@ -15,7 +15,8 @@ import {
   Test,
   TestPDF,
   TestFS,
-  LinkBack
+  LinkBack,
+  Chonometer,
 } from '$lib/components';
 
 let { data } = $props();
@@ -26,6 +27,7 @@ console.log(page)
 console.log(data.info?.activity.type_general)
 
 let scales = data.info?.scales;
+let type_activity = data.info?.activity.type_general;
 
 type Item = {
   exercise: {};
@@ -96,9 +98,9 @@ function handleViewResult(_viewResult: number) {
 {#if visible}
 
   <HeaderExercise>
-    {#if data.info?.activity.type_general === 'E'}
-      <span>&nbsp;</span>
-    {:else if data.info?.activity.type_general === 'R'}
+    {#if type_activity === 'V'}
+      <div><Chonometer /></div>
+    {:else if type_activity === 'R'}
       <LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack>
     {/if}
     <ListExercises {info} items={items} {handleActivity} {handleViewResult} />
@@ -118,35 +120,35 @@ function handleViewResult(_viewResult: number) {
       {#key indexExercise}
         {#if type === 'match'}
 
-          <Match {viewResult} {scales} {indexExercise} {infoData} />
+          <Match {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'morphosyntax'}
 
-          <Morphosyntax {viewResult} {scales} {indexExercise} {infoData} />
+          <Morphosyntax {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'point-out'}
 
-          <PointOut {viewResult} {scales} {indexExercise} {infoData} />
+          <PointOut {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'select'}
 
-          <SelectWord {viewResult} {scales} {indexExercise} {infoData} />
+          <SelectWord {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'character'}
 
-          <Character {viewResult} {scales} {indexExercise} {infoData} />
+          <Character {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test'}
 
-          <Test {viewResult} {scales} {indexExercise} {infoData} />
+          <Test {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-pdf'}
 
-          <TestPDF {viewResult} {scales} {indexExercise} {infoData} />
+          <TestPDF {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {:else if type === 'test-fs'}
 
-          <TestFS {viewResult} {scales} {indexExercise} {infoData} />
+          <TestFS {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
 
         {/if}
       {/key}

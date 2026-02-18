@@ -3,7 +3,7 @@ import { Toast } from '$lib/components';
 import { colors } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 type Option = {
   option: string;
@@ -36,6 +36,14 @@ options = infoData.exercise.optionSuboptions;
 indexOptWord = -1;
 
 function handleSelectWord(index: number) {
+
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
+
   if (viewResult === 1) return;
   index_word = index;
 

@@ -1,7 +1,12 @@
 <script lang="ts">
 import { NoneData } from '$lib/components';
-import { typeActivity, formatDate, isDateEnd } from '$lib/utils';
+import { typeActivity, formatDate, isDateEnd, compareDates } from '$lib/utils';
+import { onMount } from 'svelte';
+import { activityLocalstore } from '$lib/store/activity_student';
+
 let { data } = $props();
+console.log(data)
+
 type Result = {
     activity_id: number;
     teacher_id: number;
@@ -19,7 +24,35 @@ type Result = {
     nota: number;
     performance: string;
 };
+type Activity = {
+  activity_id: number;
+  course_id: number;
+  subject_id: number;
+  teacher_id: number;
+  topic_id: number;
+} | null;
 const result: Result[] = data.activities as Result[];
+onMount(()=>{
+  if (result.length !== 0) {
+    const activity_store = activityLocalstore.getActivity();
+    const activity: Activity = activity_store?.activity as Activity;
+
+    if (activity !== null) {
+      for (let i = 0; i < result.length; i++) {
+        const activity_id = result[i].activity_id;
+        const course_id = result[i].course_id;
+        const subject_id = result[i].subject_id;
+        const topic_id = result[i].topic_id;
+        const date_end = result[i].date_end;
+        if (activity_id === activity.activity_id && course_id === activity.course_id && subject_id === activity.course_id && topic_id === activity.topic_id) {
+          if (!compareDates(date_end)) {
+            activityLocalstore.clear();
+          }
+        }
+      }
+    }
+  }
+});
 </script>
 
 <div class="container-topics">
@@ -48,14 +81,20 @@ const result: Result[] = data.activities as Result[];
                   <div class="subject">{row.activity}</div>
                   <div class="wr-content-activity">
                     <p class="info">{typeActivity(row.type_general)}</p>
-                    {#if row.time}
+
+                    {#if !row.answer_id}
+                      {#if row.time}
+                        <p class="info">
+                          Tiempo: <span>{row.time} min</span>
+                        </p>
+                      {/if}
                       <p class="info">
-                        Tiempo: <span>{row.time} min</span>
+                        <span>Fecha final: {formatDate(row.date_end)}</span>
                       </p>
+                    {:else if row.answer_id}
+                      <div class="info">{row.nota} {row.performance}</div>
                     {/if}
-                    <p class="info">
-                      <span>Fecha final: {formatDate(row.date_end)}</span>
-                    </p>
+
                   </div>
                   <div class="wr-links">
                     {#if !row.answer_id && isDateEnd(row.date_end)}

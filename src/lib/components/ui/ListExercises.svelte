@@ -37,10 +37,30 @@ function handleViewResultX(option: string) {
     values = values + items[i].value;
   }
   let notaTotal = values / max;
-
   notaFinal = scaleNota(scales, notaTotal)
-
   handleViewResult(viewResult);
+}
+
+function handleViewResultTest() {
+  viewResult = viewResult === 0 ? 2 : 0;
+}
+
+function handleSendTest() {
+  items = activityLocalstore.get();
+  let values = 0;
+  let max = items.length;
+  for (let i = 0; i < max; i++) {
+    values = values + items[i].value;
+  }
+  let notaTotal = values / max;
+  notaFinal = scaleNota(scales, notaTotal)
+  const info = {
+    nota: notaFinal.nota,
+    scale: notaFinal.scale,
+    percentage: notaFinal.percentage,
+    items
+  };
+  console.log($state.snapshot(info))
 }
 
 </script>
@@ -53,16 +73,25 @@ function handleViewResultX(option: string) {
         {#if viewResult === 0}
           <div class="wr-btns-resul-save">
             <button class="btn-result" onclick={()=>handleViewResultX('result')}>Resultados</button>
-            <button class="btn-save" onclick={()=>handleViewResultX('result')}>Guardar</button>
+            <!--button class="btn-save" onclick={()=>handleViewResultX('result')}>Guardar</button-->
           </div>
         {:else}
           <div class="wr-btns-resul-save">
             <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Continuar</button>
+            <button class="btn-save-test" onclick={handleSendTest}>Enviar</button>
             <div class="info-nota">
-              Nota: {notaFinal.nota} {notaFinal.scale}
+              {notaFinal.nota} {notaFinal.scale}
             </div>
           </div>
         {/if}
+      {:else if info.activity.type_general === 'V'}
+        <button class="btn-save" onclick={handleViewResultTest}>
+          {#if viewResult === 0}
+            Enviar
+          {:else if viewResult === 2}
+            Cancelar
+          {/if}
+        </button>
       {/if}
     </div>
     <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html circleX}</button>
@@ -97,7 +126,8 @@ function handleViewResultX(option: string) {
           </div>
         {/each}
       {:else if viewResult === 2}
-        Enviar test
+        <p class="txt-info">¿Quieres enviar el test?</p>
+        <button class="btn-save-test" onclick={handleSendTest}>Enviar test</button>
       {/if}
     </div>
 
@@ -112,9 +142,13 @@ function handleViewResultX(option: string) {
     stroke-width: 3px;
   }
 }
+.txt-info {
+  font-family: var(--font-normal);
+  font-size: 1em;
+}
 .info-nota {
   font-family: var(--font-normal);
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: 800;
   color: #fff;
 }
@@ -132,10 +166,28 @@ function handleViewResultX(option: string) {
   color: #fff;
   height: 100%;
 }
+.btn-save-test {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.7em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  background: var(--bg-blue);
+  color: #fff;
+  height: 100%;
+  transition: var(--transition);
+}
+.btn-save-test:hover {
+  background: var(--bg-blue-hover);
+}
 .wr-btns-resul-save {
   display: flex;
   align-items: center;
-  gap: 1em;
+  gap: 0.5em;
 }
 .item-value {
   font-weight: 800;

@@ -19,7 +19,7 @@ type Word = {
   word: string;
 };
 
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -44,6 +44,14 @@ indexOptWord = -1;
 // =============================================
 
 function handleSelectWord(index: number) {
+
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
+
   if (viewResult === 1) return;
 
   if (indexOptWord === -1 && words[index].selection_word === '') {
@@ -86,6 +94,12 @@ function handleSelectWord(index: number) {
 }
 
 function handleSelectOptWord(index: number) {
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
   if (viewResult === 1) return;
   indexOptWord = indexOptWord === -1 || indexOptWord !== index ? index : -1;
 }

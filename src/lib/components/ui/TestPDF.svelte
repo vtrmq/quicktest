@@ -7,7 +7,7 @@ type Point = {
 
 let modeSheet = $state(false);
 
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 let points: Point[] = $state([]);
 points = infoData.exercise.points;
@@ -17,6 +17,12 @@ function handleModeSheet() {
 }
 
 function handleSelectPoint(point: number, item: number) {
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
   if (viewResult === 1) return;
   points[point].points[item].rss = !points[point].points[item].rss
   activityLocalstore.testPDF(indexExercise, JSON.stringify(points), scales);

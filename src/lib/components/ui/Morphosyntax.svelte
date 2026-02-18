@@ -2,7 +2,7 @@
 import { activityLocalstore } from "$lib/store/activity_student";
 import { colorSynt, bgColorSynt, wordObjects } from '$lib/utils';
 import { Select } from "$lib/components";
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 type ArrWord = {
   type: string;
@@ -43,6 +43,14 @@ arrWordsBox = infoData.exercise.syntax.arrWordsBox;
 
 function selectSynt(e: any, row: number, column: number) {
   e.stopPropagation();
+
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
+
   if (viewResult === 1) return;
   numRow = row;
   numColumn = column;

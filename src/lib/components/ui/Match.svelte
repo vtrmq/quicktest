@@ -3,7 +3,7 @@ import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
-import { onMount } from 'svelte';
+//import { onMount } from 'svelte';
 
 type Side = 'left' | 'right';
 type Words = { word: string; };
@@ -16,7 +16,7 @@ type SelectedWord = {
   side: Side;
 }
 
-let { viewResult = 0, infoData, indexExercise = -1, scales } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
@@ -73,6 +73,13 @@ function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
 }
 
 function selectWordMatch(wordElement: Event, side: Side, index: number) {
+
+  if (type_activity === 'V') {
+    const time = activityLocalstore.getTime();
+    if (time !== null && time.min === 0 && time.seg === 0) {
+      return;
+    }
+  }
 
   if (viewResult === 1) return;
 
@@ -142,7 +149,7 @@ function getWordEdge(wordElement: HTMLButtonElement, side: string) {
   };
 }
 
-let isEntry = false;
+//let isEntry = false;
 function drawConnections() {
 
   canvasMatch.width = columnsContainer.offsetWidth;
