@@ -299,14 +299,19 @@ export function scaleNota(
   scale: { scale: string; min_value: number; max_value: number }[],
   notaFinal: number
 ) {
+
   const minNota = Math.min(...scale.map((s) => s.min_value));
+  const maxNota = scale.reduce((max, obj) => obj.max_value > max ? obj.max_value : max, -Infinity);
+
   const nivel = scale.find((r) => notaFinal >= r.min_value && notaFinal <= r.max_value);
-  const percentage = (notaFinal * 10).toFixed(0);
+  //const percentage = (notaFinal * 10).toFixed(0);
+
+  const percentage = (notaFinal * 100) / maxNota;
 
   return {
     nota: formatearNota(notaFinal) || String(minNota),
     scale: nivel?.scale || '',
-    percentage,
+    percentage: Math.trunc(percentage),
   };
 }
 

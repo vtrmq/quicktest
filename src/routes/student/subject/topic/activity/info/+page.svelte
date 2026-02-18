@@ -20,18 +20,6 @@ type Info = {
 let { data } = $props();
 let info: Info = data.result as Info;
 
-//console.log(data)
-//console.log(page)
-
-const root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId']);
-type Item = {
-  activity: object | null;
-  item: object | null;
-  time: object | null;
-} | null
-//let items: Item = $state({}) as Item;
-let isEqualActivity = $state(false);
-/*
 type Activity = {
   activity_id: number;
   course_id: number;
@@ -39,38 +27,35 @@ type Activity = {
   teacher_id: number;
   topic_id: number;
 } | null;
-*/
+
+const root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId']);
+type Item = {
+  activity: Activity | null;
+  item: object | null;
+  time: object | null;
+} | null
+
+let isEqualActivity = $state(false);
 let isVisible = $state(false);
-let activity_store: Item = $state(null);
+let activity_store: Item = $state() as Item;
 
 onMount(()=>{
-  //console.log(info)
-  //console.log($state.snapshot(items))
-  //console.log($state.snapshot(isEqualActivity))
-
   const date_end = info.inbox.date_end;
-  //console.log(date_end)
   if (!compareDates(date_end)) {
     activityLocalstore.clear();
     goto("/student/inbox");
   }
-  //console.log(info.activity.type_general)
-  activity_store = activityLocalstore.getActivity();
-  //console.log($state.snapshot(activity_store))
+  activity_store = activityLocalstore.getActivity() as Item;
 
   if (info.activity.type_general === 'R') {
-    // teacherId=5&courseId=6&subjectId=6&topicId=1&activityId=1
-    //const activity: Activity = items?.activity as Activity;
-    //console.log($state.snapshot(info))
     const params = extractParams(page.url.search, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId']);
-    if (info.activity.activity_id === params.activityId && 
-      info.course.course_id === params.courseId && 
-      info.subject.subject_id === params.subjectId && 
-      info.teacher.id === params.teacherId && 
-      info.topic.topic_id === params.topicId) {
+    if (activity_store?.activity?.activity_id === params.activityId && 
+      activity_store?.activity?.course_id === params.courseId && 
+      activity_store?.activity?.subject_id === params.subjectId && 
+      activity_store?.activity?.teacher_id === params.teacherId && 
+      activity_store?.activity?.topic_id === params.topicId) {
       isEqualActivity = true;
     }
-    //console.log(isEqualActivity)
   } else if (info.activity.type_general === 'V' && activity_store?.item !== null) {
     const _root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
     goto(`/student/subject/topic/activity/exercises?${_root}`);

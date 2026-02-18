@@ -7,7 +7,7 @@ import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
 type NotaFinal = {
   nota: string;
-  percentage: string;
+  percentage: number;
   scale: string;
 }
 
@@ -15,7 +15,18 @@ let viewBox = $state(false); // false
 let itemResaltado = $state(-1);
 let scales = info.scales;
 let viewResult = $state(0);
-let notaFinal: NotaFinal = $state({nota: '', percentage: '', scale: ''}) as NotaFinal;
+let notaFinal: NotaFinal = $state({nota: '', percentage: 0, scale: ''}) as NotaFinal;
+
+type Activity = {
+  exercise: {points: [{position: any}]};
+  mode: string;
+  time: number;
+  type: string;
+  typeExercise: string;
+  value: number;
+  visible: boolean;
+  position: any;
+}
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
@@ -37,7 +48,17 @@ function handleViewResultX(option: string) {
     values = values + items[i].value;
   }
   let notaTotal = values / max;
+
   notaFinal = scaleNota(scales, notaTotal)
+
+  const _minNota = scales.reduce((min: {min_value: number} , obj: {min_value: number}) => obj.min_value < min.min_value ? obj : min);
+
+  if (parseFloat(notaFinal.nota) < parseFloat(_minNota.min_value)) {
+    notaFinal.nota = _minNota.min_value;
+    notaFinal.scale = _minNota.scale;
+    //notaFinal.percentage =  parseFloat( (_minNota.min_value * 10).toFixed(0) );
+  }
+
   handleViewResult(viewResult);
 }
 
@@ -45,20 +66,51 @@ function handleViewResultTest() {
   viewResult = viewResult === 0 ? 2 : 0;
 }
 
+function sortById<T extends { position: number }>(array: T[]): T[] {
+  // Usamos [...array] para no mutar el array original
+  return [...array].sort((a, b) => a.position - b.position);
+}
+
 function handleSendTest() {
-  items = activityLocalstore.get();
-  let values = 0;
-  let max = items.length;
-  for (let i = 0; i < max; i++) {
-    values = values + items[i].value;
+  const _items = activityLocalstore.get();
+  const itemsOrder: Activity[] = sortById(_items)
+  //console.log(itemsOrder)
+
+  for (let i = 0; i < itemsOrder.length; i++) {
+    delete itemsOrder[i].position
+    if (itemsOrder[i].type === "test" || itemsOrder[i].type === "test-fs") {
+      const items: any = sortById(itemsOrder[i].exercise.points);
+      for (let j = 0; j < items.length; j++) {
+        delete items[j].position;
+      }
+      itemsOrder[i].exercise.points = items;
+    }
   }
-  let notaTotal = values / max;
+
+  let values = 0;
+  let _max = itemsOrder.length;
+  for (let i = 0; i < _max; i++) {
+    values = values + itemsOrder[i].value;
+  }
+
+  let notaTotal = values / _max;
   notaFinal = scaleNota(scales, notaTotal)
+  //console.log($state.snapshot(notaFinal))
+
+  const minNota = scales.reduce((min: {min_value: number} , obj: {min_value: number}) => obj.min_value < min.min_value ? obj : min);
+  //const maxNota = scales.reduce((max: {max_value: number} , obj: {max_value: number}) => obj.max_value > max.max_value ? obj : max);
+
+  if (parseFloat(notaFinal.nota) < parseFloat(minNota.min_value)) {
+    notaFinal.nota = minNota.min_value;
+    notaFinal.scale = minNota.scale;
+    notaFinal.percentage = minNota.percentage;
+  }
+
   const info = {
-    nota: notaFinal.nota,
+    nota: parseFloat(notaFinal.nota),
     scale: notaFinal.scale,
     percentage: notaFinal.percentage,
-    items
+    items: itemsOrder
   };
   console.log($state.snapshot(info))
 }
@@ -80,7 +132,7 @@ function handleSendTest() {
             <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Continuar</button>
             <button class="btn-save-test" onclick={handleSendTest}>Enviar</button>
             <div class="info-nota">
-              {notaFinal.nota} {notaFinal.scale}
+              {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
             </div>
           </div>
         {/if}
