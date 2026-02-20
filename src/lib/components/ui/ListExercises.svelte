@@ -33,6 +33,7 @@ function handleViewBoxExercise() {
 }
 
 function handleSelectActivity(index: number) {
+  viewResult = 0;
   itemResaltado = index;
   viewBox = !viewBox;
   const _items = activityLocalstore.get();
@@ -101,9 +102,10 @@ function handleSendTest() {
   //const maxNota = scales.reduce((max: {max_value: number} , obj: {max_value: number}) => obj.max_value > max.max_value ? obj : max);
 
   if (parseFloat(notaFinal.nota) < parseFloat(minNota.min_value)) {
-    notaFinal.nota = minNota.min_value;
-    notaFinal.scale = minNota.scale;
-    notaFinal.percentage = minNota.percentage;
+    const _notaFinal = scaleNota(scales, minNota.min_value);
+    notaFinal.nota = _notaFinal.nota;
+    notaFinal.scale = _notaFinal.scale;
+    notaFinal.percentage = _notaFinal.percentage;
   }
 
   const info = {

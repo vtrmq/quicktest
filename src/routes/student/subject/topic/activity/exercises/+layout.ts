@@ -1,21 +1,7 @@
 import { browser } from '$app/environment';
 import type { LayoutLoad } from './$types';
 import { activityLocalstore } from '$lib/store/activity_student';
-
-function shuffleArray<T>(array: T[]): T[] {
-  // Creamos una copia para no modificar el array original (inmutabilidad)
-  const shuffled = [...array];
-
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    // Generamos un índice aleatorio entre 0 e i
-    const j = Math.floor(Math.random() * (i + 1));
-    
-    // Intercambiamos los elementos usando desestructuración
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
-  return shuffled;
-}
+import { shuffleArray } from '$lib/utils';
 
 export const load: LayoutLoad = async ({ data }) => {
   if (browser) {

@@ -2,7 +2,7 @@
 import { page } from '$app/state';
 let { data } = $props();
 import { NoneData, LinkBack } from '$lib/components';
-import { filtrarParametros, typeActivity, formatDate, isDateEnd, compareDates } from '$lib/utils';
+import { filtrarParametros, typeActivity, formatDate, isDateEnd, compareDates, formatDecimal, decimal, drawChartCircle } from '$lib/utils';
 import { onMount } from 'svelte';
 import { activityLocalstore } from '$lib/store/activity_student';
 
@@ -40,14 +40,17 @@ type Activity = {
   teacher_id: number;
   topic_id: number;
 } | null;
-type Course = {
-  course_id: number;
-} | null;
-type Subject = {
-  subject_id: number;
-} | null;
+type Course = { course_id: number; } | null;
+type Subject = { subject_id: number; } | null;
 
+let chart = $state<SVGElement>() as SVGElement;
+let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
+let sumaTotal = $state(7.6);
+let performance = $state('Básico');
+let percentage = $state(76);
 const result: Result = data.result as Result;
+
+let notaTotal = $state(0);
 onMount(()=>{
   if (result.activities.length !== 0) {
     const activity_store = activityLocalstore.getActivity();
@@ -67,6 +70,15 @@ onMount(()=>{
             activityLocalstore.clear();
           }
         }
+        const nota = result.activities[i].nota;
+        if (nota !== null) {
+          notaTotal = notaTotal + nota;
+        }
+      }
+      //console.log(notaTotal)
+      if (notaTotal !== 0) {
+        notaTotal = notaTotal / result.activities.length;
+        drawChartCircle(percentage, chart, valueDisplay)
       }
     }
   }
@@ -133,6 +145,17 @@ onMount(()=>{
 
       {/each}
     </div>
+
+    {#if result.activities.length !== 0 && notaTotal !== 0}
+      <div class="container-circle">
+        <div style="position: relative; display: flex;">
+          <svg class="chart-circle" bind:this={chart}></svg>
+          <div class="value-display" bind:this={valueDisplay}></div>
+        </div>
+        <h1 class="performance-chart">Desempeño: {decimal(formatDecimal(sumaTotal))} {performance}</h1>
+      </div>
+    {/if}
+
   {/if}
 </div>
 

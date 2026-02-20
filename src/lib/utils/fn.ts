@@ -335,3 +335,203 @@ export function compareDates(fechaStr: string): boolean {
   hoy.setHours(0, 0, 0, 0);
   return hoy <= fechaDada;
 }
+
+function createSVGElement(type: any, attributes: any) {
+  const element = document.createElementNS('http://www.w3.org/2000/svg', type);
+  for (const key in attributes) {
+    element.setAttribute(key, attributes[key]);
+  }
+  return element;
+}
+
+export const drawChart = (values: {percentage: number, typeActivityGeneral: string}[], svg: SVGElement) => {
+
+  const width = svg.clientWidth;
+  const height = svg.clientHeight;
+  const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+  const chartWidth = width - margin.left - margin.right;
+  const chartHeight = height - margin.top - margin.bottom;
+
+  // Limpiar el SVG
+  svg.innerHTML = '';
+
+  // Crear el grupo principal
+  const g = createSVGElement('g', { transform: `translate(${margin.left}, ${margin.top})` });
+  svg.appendChild(g);
+
+  // Calcular escalas
+  const xScale = chartWidth / values.length;
+  const yScale = chartHeight / 100; // Siempre escalar a 100
+
+  // Dibujar líneas horizontales y etiquetas del eje Y
+  for (let i = 0; i <= 100; i += 10) {
+    const y = chartHeight - i * yScale;
+
+    // Línea horizontal
+    const gridLine = createSVGElement('line', {
+      x1: 0,
+      y1: y,
+      x2: chartWidth,
+      y2: y,
+      class: 'grid-line'
+    });
+    g.appendChild(gridLine);
+
+    // Etiqueta del eje Y
+    const label = createSVGElement('text', {
+      x: -5,
+      y: y,
+      class: 'axis',
+      'text-anchor': 'end',
+      'alignment-baseline': 'middle'
+    });
+    label.textContent = i;
+    g.appendChild(label);
+  }
+
+  // Dibujar barras
+  values.forEach((value, index) => {
+    const barHeight = Math.min(value.percentage, 100) * yScale; // Limitar a 100
+    const bar = createSVGElement('rect', {
+      x: index * xScale,
+      y: chartHeight - barHeight,
+      width: xScale * 0.8,
+      height: barHeight,
+      class: value.typeActivityGeneral
+    });
+    g.appendChild(bar);
+
+    // Añadir etiquetas de valor
+    const label = createSVGElement('text', {
+      x: (index + 0.4) * xScale,
+      y: chartHeight - barHeight - 5,
+      class: 'bar-label'
+    });
+    label.textContent = `${value.percentage}%(${value.typeActivityGeneral})`;
+    g.appendChild(label);
+  });
+
+  // Dibujar ejes
+  const xAxis = createSVGElement('line', {
+    x1: 0,
+    y1: chartHeight,
+    x2: chartWidth,
+    y2: chartHeight,
+    stroke: 'black'
+  });
+  g.appendChild(xAxis);
+
+  const yAxis = createSVGElement('line', {
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: chartHeight,
+    stroke: 'black'
+  });
+  g.appendChild(yAxis);
+
+  // Añadir etiquetas de eje
+  const xLabel = createSVGElement('text', {
+    x: chartWidth / 3,
+    y: height - 10,
+    class: 'axis-label'
+  });
+  xLabel.textContent = 'Porcentaje por actividad';
+  svg.appendChild(xLabel);
+
+  const yLabel = createSVGElement('text', {
+    x: -chartHeight / 1.4,
+    y: 25,
+    transform: 'rotate(-90)',
+    class: 'axis-label'
+  });
+  yLabel.textContent = 'Porcentajes';
+  svg.appendChild(yLabel);
+  return svg;
+}
+
+export const drawChartCircle = (value: number, svg: SVGElement, valueDisplay: HTMLDivElement) => {
+  // Limpiar el SVG
+  svg.innerHTML = '';
+
+  const size = 160;
+  const radius = size / 2;
+  const center = size / 2;
+
+  // Calcular ángulos
+
+  value = Number(value.toFixed(2));
+  //console.log(value)
+  const angle: number = (value / 100) * 360;
+  const startAngle = -90; // Comenzar desde arriba
+  const endAngle = startAngle + angle;
+
+  //console.log(endAngle)
+
+  // Función para convertir grados a radianes
+  const toRadians = (angle: number) => angle * Math.PI / 180;
+
+  // Calcular puntos del arco
+  const x1 = center + radius * Math.cos(toRadians(startAngle));
+  const y1 = center + radius * Math.sin(toRadians(startAngle));
+  const x2 = center + radius * Math.cos(toRadians(endAngle));
+  const y2 = center + radius * Math.sin(toRadians(endAngle));
+
+  // Determinar si el arco es mayor o menor que 180 grados
+  const largeArcFlag = angle > 180 ? 1 : 0;
+
+  // Crear el fondo del círculo (gris)
+  const background = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  background.setAttribute('cx', String(center));
+  background.setAttribute('cy', String(center));
+  background.setAttribute('r', String(radius));
+  if (value !== 100) {
+    background.setAttribute('fill', '#e0e0e0');
+  } else {
+    background.setAttribute('fill', '#4CAF50');
+  }
+  svg.appendChild(background);
+
+  // Crear el arco de valor (verde)
+  const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  arc.setAttribute('d', `M ${center},${center} L ${x1},${y1} A ${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} Z`);
+  arc.setAttribute('fill', '#4CAF50');
+  svg.appendChild(arc);
+
+  // Crear el círculo central (blanco)
+  const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  centerCircle.setAttribute('cx', String(center));
+  centerCircle.setAttribute('cy', String(center));
+  centerCircle.setAttribute('r', String(radius * 0.25)); // Reducir ligeramente el tamaño
+  centerCircle.setAttribute('fill', 'white');
+  svg.appendChild(centerCircle);
+
+  // Mostrar el valor en el centro
+  valueDisplay.textContent = `${value}%`;
+  return svg;
+}
+
+export function formatDecimal(number: number) {
+  const formattedNumber = Math.floor(number * 10) / 10 + (number % 1 === 0 ? '.0' : '');
+  return parseFloat(formattedNumber);
+}
+
+export const decimal = (number: number) => {
+  let num = number.toString();
+  return parseFloat(num) < 10 ? (num.indexOf('.') === -1 ? `${num}.0` : num) : num;
+}
+
+export function shuffleArray<T>(array: T[]): T[] {
+  // Creamos una copia para no modificar el array original (inmutabilidad)
+  const shuffled = [...array];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    // Generamos un índice aleatorio entre 0 e i
+    const j = Math.floor(Math.random() * (i + 1));
+    
+    // Intercambiamos los elementos usando desestructuración
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}

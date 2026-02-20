@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     }
 
     // Consulta por lotes (batch) para obtener todos los datos
-    const [courseResult, subjectResult, teacherResult, topicsResult, activitiesResult] = await db.batch([
+    const [courseResult, subjectResult, teacherResult, topicsResult, activitiesResult, scalesResult] = await db.batch([
       // Curso
       db.prepare(`SELECT course_id, course as name FROM courses WHERE course_id = ?`).bind(courseId),
   
@@ -54,9 +54,21 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
           AND isub.topic_id = ?
           AND a.topic_id = ?
         ORDER BY a.activity_id DESC
-      `).bind(studentId, teacherId, courseId, subjectId, topicId, topicId)
+      `).bind(studentId, teacherId, courseId, subjectId, topicId, topicId),
+
+      db.prepare('SELECT scale, min_value, max_value FROM scales WHERE teacher_id = ?').bind(teacherId)
 
     ]);
+
+    let activitiesAll: any = [];
+    if (activitiesResult.results !== null) {
+      for (let i = 0; i < activitiesResult.results.length; i++) {
+        if (activitiesResult.results[i].items !== null || activitiesResult.results[i].file !== null) {
+          activitiesAll.push(activitiesResult.results[i]);
+        }
+      }
+    }
+    //console.log(activitiesAll)
 
     // Construir el resultado
     const result = {
@@ -64,7 +76,9 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       subject: subjectResult.results[0] || null,
       teacher: teacherResult.results[0] || null,
       topic: topicsResult.results[0],
-      activities: activitiesResult.results
+      activities: activitiesAll,
+      scales: scalesResult.results || [],
+      //activities: activitiesResult.results
     };
 
     return {

@@ -80,6 +80,7 @@ onMount(()=>{
                 <div>
                   <div class="subject">{row.activity}</div>
                   <div class="wr-content-activity">
+                    <p class="name-subject">{row.subject}</p>
                     <p class="info">{typeActivity(row.type_general)}</p>
 
                     {#if !row.answer_id}
@@ -123,6 +124,12 @@ onMount(()=>{
 {/if}
 
 <style>
+.name-subject {
+  color: #009688;
+  font-size: 1.1em;
+  font-family: var(--font-normal);
+  font-weight: 700;
+}
 .none-activity {
   font-size: 1em;
   color: brown;

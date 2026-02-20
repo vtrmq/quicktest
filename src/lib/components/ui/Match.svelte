@@ -3,6 +3,7 @@ import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
+    import { onMount } from 'svelte';
 //import { onMount } from 'svelte';
 
 type Side = 'left' | 'right';
@@ -41,14 +42,42 @@ let IdMatch = '';
 
 leftWords = infoData.exercise.leftWords;
 rightWords = infoData.exercise.rightWords;
+wordConnections = infoData.exercise.wordConnectionsStudent;
+wordConnectionsTeacher = infoData.exercise.wordConnections;
+
 mode = infoData.mode;
 time = infoData.time;
 
 $effect(()=>{
-  wordConnections = infoData.exercise.wordConnectionsStudent;
-  wordConnectionsTeacher = infoData.exercise.wordConnections;
+  handlePaintErrors()
+});
+onMount(()=>{
   viewConnections();
 });
+
+function handlePaintErrors() {
+  wordConnections.forEach((connection: Connection) => {
+    const leftWord = Array.from(leftColumn.children)
+    .find((el): el is HTMLButtonElement =>
+      el instanceof HTMLButtonElement && el.id === connection.left
+    );
+
+    const rightWord = Array.from(rightColumn.children)
+    .find((el): el is HTMLButtonElement =>
+      el instanceof HTMLButtonElement && el.id === connection.right
+    );
+
+    if (leftWord && rightWord) {
+      const resp = wordConnectionsTeacher.some((conn: Connection) =>
+        conn.left === leftWord.id && conn.right === rightWord.id
+      )
+      document.getElementById(leftWord.id)?.classList.remove('error');
+      if (resp === false && viewResult === 1) {
+        document.getElementById(leftWord.id)?.classList.add('error');
+      }
+    }
+  });
+}
 
 function saveConnections() {
   let arrConnections = JSON.parse(JSON.stringify(wordConnections))
@@ -176,6 +205,7 @@ function drawConnections() {
         const start = getWordEdge(leftWord, 'right');
         const end = getWordEdge(rightWord, 'left');
 
+        /*
         const resp = wordConnectionsTeacher.some((conn: Connection) =>
           conn.left === leftWord.id && conn.right === rightWord.id
         )
@@ -183,6 +213,7 @@ function drawConnections() {
         if (resp === false && viewResult === 1) {
           document.getElementById(leftWord.id)?.classList.add('error');
         }
+        */
 
         if (!ctx) return;
         ctx.beginPath();

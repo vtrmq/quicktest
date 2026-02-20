@@ -1,6 +1,6 @@
 <script lang="ts">
 import { activityLocalstore } from "$lib/store/activity_student";
-import { colorSynt, bgColorSynt, wordObjects } from '$lib/utils';
+import { colorSynt, bgColorSynt, wordObjects, shuffleArray } from '$lib/utils';
 import { Select } from "$lib/components";
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
 
@@ -73,6 +73,7 @@ function changeMorphosyntax(e: Event) {
   select_morphosyntax = value;
 }
 
+
 function loadSintax() {
   //text = infoData.exercise.content;
 
@@ -92,7 +93,7 @@ function loadSintax() {
     }
   }
 
-  arrSelectMorphosyntax = _arrWords;
+  arrSelectMorphosyntax = shuffleArray(_arrWords);
 
 }
 

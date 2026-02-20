@@ -45,8 +45,19 @@ SELECT
   LIMIT ? OFFSET ?
 `).bind(studentId, limit, offset).all();
 
+
+    let activitiesAll: any = [];
+    if (activitiesResult.results !== null) {
+      for (let i = 0; i < activitiesResult.results.length; i++) {
+        if (activitiesResult.results[i].items !== null || activitiesResult.results[i].file !== null) {
+          activitiesAll.push(activitiesResult.results[i]);
+        }
+      }
+    }
+
     return {
-      activities: activitiesResult.results
+      //activities: activitiesResult.results
+      activities: activitiesAll
     };
 
   } catch (error) {
