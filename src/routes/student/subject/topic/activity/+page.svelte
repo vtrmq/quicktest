@@ -2,14 +2,23 @@
 import { page } from '$app/state';
 let { data } = $props();
 import { NoneData, LinkBack } from '$lib/components';
-import { filtrarParametros, typeActivity, formatDate, isDateEnd, compareDates, formatDecimal, decimal, drawChartCircle } from '$lib/utils';
+import { 
+  filtrarParametros, 
+  typeActivity, 
+  formatDate, 
+  isDateEnd, 
+  compareDates, 
+  formatDecimal, 
+  decimal, 
+  drawChartCircle, 
+  scaleNota 
+} from '$lib/utils';
 import { onMount } from 'svelte';
 import { activityLocalstore } from '$lib/store/activity_student';
 
-//console.log(data)
-
 const root = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId']);
 
+type Scale = { scale: string; min_value: number; max_value: number };
 type Activities = {
   activity_id: number;
   teacher_id: number;
@@ -23,7 +32,6 @@ type Activities = {
   answered: number;
   nota: number;
   performance: string;
-
 };
 
 type Result = {
@@ -32,6 +40,7 @@ type Result = {
   teacher: {id: number; name: string; surnames: string;};
   topic: {topic_id: number; topic: string;};
   activities: Array<Activities>;
+  scales: Scale[];
 };
 type Activity = {
   activity_id: number;
@@ -42,13 +51,13 @@ type Activity = {
 } | null;
 type Course = { course_id: number; } | null;
 type Subject = { subject_id: number; } | null;
+type InfoTotal = {nota: string; percentage: number; scale: string}
+
 
 let chart = $state<SVGElement>() as SVGElement;
 let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
-let sumaTotal = $state(7.6);
-let performance = $state('Básico');
-let percentage = $state(76);
 const result: Result = data.result as Result;
+let infoTotal = $state<InfoTotal>();
 
 let notaTotal = $state(0);
 onMount(()=>{
@@ -75,10 +84,9 @@ onMount(()=>{
           notaTotal = notaTotal + nota;
         }
       }
-      //console.log(notaTotal)
       if (notaTotal !== 0) {
-        notaTotal = notaTotal / result.activities.length;
-        drawChartCircle(percentage, chart, valueDisplay)
+        infoTotal = scaleNota(result.scales, notaTotal);
+        drawChartCircle(infoTotal.percentage, chart, valueDisplay)
       }
     }
   }
@@ -119,14 +127,20 @@ onMount(()=>{
                   <div class="subject">{row.activity}</div>
                   <div class="wr-content-activity">
                     <p class="info">{typeActivity(row.type_general)}</p>
-                    {#if row.time}
+                    {#if row.nota === null}
+                      {#if row.time}
+                        <p class="info">
+                          Tiempo: <span>{row.time} min</span>
+                        </p>
+                      {/if}
                       <p class="info">
-                        Tiempo: <span>{row.time} min</span>
+                        <span>Fecha final: {formatDate(row.date_end)}</span>
+                      </p>
+                    {:else}
+                      <p class="info">
+                        Nota: <span>{row.nota} {row.performance}</span>
                       </p>
                     {/if}
-                    <p class="info">
-                      <span>Fecha final: {formatDate(row.date_end)}</span>
-                    </p>
                   </div>
                   <div class="wr-links">
                     {#if row.answered === 0 && isDateEnd(row.date_end)}
@@ -146,15 +160,15 @@ onMount(()=>{
       {/each}
     </div>
 
-    {#if result.activities.length !== 0 && notaTotal !== 0}
-      <div class="container-circle">
-        <div style="position: relative; display: flex;">
-          <svg class="chart-circle" bind:this={chart}></svg>
-          <div class="value-display" bind:this={valueDisplay}></div>
-        </div>
-        <h1 class="performance-chart">Desempeño: {decimal(formatDecimal(sumaTotal))} {performance}</h1>
+    <div class="container-circle" class:visible={result.activities.length !== 0 && notaTotal !== 0}>
+      <div style="position: relative; display: flex;">
+        <svg class="chart-circle" bind:this={chart}></svg>
+        <div class="value-display" bind:this={valueDisplay}></div>
       </div>
-    {/if}
+      {#if infoTotal}
+        <h1 class="performance-chart">Desempeño: {decimal(formatDecimal(parseFloat(infoTotal.nota)))} {infoTotal?.scale}</h1>
+      {/if}
+    </div>
 
   {/if}
 </div>

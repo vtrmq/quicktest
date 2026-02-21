@@ -379,48 +379,48 @@ function handleDraw() {
 }
 </script>
 
-<div class="designer">
+<div class="designer-point-out">
 
   <!-- Toolbar -->
-  <div class="toolbar">
-    <!--button class="btn-option-menu" onclick={() => mode = 'place'} class:active={mode === 'place'}>
+  <div class="toolbar-point-out">
+    <!--button class="btn-option-menu-point-out" onclick={() => mode = 'place'} class:active={mode === 'place'}>
       Colocar palabra
     </button-->
-    <button class="btn-option-menu" onclick={handleDraw} class:active={mode === 'draw'}>
+    <button class="btn-option-menu-point-out" onclick={handleDraw} class:active={mode === 'draw'}>
       Dibujar línea
     </button>
-    <button class="btn-option-menu" onclick={() => {visibleWord = !visibleWord;}}>
+    <button class="btn-option-menu-point-out" onclick={() => {visibleWord = !visibleWord;}}>
       {visibleWord ? 'Ocultar texto' : 'Mostrar texto'}
     </button>
   </div>
 
   <!-- Contenedor imagen -->
 
-  <div class="image-container" bind:this={container}
+  <div class="image-container-point-out" bind:this={container}
     onpointerdown={onPointerDown}
     onpointerup={onPointerUp}
     onpointermove={onPointerMove}
   >
-    <div class="stage">
+    <div class="stage-point-out">
       <img src={imagenPointOut} draggable="false" alt="" />
       <canvas bind:this={canvas}></canvas>
 
       {#each placedOptions as item (item.id)}
         <button
-          class="placed"
+          class="placed-point-out"
           style="left:{item.x * 100}%; top:{item.y * 100}%"
           onpointerdown={(e) => startDrag(e, item.id)}
-        ><span class:visible-word={!visibleWord}>{item.option}</span><span class="remove" onpointerdown={(e) => removeOption(e, item.id)} role="button" tabindex="0">✕</span>
+        ><span class:visible-word-point-out={!visibleWord}>{item.option}</span><span class="remove-point-out" onpointerdown={(e) => removeOption(e, item.id)} role="button" tabindex="0">✕</span>
         </button>
       {/each}
     </div>
   </div>
 
   <!-- Opciones -->
-  <div class="options">
+  <div class="options-point-out">
     {#each optionSuboptions as opt}
       <button
-        class="btn-word-option"
+        class="btn-word-option-point-out"
         disabled={placedOptions.some(p => p.option === opt.option)}
         onclick={() => {mode = 'place'; selectedOption = opt}}
         class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
@@ -429,25 +429,8 @@ function handleDraw() {
 
 </div>
 
-
+<!--
 <style>
-.visible-word {
-  display: none;
-}
-.btn-option-menu {
-  font-family: var(--font-normal);
-  padding: 0.4em;
-  border-radius: 4px;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  width: 100px;
-  background: #bee6ff;
-  transition: var(--transition);
-}
-.btn-option-menu:hover {
-  background: #a6d9f9;
-}
 .btn-word-option {
   font-family: var(--font-normal);
   padding: 0.4em;
@@ -458,6 +441,7 @@ function handleDraw() {
   background: #0aa74f;
   color: #fff;
   height: 32px;
+  box-shadow: green 0px 4px 0px 0px;
 }
 .designer {
   width: 100%;
@@ -466,7 +450,7 @@ function handleDraw() {
   margin: auto;
   background: #fff;
   display: grid;
-  grid-template-rows: 50px 1fr 60px;
+  grid-template-rows: 50px 1fr 70px;
   border: 2px solid #333;
   border-radius: 8px;
   overflow: hidden;
@@ -520,28 +504,15 @@ function handleDraw() {
   height: 30px;
 }
 
-.remove {
-  margin-left: 6px;
-  cursor: pointer;
-  display: none;
-}
 
 .options {
   background: #d1e1dc;
   display: flex;
   overflow-x: auto;
-  padding: 3px 10px;
+  padding: 0px 10px 5px;
   gap: 0.6em;
   border-top: 2px solid #333;
   align-items: center;
-  /*
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1em;
-  border-top: 2px solid #333;
-*/
 }
 
 .options button.selected {
@@ -552,20 +523,9 @@ function handleDraw() {
   background: #838c91;
   color: #fff;
 }
-.toolbar {
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  border-bottom: 2px solid #333;
-}
-.toolbar button.active {
-  font-weight: bold;
-}
 
 </style>
-
+-->
 
 
   <!--div

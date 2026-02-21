@@ -205,7 +205,7 @@ loadSintax();
                     width: {rs.width}; 
                     border-top: 2px solid {colorSynt(index)}; 
                     background: {rs.label.morphosyntax.length !== 0 ? bgColorSynt(index) : ''}; 
-                    background: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#bf0000' : ''}; 
+                    background: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#e35353' : ''}; 
                     color: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#fff' : ''}; 
                     border-top: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '2px solid #bf0000' : ''};
                     font-size: {rs.size}px;" 

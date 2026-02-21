@@ -1,8 +1,11 @@
 <script lang="ts">
+import { goto } from '$app/navigation';
+import { deserialize } from '$app/forms';
 import { page } from '$app/state';
-import { onMount, onDestroy } from 'svelte';
+import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
-import { filtrarParametros } from "$lib/utils";
+import { filtrarParametros, getDateTimeUTC } from "$lib/utils";
+import { Toast } from '$lib/components';
 
 import { 
   HeaderExercise, 
@@ -21,10 +24,12 @@ import {
 
 let { data } = $props();
 let visible = $state(false);
+let isSend = $state(false);
+let toast = $state<Toast | null>(null);
 const search = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
-console.log(page)
 
-console.log(data.info?.activity.type_general)
+//console.log(page)
+//console.log(data.info?.activity.type_general)
 
 let scales = data.info?.scales;
 let type_activity = data.info?.activity.type_general;
@@ -84,16 +89,44 @@ function handleActivity(index: number, _items: Item[], _viewResult: number) {
   }, 200);
 }
 
-onDestroy(()=>{
-  //activityLocalstore.clear();
-});
 
 function handleViewResult(_viewResult: number) {
   viewResult = _viewResult;
 }
 
+async function handleSendActivity(activity: object, url: string) {
+
+  const formData = new FormData();
+  formData.append('dateTime', getDateTimeUTC());
+  formData.append('activity', JSON.stringify(activity));
+
+  const response = await fetch('?/send', {
+    method: 'POST',
+    body: formData
+  });
+
+  isSend = true;
+  const resp = await response.text();
+  const result = deserialize(resp);
+
+  if (result.type === "success") {
+    goto(url);
+  } else if (result.type === "failure") {
+    toast?.view({
+      type: result.type,
+      message: result.data?.message,
+      time: 3000
+    });
+    isSend = false;
+  } else if (result.type === "redirect") {
+    goto('/')
+  }
+
+}
+
 </script>
 
+<Toast bind:this={toast} />
 
 {#if visible}
 
@@ -103,7 +136,7 @@ function handleViewResult(_viewResult: number) {
     {:else if type_activity === 'R'}
       <LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack>
     {/if}
-    <ListExercises {info} items={items} {handleActivity} {handleViewResult} />
+    <ListExercises {info} items={items} {handleActivity} {handleViewResult} {handleSendActivity} {isSend} />
   </HeaderExercise>
 
   <div class="container-body" bind:this={containerBody} transition:fade>

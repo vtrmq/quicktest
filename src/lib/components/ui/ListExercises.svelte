@@ -1,7 +1,8 @@
 <script lang="ts">
-import { typeExerc, scaleNota, formatearNota } from "$lib/utils"
+import { page } from '$app/state';
+import { typeExerc, scaleNota, formatearNota, filtrarParametros } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
-let { info, items, handleActivity, handleViewResult } = $props();
+let { info, items, handleActivity, handleViewResult, handleSendActivity, isSend = false } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
@@ -49,10 +50,12 @@ function handleViewResultX(option: string) {
     values = values + items[i].value;
   }
   let notaTotal = values / max;
-
-  notaFinal = scaleNota(scales, notaTotal)
+  //console.log(parseFloat(formatearNota(notaTotal)))
+  notaFinal = scaleNota(scales, parseFloat(formatearNota(notaTotal)))
+  //console.log($state.snapshot(notaFinal))
 
   const _minNota = scales.reduce((min: {min_value: number} , obj: {min_value: number}) => obj.min_value < min.min_value ? obj : min);
+  //console.log(_minNota)
 
   if (parseFloat(notaFinal.nota) < parseFloat(_minNota.min_value)) {
     notaFinal.nota = _minNota.min_value;
@@ -95,7 +98,7 @@ function handleSendTest() {
   }
 
   let notaTotal = values / _max;
-  notaFinal = scaleNota(scales, notaTotal)
+  notaFinal = scaleNota(scales, parseFloat(formatearNota(notaTotal)))
   //console.log($state.snapshot(notaFinal))
 
   const minNota = scales.reduce((min: {min_value: number} , obj: {min_value: number}) => obj.min_value < min.min_value ? obj : min);
@@ -108,13 +111,20 @@ function handleSendTest() {
     notaFinal.percentage = _notaFinal.percentage;
   }
 
-  const info = {
+  const result = {
     nota: parseFloat(notaFinal.nota),
-    scale: notaFinal.scale,
+    performance: notaFinal.scale,
     percentage: notaFinal.percentage,
-    items: itemsOrder
+    answer: itemsOrder,
+    courseId: info.courseId,
+    subjectId: info.subjectId,
+    topicId: info.topicId,
+    activityId: info.activityId,
+    teacherId: info.teacherId,
   };
-  console.log($state.snapshot(info))
+  const search = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId']);
+  const url = `/student/subject/topic/activity?${search}`;
+  handleSendActivity(result, url);
 }
 
 </script>
@@ -132,7 +142,13 @@ function handleSendTest() {
         {:else}
           <div class="wr-btns-resul-save">
             <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Continuar</button>
-            <button class="btn-save-test" onclick={handleSendTest}>Enviar</button>
+            <button class="btn-save-test" onclick={handleSendTest} disabled={isSend}>
+              {#if !isSend}
+                Enviar
+              {:else}
+                <svg class="svg-load" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              {/if}
+            </button>
             <div class="info-nota">
               {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
             </div>
@@ -167,7 +183,7 @@ function handleSendTest() {
                 <div class="wr-info-result">
                   <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
                   {#if viewResult === 1}
-                    <span class="item-value">Nota: {formatearNota(item.value)} {scaleNota(scales, item.value).scale}</span>
+                    <span class="item-value">Nota: {formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
                   {/if}
                 </div>
                 {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
@@ -195,6 +211,18 @@ function handleSendTest() {
     color: #fff;
     stroke-width: 3px;
   }
+}
+.svg-load {
+  width: 22px;
+  animation: girar 1.5s linear infinite;
+}
+@keyframes girar {
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
 }
 .txt-info {
   font-family: var(--font-normal);
@@ -234,6 +262,8 @@ function handleSendTest() {
   color: #fff;
   height: 100%;
   transition: var(--transition);
+  box-shadow: rgb(6 125 179) 0px 4px 0px 0px;
+  width: 78px;
 }
 .btn-save-test:hover {
   background: var(--bg-blue-hover);
@@ -245,7 +275,8 @@ function handleSendTest() {
 }
 .item-value {
   font-weight: 800;
-  color: #393939;
+  color: #9c27b0;
+  text-shadow: 1px 1px 0px #e5f3f3;
 }
 .wr-info-result {
   display: flex;
@@ -270,9 +301,14 @@ function handleSendTest() {
   outline: none;
   font-family: var(--font-normal);
   font-size: 1em;
-  background: #7b68ee;
+  background: var(--purple);
   color: #fff;
   height: 100%;
+  box-shadow: var(--purple-border) 0px 4px 0px 0px;
+  transition: var(--transition);
+}
+.btn-result:hover {
+  background: var(--purple-hover);
 }
 .container-info-exerc {
   display: flex;
@@ -282,6 +318,8 @@ function handleSendTest() {
 .text-left {
   text-align: left;
   font-size: 1.05em;
+  margin-top: 0.4em;
+  line-height: 20px;
 }
 .label-activity-exercise {
   font-family: var(--font-normal);

@@ -142,10 +142,10 @@ function startProgress() {
 
 <Toast bind:this={toast} />
 
-<div class="rf">
+<div class="rf-character">
   {#if infoData.mode === 'normal'}
 
-    <div class="center-exercise">
+    <div class="center-exercise-character">
       <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
 
         <div class="box1-select">
@@ -217,27 +217,28 @@ function startProgress() {
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
 
-    <div class="box-info-lecture">
-      <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {activity.question}</p>
-      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
-      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    <div class="box-info-lecture-character">
+      <h2 class="label-h2-character">Comprensión de lectura</h2>
+      <p class="title-lecture-character">Título: {activity.question}</p>
+      <div class="wr-img-lecture-character"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture-character" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
 
-    <div class="center-exercise">
-      <div class="wrapper-lecture" transition:fade>
-        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{activity.question}</h2>
-        <p class="p-lecture">{activity.content}</p>
-        <button class="btn-break" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
+    <div class="center-exercise-character">
+      <div class="wrapper-lecture-character" transition:fade>
+        <progress bind:this={progressElement} class="progresbar-character progresbar-character" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture-character">{activity.question}</h2>
+        <p class="p-lecture-character">{activity.content}</p>
+        <button class="btn-break-character" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
       </div>
     </div>
 
   {/if}
 </div>
 
+<!--
 <style>
 progress {
   appearance: none;       /* Quita el estilo nativo */
@@ -361,3 +362,4 @@ progress::-moz-progress-bar {
   background: var(--bg-blue-hover);
 }
 </style>
+-->

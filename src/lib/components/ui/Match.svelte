@@ -3,8 +3,7 @@ import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
-    import { onMount } from 'svelte';
-//import { onMount } from 'svelte';
+import { onMount } from 'svelte';
 
 type Side = 'left' | 'right';
 type Words = { word: string; };
@@ -295,10 +294,10 @@ function startProgress() {
 
 </script>
 
-<div class="rf">
+<div class="rf-match">
   {#if infoData.mode === 'normal'}
 
-    <div class="center-exercise">
+    <div class="center-exercise-match">
       <div class="body-exercise-match" bind:this={containerMatch}>
         <div class="mg-center">
           <div class="pd1">
@@ -330,26 +329,27 @@ function startProgress() {
 
   {:else if mode === 'lecture' && visible} <!-- Mensaje inicio de lectura -->
 
-    <div class="box-info-lecture">
-      <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {infoData.exercise.question}</p>
-      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
-      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    <div class="box-info-lecture-match">
+      <h2 class="label-h2-match">Comprensión de lectura</h2>
+      <p class="title-lecture-match">Título: {infoData.exercise.question}</p>
+      <div class="wr-img-lecture-match"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture-match" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
   {:else if mode === 'lecture' && !visible} <!-- Muestra la lectura -->
 
-    <div class="center-exercise">
-      <div class="wrapper-lecture" transition:fade>
-        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{infoData.exercise.question}</h2>
-        <p class="p-lecture">{infoData.exercise.content}</p>
+    <div class="center-exercise-match">
+      <div class="wrapper-lecture-match" transition:fade>
+        <progress bind:this={progressElement} class="progress-match progresbar-match" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture-match">{infoData.exercise.question}</h2>
+        <p class="p-lecture-match">{infoData.exercise.content}</p>
       </div>
     </div>
 
   {/if}
 </div>
 
+<!--
 <style>
 progress {
   appearance: none;       /* Quita el estilo nativo */
@@ -457,3 +457,4 @@ progress::-moz-progress-bar {
   background: var(--bg-blue-hover);
 }
 </style>
+-->

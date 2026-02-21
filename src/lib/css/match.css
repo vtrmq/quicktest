@@ -26,6 +26,7 @@
   line-height: 22px;
   text-align: left;
   transition: var(--transition);
+  box-shadow: #c3c3c3 0px 4px 0px 0px;
 }
 .word-mt:hover {
   background: #d0f1a9;
@@ -36,6 +37,7 @@
 .word-mt.error {
   background-color: #ef5c5c;
   color: #fff;
+  box-shadow: #ad2a00 0px 4px 0px 0px;
 }
 .container-columns {
   position: relative;
@@ -161,4 +163,131 @@
 }
 .btm {
   padding-bottom: 4em;
+}
+
+
+
+/* =========================================================== */
+/* =========================================================== */
+/* =========================================================== */
+
+.progress-match {
+  appearance: none;       /* Quita el estilo nativo */
+  -webkit-appearance: none;
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Fondo de la barra (el contenedor) */
+.progress-match::-webkit-progress-bar {
+  background-color: #ffffff; /* Blanco */
+}
+
+/* Color de la barra de carga (Relleno) */
+.progress-match::-webkit-progress-value {
+  background-color: #007bff; /* Azul */
+  transition: width 0.1s ease; /* Suaviza el movimiento */
+}
+
+/* Compatibilidad para Firefox */
+.progress-match::-moz-progress-bar {
+  background-color: #007bff; /* Azul */
+}
+
+.progresbar-match {
+  position: absolute;
+  top: -3px;
+  background: aqua;
+  width: 100%;
+  left: 0;
+  height: 9px;
+}
+.btn-break-match {
+  font-family: var(--font-normal);
+  padding: 0.6em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 1em;
+  background: var(--bg-blue);
+  color: #fff;
+  transition: var(--transition);
+  margin-top: 1em;
+}
+.btn-break-match:hover {
+  background: var(--bg-blue-hover);
+}
+.rf-match {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.center-exercise-match {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  top: 0;
+  position: absolute;
+}
+.title-lecture-match {
+  font-family: var(--font-normal);
+  font-size: 1.2em;
+  padding-bottom: 1em;
+  line-height: 28px;
+}
+.wrapper-lecture-match {
+  width: 100%;
+  max-width: 500px;
+  border: 2px solid var(--bg-header-synt);
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  border-radius: var(--border-radius);
+  overflow-y: auto;
+  height: calc(100% - calc(var(--height-header) + -60px));
+  top: 0;
+  position: absolute;
+}
+.p-lecture-match {
+  font-family: var(--font-normal);
+  line-height: 34px;
+  font-size: 1em;
+}
+.box-info-lecture-match {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  padding-bottom: 2em;
+}
+.label-h2-match {
+  font-family: var(--font-normal);
+  font-weight: 800;
+}
+.wr-img-lecture-match {
+  width: 200px;
+  height: 200px;
+}
+.wr-img-lecture-match > img {
+  width: 100%;
+  height: 100%;
+}
+.btn-start-lecture-match {
+  font-family: var(--font-normal);
+  padding: 0.6em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 1em;
+  background: var(--bg-blue);
+  color: #fff;
+  transition: var(--transition);
+}
+.btn-start-lecture-match:hover {
+  background: var(--bg-blue-hover);
 }

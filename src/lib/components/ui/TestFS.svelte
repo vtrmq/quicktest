@@ -88,6 +88,7 @@ function handleSelectWordFSRemove(point: number, index: number) {
   {/each}
 </div>
 
+<!--
 <style>
 .title-fs {
   font-family: var(--font-normal);
@@ -198,3 +199,4 @@ function handleSelectWordFSRemove(point: number, index: number) {
   color: #232b2a;
 }
 </style>
+-->

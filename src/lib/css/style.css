@@ -9,8 +9,11 @@
 }
 
 :root {
-  --font-bold: "Patua One", sans-serif;
-  --font-normal: "Lato", sans-serif;
+  /*--font-bold: "Patua One", sans-serif;
+  --font-normal: "Lato", sans-serif;*/
+
+  --font-bold: "Ubuntu", sans-serif;
+  --font-normal: "Ubuntu", sans-serif;
   --border-radius: 10px;
   --transition: 0.3s;
   --height-header: 60px;
@@ -78,11 +81,14 @@ ol {
 }
 
 .container-circle {
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   gap: 1em;
+}
+.container-circle.visible {
+  display: flex;
 }
 .chart-circle {
   width: 160px;

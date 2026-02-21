@@ -147,10 +147,10 @@ function startProgress() {
 
 <Toast bind:this={toast} />
 
-<div class="rf">
+<div class="rf-character">
   {#if mode === 'normal'}
 
-    <div class="center-exercise">
+    <div class="center-exercise-character">
       <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
 
         <div class="box1-select">
@@ -164,7 +164,7 @@ function startProgress() {
                 {#if w.type === "w" && w.sign === 0}
                   <button 
                     class="word-character pointer" class:raya-character={w.value}
-                    class:item-bad={(w.value === true && w.resp === false) && viewResult === 1}
+                    class:item-bad-character={(w.value === true && w.resp === false) && viewResult === 1}
                     onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                 {:else if type === "s" && w.type === "w" && w.sign === 3}
                   <div class="flex-select word-character">
@@ -179,7 +179,7 @@ function startProgress() {
                     <div class="flex-select word-character">
                       <button 
                         class="fnt-select pointer last-word-character" class:raya-character={w.value}
-                        class:item-bad={(w.value === true && w.resp === false) && viewResult === 1}
+                        class:item-bad-character={(w.value === true && w.resp === false) && viewResult === 1}
                         onclick={()=>handleSelectWord(index)}>{!w.value ? w.word : w.selection_word}</button>
                       <span class="sign-select">{!words[index + 1].value ? words[index + 1].word : ''}</span>
                     </div>
@@ -224,32 +224,33 @@ function startProgress() {
 
   {:else if mode === 'lecture' && visible === true} <!-- Mensaje inicio de lectura -->
 
-    <div class="box-info-lecture">
-      <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {infoData.exercise.question}</p>
-      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
-      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    <div class="box-info-lecture-character">
+      <h2 class="label-h2-character">Comprensión de lectura</h2>
+      <p class="title-lecture-character">Título: {infoData.exercise.question}</p>
+      <div class="wr-img-lecture-character"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture-character" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
   {:else if mode === 'lecture' && visible === false} <!-- Muestra la lectura -->
 
-    <div class="center-exercise">
-      <div class="wrapper-lecture" transition:fade>
-        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{infoData.exercise.question}</h2>
-        <p class="p-lecture">{infoData.exercise.content}</p>
-        <button class="btn-break" onclick={()=>mode = 'normal'}>Saltar</button>
+    <div class="center-exercise-character">
+      <div class="wrapper-lecture-character" transition:fade>
+        <progress bind:this={progressElement} class="progress-character progresbar-character" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture-character">{infoData.exercise.question}</h2>
+        <p class="p-lecture-character">{infoData.exercise.content}</p>
+        <button class="btn-break-character" onclick={()=>mode = 'normal'}>Saltar</button>
       </div>
     </div>
 
   {/if}
 </div>
 
+<!--
 <style>
 .item-bad {
-  background: #c70101;
+  background: #e35353;
   color: #fff;
-  border: 1px solid #9d0303;
+  border-bottom: 2px solid #fdadad;
 }
 progress {
   appearance: none;       /* Quita el estilo nativo */
@@ -373,3 +374,4 @@ progress::-moz-progress-bar {
   background: var(--bg-blue-hover);
 }
 </style>
+-->

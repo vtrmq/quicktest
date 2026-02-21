@@ -5,7 +5,7 @@ import { onMount } from 'svelte';
 import { activityLocalstore } from '$lib/store/activity_student';
 
 let { data } = $props();
-console.log(data)
+//console.log(data)
 
 type Result = {
     activity_id: number;

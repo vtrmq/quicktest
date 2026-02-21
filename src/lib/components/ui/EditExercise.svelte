@@ -64,7 +64,7 @@ let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
 
-console.log(items)
+//console.log(items)
 
 let album = $state<Album | null>(null);
 let audio = $state<Audios | null>(null);
@@ -1900,6 +1900,8 @@ $effect(()=>{
 .text-left {
   text-align: left;
   font-size: 1.05em;
+  margin-top: 0.4em;
+  line-height: 20px;
 }
 .grid-fx {
   display: flex;
@@ -2488,6 +2490,7 @@ to {
   align-items: center;
   width: 64px;
   height: 32px;
+  box-shadow: #c37400 0px 4px 0px 0px;
 }
 .btn-new {
   font-family: var(--font-normal);
@@ -2498,6 +2501,7 @@ to {
   transition: var(--transition);
   height: 32px;
   padding: 0.4em;
+  box-shadow: #c37400 0px 4px 0px 0px;
 }
 .sheet-type {
   margin: 2em 0;

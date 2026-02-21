@@ -38,6 +38,7 @@ SELECT
   JOIN subjects s ON isub.subject_id = s.subject_id
   LEFT JOIN answers ans ON 
     ans.activity_id = a.activity_id 
+    AND ans.subject_id = s.subject_id
     AND ans.student_id = cs.student_id
   WHERE cs.student_id = ?
     AND a.visible = 1

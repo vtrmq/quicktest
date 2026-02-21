@@ -129,25 +129,25 @@ function handleSelectOption(opt: Opt) {
 
 </script>
 
-<div class="designer">
+<div class="designer-point-out">
 
   <!-- Toolbar -->
-  <div class="header">
+  <div class="header-point-out">
     {infoData.exercise.question}
   </div>
 
   <!-- Contenedor imagen -->
 
-  <div class="image-container" bind:this={container}>
-    <div class="stage">
+  <div class="image-container-point-out" bind:this={container}>
+    <div class="stage-point-out">
       <img src={imagenPointOut} draggable="false" alt="" />
       <canvas bind:this={canvas}></canvas>
 
       {#each placedOptions as item, index (item.id)}
         <button
-          class="placed"
+          class="placed-point-out"
           style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.id)} 
-          class:item-bad={item.value === false && viewResult === 1}>
+          class:item-bad-point-out={item.value === false && viewResult === 1}>
           <span>{item.resp}</span>
         </button>
       {/each}
@@ -155,10 +155,10 @@ function handleSelectOption(opt: Opt) {
   </div>
 
   <!-- Opciones -->
-  <div class="options">
+  <div class="options-point-out">
     {#each optionSuboptions as opt}
       <button
-        class="btn-word-option"
+        class="btn-word-option-point-out"
         onclick={() => handleSelectOption(opt)}
         class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
     {/each}
@@ -166,12 +166,13 @@ function handleSelectOption(opt: Opt) {
 
 </div>
 
+<!--
 <style>
 .options {
   background: #d1e1dc;
   display: flex;
   overflow-x: auto;
-  padding: 3px 10px;
+  padding: 0px 10px 5px;
   gap: 0.6em;
   border-top: 2px solid var(--bg-header-synt);
   align-items: center;
@@ -191,6 +192,7 @@ function handleSelectOption(opt: Opt) {
   background: #0aa74f;
   color: #fff;
   height: 32px;
+  box-shadow: green 0px 4px 0px 0px;
 }
 .header {
   background: #ffffff;
@@ -210,7 +212,7 @@ function handleSelectOption(opt: Opt) {
   margin: auto;
   background: #fff;
   display: grid;
-  grid-template-rows: 50px 1fr 60px;
+  grid-template-rows: 50px 1fr 70px;
   border: 2px solid var(--bg-header-synt);
   border-radius: 8px;
   overflow: hidden;
@@ -266,3 +268,4 @@ function handleSelectOption(opt: Opt) {
   border: 1px solid #9d0303;
 }
 </style>
+-->

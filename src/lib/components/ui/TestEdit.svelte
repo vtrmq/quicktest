@@ -69,45 +69,45 @@ function startProgress() {
 </script>
 
 
-<div class="rf">
+<div class="rf-test">
   {#if infoData.mode === 'normal'}
 
-    <div class="center-exercise">
+    <div class="center-exercise-test">
 
 
-      <div class="container-activity">
-        <h1 class="question-test">{activity.question}</h1>
+      <div class="container-activity-test">
+        <h1 class="question-test-test">{activity.question}</h1>
         {#each points as qs, point}
-          <div class="container-question">
-            <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
-            <div class="question">{qs.question}</div>
+          <div class="container-question-test">
+            <div class="wr-point-number-test"><div class="point-number-test">{point + 1}</div></div>
+            <div class="question-test">{qs.question}</div>
 
             {#if qs.images.length !== 0}
-              <div class="container-images-question">
+              <div class="container-images-question-test">
                 {#each qs.images as img, i}
-                  <div class="box-image-question">
-                    <div class="wr-image-question">
-                      <img class="image-question" src={img} alt="" />
+                  <div class="box-image-question-test">
+                    <div class="wr-image-question-test">
+                      <img class="image-question-test" src={img} alt="" />
                     </div>
                     {#if qs.images.length > 1}
-                      <div class="label-image">Imagen {ALFABETO(i + 1)}</div>
+                      <div class="label-image-test">Imagen {ALFABETO(i + 1)}</div>
                     {/if}
                   </div>
                 {/each}
               </div>
             {/if}
 
-            <div class="container-items-answer">
+            <div class="container-items-answer-test">
               {#each qs.answers as answer, index}
-                <div class="container-answer" class:rst-point={answer.rst}>
-                  <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
+                <div class="container-answer-test" class:rst-point-test={answer.rst}>
+                  <div class="wr-label-point-test"><div class="label-resp-test" class:rst-point-test={answer.rst}>Respuesta {index + 1}</div></div>
                   {#if answer.image.length !== 0}
-                    <div class="wr-image-answer">
-                      <img class="image-question" src={answer.image} alt="" />
+                    <div class="wr-image-answer-test">
+                      <img class="image-question-test" src={answer.image} alt="" />
                     </div>
                   {/if}
-                  <div class="wr-input-item">
-                    <div class="answer-item">{answer.resp}</div>
+                  <div class="wr-input-item-test">
+                    <div class="answer-item-test">{answer.resp}</div>
                   </div>
                 </div>
               {/each}
@@ -120,27 +120,28 @@ function startProgress() {
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
 
-    <div class="box-info-lecture">
-      <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {activity.question}</p>
-      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
-      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    <div class="box-info-lecture-test">
+      <h2 class="label-h2-test">Comprensión de lectura</h2>
+      <p class="title-lecture-test">Título: {activity.question}</p>
+      <div class="wr-img-lecture-test"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture-test" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
 
-    <div class="center-exercise">
-      <div class="wrapper-lecture" transition:fade>
-        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{activity.question}</h2>
-        <p class="p-lecture">{activity.content}</p>
-        <button class="btn-break" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
+    <div class="center-exercise-test-test">
+      <div class="wrapper-lecture-test" transition:fade>
+        <progress bind:this={progressElement} class="progress-test progresbar-test" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture-test">{activity.question}</h2>
+        <p class="p-lecture-test">{activity.content}</p>
+        <button class="btn-break-test" onclick={()=>_infoData.mode = 'normal'}>Saltar</button>
       </div>
     </div>
 
   {/if}
 </div>
 
+<!--
 <style>
 progress {
   appearance: none;       /* Quita el estilo nativo */
@@ -425,13 +426,15 @@ progress::-moz-progress-bar {
 }
 .point-number {
   background: #93deff;
-  width: 30px;
-  height: 30px;
+  width: 39px;
+  height: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 60px;
   font-family: var(--font-normal);
   font-weight: 600;
+  box-shadow: #43aad7 0px 4px 0px 0px;
 }
 </style>
+-->

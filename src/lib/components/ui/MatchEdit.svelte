@@ -253,10 +253,10 @@ function startProgress() {
 
 </script>
 
-<div class="rf">
+<div class="rf-match">
   {#if infoData.mode === 'normal'}
 
-    <div class="center-exercise">
+    <div class="center-exercise-match">
       <div class="body-exercise-match" bind:this={containerMatch}>
         <div class="mg-center">
           <div class="pd1">
@@ -288,30 +288,31 @@ function startProgress() {
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === true} <!-- Mensaje inicio de lectura -->
 
-    <div class="box-info-lecture">
-      <h2 class="label-h2">Comprensión de lectura</h2>
-      <p class="title-lecture">Título: {activity.question}</p>
-      <div class="wr-img-lecture"><img src={reading} alt="" /></div>
-      <button class="btn-start-lecture" onclick={handleStartLecture}>Iniciar actividad</button>
+    <div class="box-info-lecture-match">
+      <h2 class="label-h2-match">Comprensión de lectura</h2>
+      <p class="title-lecture-match">Título: {activity.question}</p>
+      <div class="wr-img-lecture-match"><img src={reading} alt="" /></div>
+      <button class="btn-start-lecture-match" onclick={handleStartLecture}>Iniciar actividad</button>
     </div>
 
   {:else if _infoData.mode === 'lecture' && _infoData.visible === false} <!-- Muestra la lectura -->
 
-    <div class="center-exercise">
-      <div class="wrapper-lecture" transition:fade>
-        <progress bind:this={progressElement} class="progresbar" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
-        <h2 class="title-lecture">{activity.question}</h2>
-        <p class="p-lecture">{activity.content}</p>
-        <button class="btn-break" onclick={()=>{viewLines()}}>Saltar</button>
+    <div class="center-exercise-match">
+      <div class="wrapper-lecture-match" transition:fade>
+        <progress bind:this={progressElement} class="progress-match progresbar-match" id="myProgress" value="0" max="100" style="width: 100%;"></progress>
+        <h2 class="title-lecture-match">{activity.question}</h2>
+        <p class="p-lecture-match">{activity.content}</p>
+        <button class="btn-break-match" onclick={()=>{viewLines()}}>Saltar</button>
       </div>
     </div>
 
   {/if}
 </div>
 
+<!--
 <style>
-progress {
-  appearance: none;       /* Quita el estilo nativo */
+.progress-match {
+  appearance: none;
   -webkit-appearance: none;
   width: 100%;
   height: 20px;
@@ -319,23 +320,20 @@ progress {
   overflow: hidden;
 }
 
-/* Fondo de la barra (el contenedor) */
-progress::-webkit-progress-bar {
-  background-color: #ffffff; /* Blanco */
+.progress-match::-webkit-progress-bar {
+  background-color: #ffffff;
 }
 
-/* Color de la barra de carga (Relleno) */
-progress::-webkit-progress-value {
-  background-color: #007bff; /* Azul */
-  transition: width 0.1s ease; /* Suaviza el movimiento */
+.progress-match::-webkit-progress-value {
+  background-color: #007bff;
+  transition: width 0.1s ease;
 }
 
-/* Compatibilidad para Firefox */
-progress::-moz-progress-bar {
-  background-color: #007bff; /* Azul */
+.progress-match::-moz-progress-bar {
+  background-color: #007bff;
 }
 
-.progresbar {
+.progresbar-match {
   position: absolute;
   top: -3px;
   background: aqua;
@@ -343,7 +341,7 @@ progress::-moz-progress-bar {
   left: 0;
   height: 9px;
 }
-.btn-break {
+.btn-break-match {
   font-family: var(--font-normal);
   padding: 0.6em 1em;
   border-radius: 5px;
@@ -355,15 +353,15 @@ progress::-moz-progress-bar {
   transition: var(--transition);
   margin-top: 1em;
 }
-.btn-break:hover {
+.btn-break-match:hover {
   background: var(--bg-blue-hover);
 }
-.rf {
+.rf-match {
   width: 100%;
   height: 100%;
   position: relative;
 }
-.center-exercise {
+.center-exercise-match {
   height: 100%;
   width: 100%;
   display: flex;
@@ -371,13 +369,13 @@ progress::-moz-progress-bar {
   top: 0;
   position: absolute;
 }
-.title-lecture {
+.title-lecture-match {
   font-family: var(--font-normal);
   font-size: 1.2em;
   padding-bottom: 1em;
   line-height: 28px;
 }
-.wrapper-lecture {
+.wrapper-lecture-match {
   width: 100%;
   max-width: 500px;
   border: 2px solid var(--bg-header-synt);
@@ -390,12 +388,12 @@ progress::-moz-progress-bar {
   top: 0;
   position: absolute;
 }
-.p-lecture {
+.p-lecture-match {
   font-family: var(--font-normal);
   line-height: 34px;
   font-size: 1em;
 }
-.box-info-lecture {
+.box-info-lecture-match {
   margin-top: 2em;
   display: flex;
   flex-direction: column;
@@ -404,19 +402,19 @@ progress::-moz-progress-bar {
   gap: 1em;
   padding-bottom: 2em;
 }
-.label-h2 {
+.label-h2-match {
   font-family: var(--font-normal);
   font-weight: 800;
 }
-.wr-img-lecture {
+.wr-img-lecture-match {
   width: 200px;
   height: 200px;
 }
-.wr-img-lecture > img {
+.wr-img-lecture-match > img {
   width: 100%;
   height: 100%;
 }
-.btn-start-lecture {
+.btn-start-lecture-match {
   font-family: var(--font-normal);
   padding: 0.6em 1em;
   border-radius: 5px;
@@ -427,7 +425,8 @@ progress::-moz-progress-bar {
   color: #fff;
   transition: var(--transition);
 }
-.btn-start-lecture:hover {
+.btn-start-lecture-match:hover {
   background: var(--bg-blue-hover);
 }
 </style>
+-->

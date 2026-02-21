@@ -1,5 +1,6 @@
 CREATE TABLE answers (
   answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  teacher_id INTEGER DEFAULT 0,
   course_id INTEGER DEFAULT 0,
   subject_id INTEGER DEFAULT 0,
   topic_id INTEGER DEFAULT 0,

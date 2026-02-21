@@ -29,7 +29,7 @@ function handleSelectPoint(point: number, item: number) {
 }
 </script>
 
-<iframe title="" class="iframe" src={infoData.exercise.file} frameborder="0"></iframe>
+<iframe title="" class="iframe-test" src={infoData.exercise.file} frameborder="0"></iframe>
 
 <button class="btn-sheet" onclick={handleModeSheet}>Hoja de respuesta</button>
 
@@ -38,14 +38,14 @@ function handleSelectPoint(point: number, item: number) {
     <p>Hoja de respuestas</p>
     <button class="btn-close-sheet" onclick={handleModeSheet}>Ocultar</button>
   </div>
-  <div class="container-points">
+  <div class="container-points-testpdf">
     {#each points as _points, point}
-      <div class="row-points">
-        <div class="label-item">{point + 1}</div>
-        <div class="row-pts">
+      <div class="row-points-testpdf">
+        <div class="label-item-testpdf">{point + 1}</div>
+        <div class="row-pts-testpdf">
           {#each _points.points as points, item}
             <button 
-              class="btn-point" 
+              class="btn-point-testpdf" 
               onclick={()=>handleSelectPoint(point, item)} 
               class:rst-point={points.rss && viewResult === 0}
               class:rst-good={(points.rss === true && points.rst === true) && viewResult === 1}
@@ -60,6 +60,7 @@ function handleSelectPoint(point: number, item: number) {
   </div>
 </div>
 
+<!--
 <style>
 .btn-point.rst-good {
   background: #11d511;
@@ -182,3 +183,4 @@ function handleSelectPoint(point: number, item: number) {
   top: 1px;
 }
 </style>
+-->

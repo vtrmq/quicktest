@@ -192,5 +192,4 @@ function handleSelectOptWord(index: number) {
 .word-select.item-bad, .last-word-select.item-bad, .last-word-l-select.item-bad, .normal-word-select.item-bad {
   background: rgb(191, 0, 0);
 }
-
 </style>

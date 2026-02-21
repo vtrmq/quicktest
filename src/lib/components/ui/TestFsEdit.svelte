@@ -24,26 +24,26 @@ function handleSelectWordFSRemove(point: number, index: number) {
 }
 </script>
 
-<div class="container-activity">
+<div class="container-activity-fs">
 
   <h1 class="title-fs">{activity.content}</h1>
 
   {#each points as qs, point}
-    <div class="container-question">
-      <div class="wr-point-number"><div class="point-number">{point + 1}</div></div>
+    <div class="container-question-fs">
+      <div class="wr-point-number-fs"><div class="point-number-fs">{point + 1}</div></div>
 
       <div class="wr-container-box-fs">
         {#if qs.image.length !== 0}
-          <div class="box-image-question">
-            <div class="wr-image-question">
-              <img class="image-question" src={qs.image} alt="" />
+          <div class="box-image-question-fs">
+            <div class="wr-image-question-fs">
+              <img class="image-question-fs" src={qs.image} alt="" />
             </div>
           </div>
         {/if}
 
         {#if qs.audio.length !== 0}
-          <div class="wr-audio">
-            <audio class="audio" src={qs.audio} controls></audio>
+          <div class="wr-audio-fs">
+            <audio class="audio-fs" src={qs.audio} controls></audio>
           </div>
         {/if}
 
@@ -69,6 +69,7 @@ function handleSelectWordFSRemove(point: number, index: number) {
   {/each}
 </div>
 
+<!--
 <style>
 .title-fs {
   font-family: var(--font-normal);
@@ -175,3 +176,4 @@ function handleSelectWordFSRemove(point: number, index: number) {
   color: #232b2a;
 }
 </style>
+-->
