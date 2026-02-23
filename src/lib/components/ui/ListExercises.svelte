@@ -2,7 +2,7 @@
 import { page } from '$app/state';
 import { typeExerc, scaleNota, formatearNota, filtrarParametros } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
-let { info, items, handleActivity, handleViewResult, handleSendActivity, isSend = false } = $props();
+let { info, items, handleActivity, handleViewResult, handleSendActivity = ()=>{}, isSend = false } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
@@ -50,17 +50,12 @@ function handleViewResultX(option: string) {
     values = values + items[i].value;
   }
   let notaTotal = values / max;
-  //console.log(parseFloat(formatearNota(notaTotal)))
   notaFinal = scaleNota(scales, parseFloat(formatearNota(notaTotal)))
-  //console.log($state.snapshot(notaFinal))
-
   const _minNota = scales.reduce((min: {min_value: number} , obj: {min_value: number}) => obj.min_value < min.min_value ? obj : min);
-  //console.log(_minNota)
 
   if (parseFloat(notaFinal.nota) < parseFloat(_minNota.min_value)) {
     notaFinal.nota = _minNota.min_value;
     notaFinal.scale = _minNota.scale;
-    //notaFinal.percentage =  parseFloat( (_minNota.min_value * 10).toFixed(0) );
   }
 
   handleViewResult(viewResult);
@@ -129,33 +124,33 @@ function handleSendTest() {
 
 </script>
 
-<button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
-<div class="container-edit-exercise" class:view-box={viewBox}>
+<button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html menu}</button>
+<div class="container-edit-exercise" class:view-box-exerc={viewBox}>
   <div class="header-box-exercise">
-    <div class="in-header">
+    <div class="in-header-exerc">
       {#if info.activity.type_general === 'R'}
         {#if viewResult === 0}
-          <div class="wr-btns-resul-save">
-            <button class="btn-result" onclick={()=>handleViewResultX('result')}>Resultados</button>
+          <div class="wr-btns-resul-save-exerc">
+            <button class="btn-result-exerc" onclick={()=>handleViewResultX('result')}>Resultados</button>
             <!--button class="btn-save" onclick={()=>handleViewResultX('result')}>Guardar</button-->
           </div>
         {:else}
-          <div class="wr-btns-resul-save">
-            <button class="btn-result" onclick={()=>handleViewResultX('activities')}>Continuar</button>
-            <button class="btn-save-test" onclick={handleSendTest} disabled={isSend}>
+          <div class="wr-btns-resul-save-exerc">
+            <button class="btn-result-exerc" onclick={()=>handleViewResultX('activities')}>Continuar</button>
+            <button class="btn-save-test-exerc" onclick={handleSendTest} disabled={isSend}>
               {#if !isSend}
                 Enviar
               {:else}
-                <svg class="svg-load" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                <svg class="svg-load-exerc" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
               {/if}
             </button>
-            <div class="info-nota">
+            <div class="info-nota-exerc">
               {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
             </div>
           </div>
         {/if}
       {:else if info.activity.type_general === 'V'}
-        <button class="btn-save" onclick={handleViewResultTest}>
+        <button class="btn-save-exerc" onclick={handleViewResultTest}>
           {#if viewResult === 0}
             Enviar
           {:else if viewResult === 2}
@@ -164,46 +159,68 @@ function handleSendTest() {
         </button>
       {/if}
     </div>
-    <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html circleX}</button>
+    <button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html circleX}</button>
   </div>
 
   <div class="body-box-exercise">
 
-    <div class="container-info">
-      <h1 class="topic">{info.topic}</h1>
-      <h2 class="activity">{info.activity.activity}</h2>
+    <div class="container-info-exerc">
+      <h1 class="topic-exerc">{info.topic}</h1>
+      <h2 class="activity-exerc">{info.activity.activity}</h2>
     </div>
-    <div class="row-items">
+    <div class="row-items-exerc">
       {#if viewResult === 0 || viewResult === 1}
         {#each items as item, index}
-          <div class="row-link-activity" class:resaltar={itemResaltado === index}>
-            <button class="link-activity" onclick={()=>handleSelectActivity(index)}>
-              <div class="box-item-link">{index + 1}</div>
+          <div class="row-link-activity-exerc" class:resaltar-exerc={itemResaltado === index}>
+            <button class="link-activity-exerc" onclick={()=>handleSelectActivity(index)}>
+              <div class="box-item-link-exerc">{index + 1}</div>
               <div class="container-info-exerc">
-                <div class="wr-info-result">
-                  <span class="label-activity-exercise" class:resaltar={itemResaltado === index}>{typeExerc(item.type)}</span>
+                <div class="wr-info-result-exerc">
+                  <span class="label-activity-exercise" class:resaltar-exerc={itemResaltado === index}>{typeExerc(item.type)}</span>
                   {#if viewResult === 1}
-                    <span class="item-value">Nota: {formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
+                    <span class="item-value-exerc">Nota: {formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
                   {/if}
                 </div>
                 {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
-                  <div class="text-left">{item.exercise.content}</div>
+                  <div class="text-left-exerc">{item.exercise.content}</div>
                 {:else}
-                  <div class="text-left">{item.exercise.question}</div>
+                  <div class="text-left-exerc">{item.exercise.question}</div>
                 {/if}
               </div>
             </button>
           </div>
         {/each}
       {:else if viewResult === 2}
-        <p class="txt-info">¿Quieres enviar el test?</p>
-        <button class="btn-save-test" onclick={handleSendTest}>Enviar test</button>
+        <p class="txt-info-exerc">¿Quieres enviar el test?</p>
+        <button class="btn-save-test-exerc" onclick={handleSendTest}>Enviar test</button>
       {/if}
     </div>
 
   </div>
 </div>
 
+<style>
+:global {
+  .btn-view-close-exerc > svg {
+    width: 18px;
+    color: #fff;
+    stroke-width: 3px;
+  }
+}
+.btn-view-close-exerc {
+  width: 36px;
+  height: 35px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 60px;
+  background: #d98507;
+}
+</style>
+<!--
 <style>
 :global {
   .btn-view-close > svg {
@@ -432,3 +449,4 @@ to {
   right: 0;
 }
 </style>
+-->

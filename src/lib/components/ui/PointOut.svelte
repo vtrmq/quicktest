@@ -2,7 +2,7 @@
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
 type Option = { id: string; option: string };
 type Line = {
@@ -18,6 +18,10 @@ type PlacedOption = {
   y: number;
   resp: string;
   value: boolean;
+};
+type Opt = {
+  id: string;
+  option: string;
 };
 
 let container!: HTMLDivElement;
@@ -87,6 +91,8 @@ function externalPoint(a: { x: number; y: number }, b: { x: number; y: number })
 }
 
 function handlePlaceWord(index: number, id: string) {
+  if (isActionStudent === false) return;
+
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
     if (time !== null && time.min === 0 && time.seg === 0) {
@@ -110,11 +116,8 @@ function paint() {
   window.addEventListener('resize', resizeCanvas);
 };
 
-type Opt = {
-  id: string;
-  option: string;
-};
 function handleSelectOption(opt: Opt) {
+  if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
     if (time !== null && time.min === 0 && time.seg === 0) {
@@ -165,107 +168,3 @@ function handleSelectOption(opt: Opt) {
   </div>
 
 </div>
-
-<!--
-<style>
-.options {
-  background: #d1e1dc;
-  display: flex;
-  overflow-x: auto;
-  padding: 0px 10px 5px;
-  gap: 0.6em;
-  border-top: 2px solid var(--bg-header-synt);
-  align-items: center;
-}
-
-.options button.selected {
-  background: #333;
-  color: white;
-}
-.btn-word-option {
-  font-family: var(--font-normal);
-  padding: 0.4em;
-  border-radius: 4px;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  background: #0aa74f;
-  color: #fff;
-  height: 32px;
-  box-shadow: green 0px 4px 0px 0px;
-}
-.header {
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  border-bottom: 2px solid var(--bg-header-synt);
-  height: 50px;
-  font-family: var(--font-normal);
-  text-align: center;
-}
-.designer {
-  width: 100%;
-  height: 100%;
-  max-width: 500px;
-  margin: auto;
-  background: #fff;
-  display: grid;
-  grid-template-rows: 50px 1fr 70px;
-  border: 2px solid var(--bg-header-synt);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.image-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  touch-action: none;
-  overflow-y: auto;
-}
-.stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
-
-.stage img {
-  width: 100%;
-  height: 100%;
-  object-fit: fill; /* contain 🔥 clave */
-  display: block;
-}
-
-.stage canvas {
-  position: absolute;
-  inset: 0;
-}
-
-.placed {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  font-family: var(--font-normal);
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: white;
-  border: 1px solid #333;
-  white-space: nowrap;
-  min-width: 50px;
-  height: 30px;
-}
-.placed.item-bad {
-  background: #c70101;
-  color: #fff;
-  border: 1px solid #9d0303;
-}
-</style>
--->

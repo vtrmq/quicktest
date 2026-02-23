@@ -3,7 +3,7 @@ import { Toast } from '$lib/components';
 import { colors } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
 type Option = {
   option: string;
@@ -36,6 +36,8 @@ options = infoData.exercise.optionSuboptions;
 indexOptWord = -1;
 
 function handleSelectWord(index: number) {
+
+  if (isActionStudent === false) return;
 
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -97,6 +99,7 @@ function handleSelectWord(index: number) {
 }
 
 function handleSelectOptWord(index: number) {
+  if (isActionStudent === false) return;
   if (viewResult === 1) return;
   indexOptWord = indexOptWord === -1 || indexOptWord !== index ? index : -1;
 }
@@ -104,10 +107,6 @@ function handleSelectOptWord(index: number) {
 </script>
 
 <Toast bind:this={toast} />
-
-<!-- 
-              style="background: {(w.value === false && w.resp === true) || (w.value === false && w.resp === false && w.resp_color.length !== 0) && viewResult === 1 ? '#bf0000' : ''};"
--->
 
 <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
 
@@ -126,14 +125,14 @@ function handleSelectOptWord(index: number) {
               role="button" 
               tabindex="0" 
               onkeypress={() => {}}
-              class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)}
+              class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length === 0 && viewResult === 1)}
             >{w.word}</span>
           {:else if type === "s" && w.type === "w" && w.sign === 3}
             <div class="flex-select word-select">
               <span 
                 class="fnt-select pointer last-word-select {w.resp_color}" 
                 onclick={()=>handleSelectWord(index)} role="button" tabindex="0" onkeypress={() => {}}
-                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)}
+                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length === 0 && viewResult === 1)}
               >{w.word}</span>
               <span class="sign-select">{words[index + 1].word}</span>
               <span class="sign-select">{words[index + 2].word}</span>
@@ -144,7 +143,7 @@ function handleSelectOptWord(index: number) {
                 <span 
                   class="fnt-select pointer last-word-select {w.resp_color}" 
                   onclick={()=>handleSelectWord(index)} role="button" tabindex="0" onkeypress={() => {}} 
-                  class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1))  || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)}
+                  class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1))  || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length === 0 && viewResult === 1)}
                 >{w.word}</span>
                 <span class="sign-select">{words[index + 1].word}</span>
               </div>
@@ -155,7 +154,7 @@ function handleSelectOptWord(index: number) {
               <span 
                 class="fnt-select pointer last-word-l-select {w.resp_color}" 
                 onclick={()=>handleSelectWord(index)} role="button" tabindex="0" onkeypress={() => {}} 
-                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)}
+                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length === 0 && viewResult === 1)}
               >{w.word}</span>
               <span class="sign-l-select">{words[index + 1].word}</span>
             </div>
@@ -165,7 +164,7 @@ function handleSelectOptWord(index: number) {
               <span 
                 class="fnt-select pointer last-word-l-select {w.resp_color}" 
                 onclick={()=>handleSelectWord(index)} role="button" tabindex="0" onkeypress={() => {}} 
-                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)}
+                class:item-bad={((w.value === false && w.resp === true && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length !== 0 && viewResult === 1)) || (w.value === false && w.resp === false && w.resp_color.length !== 0 && viewResult === 1) || (w.value === true && w.resp === false && w.resp_color.length === 0 && viewResult === 1)}
               >{w.word}</span>
             </div>
           {/if}
@@ -188,8 +187,11 @@ function handleSelectOptWord(index: number) {
 
 </div>
 
+<!--
 <style>
 .word-select.item-bad, .last-word-select.item-bad, .last-word-l-select.item-bad, .normal-word-select.item-bad {
   background: rgb(191, 0, 0);
+  color: #fff;
 }
 </style>
+-->

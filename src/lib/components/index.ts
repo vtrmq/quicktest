@@ -62,6 +62,7 @@ export { default as TestEdit } from './ui/TestEdit.svelte';
 export { default as MatchEdit } from './ui/MatchEdit.svelte';
 export { default as PointOutEdit } from './ui/PointOutEdit.svelte';
 export { default as TestPDFEdit } from './ui/TestPDFEdit.svelte';
+export { default as ListExercisesResult } from './ui/ListExercisesResult.svelte';
 
 // Activities student
 export { default as ListExercises } from './ui/ListExercises.svelte';

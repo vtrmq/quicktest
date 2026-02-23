@@ -1,3 +1,7 @@
+.btn-point-testpdf.rst-std {
+  background: orange;
+  color: #fff;
+}
 .btn-close-sheet {
   padding: 0.5em 1em;
   cursor: pointer;
@@ -55,6 +59,14 @@
   transition: var(--transition);
 }
 .btn-point-testpdf.rst-point {
+  background: #11d511;
+  color: #fff;
+}
+.btn-point-testpdf.rst-bad {
+  background: red;
+  color: #fff;
+}
+.btn-point-testpdf.rst-good {
   background: #11d511;
   color: #fff;
 }

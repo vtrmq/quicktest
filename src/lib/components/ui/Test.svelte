@@ -13,7 +13,11 @@ type Point = {
 
 let points: Point[] = $state([]);
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+
+(()=>{
+  console.log($state.snapshot(infoData))
+})();
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
@@ -66,6 +70,7 @@ function startProgress() {
 }
 
 function handleSelectItem(point: number, index: number) {
+  if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
     if (time !== null && time.min === 0 && time.seg === 0) {
@@ -113,13 +118,15 @@ function handleSelectItem(point: number, index: number) {
                 <div 
                   class="container-answer-test" 
                   class:rst-point-test={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
-                  class:item-bad-test={(answer.rss === true && answer.rst === false && viewResult === 1)} 
+                  class:item-bad-test={((answer.rss === true && answer.rst === false)) && viewResult === 1} 
+                  class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                   onclick={()=>handleSelectItem(point, index)} 
                   onkeyup={()=>{}} role="button" tabindex="0">
                   <div class="wr-label-point-test">
                     <div class="label-resp-test" 
                       class:rst-point-test={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
-                      class:item-bad-test={(answer.rss === true && answer.rst === false && viewResult === 1)} 
+                      class:item-bad-test={(answer.rss === true && answer.rst === false) && viewResult === 1} 
+                      class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                     >Respuesta {index + 1}</div>
                   </div>
                   {#if answer.image.length !== 0}
@@ -160,293 +167,3 @@ function handleSelectItem(point: number, index: number) {
 
   {/if}
 </div>
-
-<!--
-<style>
-.container-answer.item-bad {
-  background: #ecacac;
-  box-shadow: rgb(207 109 109) 0px 7px 0px 0px;
-}
-progress {
-  appearance: none;       /* Quita el estilo nativo */
-  -webkit-appearance: none;
-  width: 100%;
-  height: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-/* Fondo de la barra (el contenedor) */
-progress::-webkit-progress-bar {
-  background-color: #ffffff; /* Blanco */
-}
-
-/* Color de la barra de carga (Relleno) */
-progress::-webkit-progress-value {
-  background-color: #007bff; /* Azul */
-  transition: width 0.1s ease; /* Suaviza el movimiento */
-}
-
-/* Compatibilidad para Firefox */
-progress::-moz-progress-bar {
-  background-color: #007bff; /* Azul */
-}
-
-.progresbar {
-  position: absolute;
-  top: -3px;
-  background: aqua;
-  width: 100%;
-  left: 0;
-  height: 9px;
-}
-.rf {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-.center-exercise {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  position: absolute;
-}
-.title-lecture {
-  font-family: var(--font-normal);
-  font-size: 1.2em;
-  padding-bottom: 1em;
-  line-height: 28px;
-}
-.wrapper-lecture {
-  width: 100%;
-  max-width: 500px;
-  border: 2px solid var(--bg-header-synt);
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-  border-radius: var(--border-radius);
-  overflow-y: auto;
-  height: calc(100% - calc(var(--height-header) + -60px));
-  top: 0;
-  position: absolute;
-}
-.p-lecture {
-  font-family: var(--font-normal);
-  line-height: 34px;
-  font-size: 1em;
-}
-.box-info-lecture {
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  padding-bottom: 2em;
-}
-.label-h2 {
-  font-family: var(--font-normal);
-  font-weight: 800;
-}
-.title-lecture {
-  font-family: var(--font-normal);
-  font-size: 1.2em;
-  padding-bottom: 1em;
-  line-height: 28px;
-}
-.wrapper-lecture {
-  width: 100%;
-  max-width: 500px;
-  border: 2px solid var(--bg-header-synt);
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-  border-radius: var(--border-radius);
-  overflow-y: auto;
-  height: calc(100% - calc(var(--height-header) + -60px));
-  top: 0;
-  position: absolute;
-}
-.p-lecture {
-  font-family: var(--font-normal);
-  line-height: 34px;
-  font-size: 1em;
-}
-.box-info-lecture {
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  padding-bottom: 2em;
-}
-.label-h2 {
-  font-family: var(--font-normal);
-  font-weight: 800;
-}
-.wr-img-lecture {
-  width: 200px;
-  height: 200px;
-}
-.wr-img-lecture > img {
-  width: 100%;
-  height: 100%;
-}
-.btn-start-lecture {
-  font-family: var(--font-normal);
-  padding: 0.6em 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  background: var(--bg-blue);
-  color: #fff;
-  transition: var(--transition);
-}
-.btn-start-lecture:hover {
-  background: var(--bg-blue-hover);
-}
-
-
-/* ================================== */
-
-.wr-input-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border-radius: var(--border-radius);
-  padding: 2px 3px 2px 0;
-  transition: var(--transition);
-  background: #fff;
-  border: 1px solid #fff;
-}
-.answer-item {
-  width: 100%;
-  resize: none;
-  background: transparent;
-  font-family: var(--font-normal);
-  font-size: var(--font-size);
-  padding: 0.4em 0.5em;
-  border-radius: var(--border-radius);
-  line-height: 28px;
-}
-.wr-label-point {
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  width: 100%;
-  top: -22px;
-  left: 0;
-}
-.label-resp {
-  background: var(--border-item);
-  font-family: var(--font-normal);
-  font-size: 0.88em;
-  padding: 5px 10px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  transition: var(--transition);
-}
-.label-resp.rst-point {
-  background: #11d511;
-}
-.label-resp.item-bad {
-  background: #ecacac;
-}
-.container-answer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  background: var(--border-item);
-  padding: 8px;
-  border-radius: var(--border-radius);
-  position: relative;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
-}
-.container-answer.rst-point {
-  background: #11d511;
-  box-shadow: rgb(0 167 0) 0px 7px 0px 0px;
-}
-.container-items-answer {
-  margin: 1em 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3em;
-}
-.image-question {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: fill;
-  border-radius: var(--border-radius);
-}
-.wr-image-question {
-  width: 100%;
-  position: relative;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  padding: 8px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.wr-image-answer {
-  width: 100%;
-  height: 380px;
-  position: relative;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-}
-.container-images-question {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-  padding-bottom: 2em;
-}
-.question {
-  font-family: var(--font-normal);
-  padding-bottom: 2em;
-  line-height: 28px;
-  font-size: var(--font-size);
-}
-.question-test {
-  font-family: var(--font-normal);
-  padding-bottom: 2em;
-  line-height: 28px;
-  font-size: 1.2em;
-}
-.container-activity {
-  width: 100%;
-  max-width: 500px;
-  padding-bottom: 6em;
-  position: absolute;
-}
-.container-question {
-  padding: 0.5em 0;
-}
-.wr-point-number {
-  display: flex;
-  justify-content: center;
-  background: #93deff;
-  height: 1px;
-  align-items: center;
-  margin: 1em 0 2em;
-}
-.point-number {
-  background: #93deff;
-  width: 39px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 60px;
-  font-family: var(--font-normal);
-  font-weight: 600;
-  box-shadow: #43aad7 0px 4px 0px 0px;
-}
-</style>
--->

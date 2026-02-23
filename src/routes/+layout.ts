@@ -9,3 +9,4 @@ import "$lib/css/testfs.css";
 import "$lib/css/test.css";
 import "$lib/css/character.css";
 import "$lib/css/testpdf.css";
+import "$lib/css/listexercises.css";

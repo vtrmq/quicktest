@@ -19,7 +19,7 @@ type Word = {
   word: string;
 };
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -44,6 +44,8 @@ indexOptWord = -1;
 // =============================================
 
 function handleSelectWord(index: number) {
+
+  if (isActionStudent === false) return;
 
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -94,6 +96,7 @@ function handleSelectWord(index: number) {
 }
 
 function handleSelectOptWord(index: number) {
+  if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
     if (time !== null && time.min === 0 && time.seg === 0) {

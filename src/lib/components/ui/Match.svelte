@@ -16,8 +16,7 @@ type SelectedWord = {
   side: Side;
 }
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity } = $props();
-
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
 let leftColumn = $state() as HTMLDivElement;
@@ -101,6 +100,8 @@ function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
 }
 
 function selectWordMatch(wordElement: Event, side: Side, index: number) {
+
+  if (isActionStudent === false) return;
 
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -348,113 +349,3 @@ function startProgress() {
 
   {/if}
 </div>
-
-<!--
-<style>
-progress {
-  appearance: none;       /* Quita el estilo nativo */
-  -webkit-appearance: none;
-  width: 100%;
-  height: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-/* Fondo de la barra (el contenedor) */
-progress::-webkit-progress-bar {
-  background-color: #ffffff; /* Blanco */
-}
-
-/* Color de la barra de carga (Relleno) */
-progress::-webkit-progress-value {
-  background-color: #007bff; /* Azul */
-  transition: width 0.1s ease; /* Suaviza el movimiento */
-}
-
-/* Compatibilidad para Firefox */
-progress::-moz-progress-bar {
-  background-color: #007bff; /* Azul */
-}
-
-.progresbar {
-  position: absolute;
-  top: -3px;
-  background: aqua;
-  width: 100%;
-  left: 0;
-  height: 9px;
-}
-.rf {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-.center-exercise {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  position: absolute;
-}
-.title-lecture {
-  font-family: var(--font-normal);
-  font-size: 1.2em;
-  padding-bottom: 1em;
-  line-height: 28px;
-}
-.wrapper-lecture {
-  width: 100%;
-  max-width: 500px;
-  border: 2px solid var(--bg-header-synt);
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-  border-radius: var(--border-radius);
-  overflow-y: auto;
-  height: calc(100% - calc(var(--height-header) + -60px));
-  top: 0;
-  position: absolute;
-}
-.p-lecture {
-  font-family: var(--font-normal);
-  line-height: 34px;
-  font-size: 1em;
-}
-.box-info-lecture {
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  padding-bottom: 2em;
-}
-.label-h2 {
-  font-family: var(--font-normal);
-  font-weight: 800;
-}
-.wr-img-lecture {
-  width: 200px;
-  height: 200px;
-}
-.wr-img-lecture > img {
-  width: 100%;
-  height: 100%;
-}
-.btn-start-lecture {
-  font-family: var(--font-normal);
-  padding: 0.6em 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  background: var(--bg-blue);
-  color: #fff;
-  transition: var(--transition);
-}
-.btn-start-lecture:hover {
-  background: var(--bg-blue-hover);
-}
-</style>
--->

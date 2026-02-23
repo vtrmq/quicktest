@@ -1,3 +1,10 @@
+.container-answer-test.item-rst-test {
+  background: orange;
+  box-shadow: rgb(197 131 9) 0px 7px 0px 0px;
+}
+.label-resp-test.item-rst-test {
+  background: orange;
+}
 .container-answer-test.item-bad-test {
   background: #ecacac;
   box-shadow: rgb(207 109 109) 0px 7px 0px 0px;
