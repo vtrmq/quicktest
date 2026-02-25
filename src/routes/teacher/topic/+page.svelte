@@ -7,9 +7,11 @@ import fileText from '$lib/assets/svg/file-text.svg?raw';
 import minus from '$lib/assets/svg/minus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
 import blocks from '$lib/assets/svg/blocks.svg?raw'
+import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog, Pagination } from '$lib/components';
 
 let { data } = $props();
+//console.log($state.snapshot(data))
 let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
@@ -18,6 +20,7 @@ let posTopic: number = 0;
 type Subjects = {
   subject_id: number;
   subject: string;
+  course_id: number;
   course: string;
 }
 
@@ -140,7 +143,10 @@ async function handleActionDelete(e: string) {
                     </div>
                     <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
                       {#each row.subjects as subject}
-                        <div class="in-course-subject"><span>{subject.course}</span> <span>{subject.subject}</span></div>
+                        <div class="in-course-subject">
+                          <a href="/teacher/topic/activities?topicId={row.topic_id}&courseId={subject.course_id}&subjectId={subject.subject_id}&origin=topic" class="link-result"><span>{subject.course}</span> <span>{subject.subject}</span></a>
+                          <a class="box-link-subject" href="/teacher/topic/activities?topicId={row.topic_id}&courseId={subject.course_id}&subjectId={subject.subject_id}&origin=topic">{@html sendHorizontal}</a>
+                        </div>
                       {/each}
                     </div>
                   </div>
@@ -176,9 +182,28 @@ async function handleActionDelete(e: string) {
 {/if}
 
 <style>
+.box-link-subject {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+:global {
+  .box-link-subject > svg {
+    width: 20px;
+    color: orange;
+    stroke-width: 3px;
+  }
+}
+.link-result {
+  color: brown;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
 .in-course-subject {
   display: flex;
-  gap: 0.5em;
+  gap: 1em;
+  justify-content: space-between;
 }
 .container-rows {
   background: #f0ffff8a;

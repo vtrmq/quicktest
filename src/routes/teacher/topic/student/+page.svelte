@@ -1,5 +1,4 @@
 <script lang="ts">
-import { onMount } from "svelte";
 import { page } from '$app/state';
 import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { 
@@ -9,10 +8,6 @@ import {
 } from '$lib/components';
 import { 
   filtrarParametros, 
-  typeActivity,
-  formatDecimal,
-  decimal,
-  drawChartCircle,
   scaleNota,
   extractParams,
 } from '$lib/utils';
@@ -21,31 +16,21 @@ type Teacher = { name: string, surnames: string };
 type Course = { course_id: number; course: string };
 type Topic = { topic_id: number, topic: string; };
 type Subject = { subject_id: number, subject: string };
-type Activities = {
-  activity_id: number;
-  teacher_id: number;
-  topic_id: number;
-  activity: string;
-  type_general: string;
-  time: string | null;
-  file: string | null;
-  shadow_file: string | null;
-  comment: string | null;
-  items: string | null;
+type Student = {
+  student_id: number;
   nota: number;
+  performance: string;
+  name: string;
+  surnames: string;
 }
-type InfoTotal = { nota: string; percentage: number; scale: string };
 
 let { data } = $props();
 let course: Course = data.result?.course;
 let subject: Subject = data.result?.subject;
 let topic: Topic = data.result?.topic;
 let teacher: Teacher = data.result?.teacher;
-let activities: Activities[] = data.result?.activities;
+let students: Student[] = data.result?.students;
 let scale = data.result?.scale
-let infoTotal = $state<InfoTotal>();
-let chart = $state<SVGElement>() as SVGElement;
-let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
 
 let root = $state('');
 //let origin = extractParams(page.url.href, ["origin"]);
@@ -60,23 +45,7 @@ if (url.origin === "topic") {
   root = `/teacher/topic/assign?${_root}`;
 }
 
-let notaTotal = $state(0);
-let countNotas = 0;
-onMount(() => {
-  for (let i = 0; i < activities.length; i++) {
-    if (activities[i].nota !== 0) {
-      notaTotal += activities[i].nota;
-      countNotas++;
-    }
-  }
-  if (notaTotal !== 0) {
-    notaTotal = notaTotal / countNotas;
-    infoTotal = scaleNota(scale, notaTotal);
-    drawChartCircle(infoTotal.percentage, chart, valueDisplay);
-  }
-});
-
-//console.log(activities)
+console.log(data)
 
 </script>
 
@@ -84,7 +53,7 @@ onMount(() => {
 
   <div class="wr-title">
     <LinkBack href={root}>Temas/Asignaturas</LinkBack>
-    <Title>Actividades del tema</Title>
+    <Title>Resultados</Title>
     <p class="course">{course.course}</p>
     <div>
       <p class="subject">{subject.subject}</p>
@@ -92,16 +61,15 @@ onMount(() => {
     </div>
   </div>
 
-  {#if activities.length !== 0}
+  {#if students.length !== 0}
     <div class="mg-top">
       <p class="topic">{topic.topic}</p>
       <div class="wrapper">
 
-        {#each activities as row, i}
-          {@const nota = scaleNota(scale, row.nota)}
+        {#each students as row, i}
           <div>
             <div class="row-teacher">
-              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === activities.length}>
+              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === students.length}>
                 <div class="point">
                   <div class="circle-green">&nbsp;</div>
                 </div>
@@ -110,19 +78,18 @@ onMount(() => {
                   <div class="box-b">&nbsp;</div>
                 </div>
                 <div class="box-a">
-                  <div class="box-bb" class:border-left={i !== 0 && i + 1 <= activities.length}>&nbsp;</div>
-                  <div class="box-b" class:border-left={i + 1 < activities.length}>&nbsp;</div>
+                  <div class="box-bb" class:border-left={i !== 0 && i + 1 <= students.length}>&nbsp;</div>
+                  <div class="box-b" class:border-left={i + 1 < students.length}>&nbsp;</div>
                 </div>
               </div>
               <div class="box-course">
                 <div>
-                  <div class="info-course"><p class="activity">{row.activity}</p></div>
+                  <div class="info-course"><p class="activity">{row.name} {row.surnames}</p></div>
                   <div class="info-p">
-                    <span>{typeActivity(row.type_general)}</span>
-                    <span>Total:&nbsp;{nota.percentage}%&nbsp;{nota.scale}</span>
+                    <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}">{@html sendHorizontal}</a>
+                <!--a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}">{@html sendHorizontal}</a-->
               </div>
             </div>
           </div>
@@ -130,32 +97,12 @@ onMount(() => {
 
       </div>
 
-
-        <div
-            class="container-circle"
-            class:visible={activities.length !== 0 && notaTotal !== 0}
-        >
-            <div style="position: relative; display: flex;">
-                <svg class="chart-circle" bind:this={chart}></svg>
-                <div class="value-display" bind:this={valueDisplay}></div>
-            </div>
-            {#if infoTotal}
-                <h1 class="performance-chart">
-                    Desempeño: {decimal(
-                        formatDecimal(parseFloat(infoTotal.nota)),
-                    )}
-                    {infoTotal?.scale}
-                </h1>
-            {/if}
-        </div>
-
-
     </div>
   {/if}
 
 </div>
 
-{#if activities.length === 0}
+{#if students.length === 0}
   <div class="wr-none-data">
     <NoneData>No hay actividades para mostrar</NoneData>
   </div>

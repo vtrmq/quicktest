@@ -163,7 +163,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
                           {subject.subject}
                         </button>
                         {#if subject.topic_subject_id}
-                          <a class="box-link-subject" href="/teacher/topic/activities?topicId={topicId}&courseId={row.course_id}&subjectId={subject.subject_id}">{@html sendHorizontal}</a>
+                          <a class="box-link-subject" href="/teacher/topic/activities?topicId={topicId}&courseId={row.course_id}&subjectId={subject.subject_id}&origin=assign">{@html sendHorizontal}</a>
                         {/if}
                       </div>
                     {/each}
