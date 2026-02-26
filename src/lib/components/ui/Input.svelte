@@ -152,9 +152,6 @@ function onInput(e: Event) {
   }
 }
 
-
-
-
 :global(.icon-form) {
   width: 30px;
   color: var(--color-icon-form);
@@ -425,35 +422,7 @@ function onInput(e: Event) {
   transition: var(--transition);
 }
 
-/* Ocultar icono de calendario nativo */
-/*
-.input-date::-webkit-calendar-picker-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: auto;
-  height: auto;
-  color: transparent;
-  background: transparent;
-  cursor: pointer;
-  z-index: 2;
-}
-.input-date::-moz-calendar-picker-indicator {
-  display: none;
-}
-.input-date {
-  padding-right: 35px !important;
-}
-*/
-
 @media(min-width: 700px) {
-  /*
-  .input {
-    padding: 0.4em 0;
-  }
-  */
   .label {
     font-size: 0.8em;
   }

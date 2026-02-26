@@ -204,7 +204,7 @@
     }
     .info-subject {
         font-size: 1em;
-        padding: 0.5em 1em 0.5em 0.5em;
+        padding: 0.5em 1em 0.5em 0;
         font-family: var(--font-normal);
         display: grid;
         gap: 1em;

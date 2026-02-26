@@ -37,7 +37,7 @@ vtrmq@hotmail.com
                     type="text"
                     requested
                     label="Correo electrónico"
-                    value={form?.data?.email ?? ""}
+                    value={form?.data?.email ?? "vtrmq09@gmail.com"}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="email"
@@ -47,7 +47,7 @@ vtrmq@hotmail.com
                     type="password"
                     requested
                     label="Contraseña"
-                    value={form?.data?.password ?? ""}
+                    value={form?.data?.password ?? "123456"}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="password"

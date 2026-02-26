@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state';
-import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
+
 import { 
   Title, 
   NoneData, 
@@ -13,32 +13,31 @@ import {
 } from '$lib/utils';
 import { onMount } from 'svelte';
 
-type Teacher = { name: string, surnames: string };
 type Course = { course_id: number; course: string };
-type Topic = { topic_id: number, topic: string; };
 type Subject = { subject_id: number, subject: string };
-type Student = {
-  student_id: number;
+type Student = { name: string, surnames: string };
+type Answer = {
+  activity: string;
+  date_time: string;
   nota: number;
   performance: string;
-  name: string;
-  surnames: string;
+  topic: string;
 }
 
 let { data } = $props();
-let course: Course = data.result?.course;
-let subject: Subject = data.result?.subject;
-let topic: Topic = data.result?.topic;
-let teacher: Teacher = data.result?.teacher;
-let students: Student[] = data.result?.students;
-let scale = data.result?.scale
+
+let course: Course = data.course;
+let subject: Subject = data.subject;
+let answers: Answer[] = data.answers;
+let student: Student = data.student;
+let scale = data.scale
 let chart = $state<SVGElement>() as SVGElement;
 let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
 
 let root = $state('');
-let url = extractParams(page.url.href, ["courseId", "subjectId", "activityId", "origin", "topicId"]);
+let url = extractParams(page.url.href, ["courseId", "dateStart", "dateEnd", "subjectId"]);
 
-root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
+root = `/teacher/student?courseId=${url.courseId}&dateStart=${url.dateStart}&dateEnd=${url.dateEnd}&subjectId=${url.subjectId}`;
 
 let notaTotal = $state(0);
 let countNotas = 0;
@@ -46,9 +45,9 @@ type InfoTotal = { nota: string; percentage: number; scale: string };
 let infoTotal = $state<InfoTotal>();
 
 onMount(()=>{
-  for (let i = 0; i < students.length; i++) {
-    if (students[i].nota !== 0) {
-      notaTotal += students[i].nota;
+  for (let i = 0; i < answers.length; i++) {
+    if (answers[i].nota !== 0) {
+      notaTotal += answers[i].nota;
       countNotas++;
     }
   }
@@ -60,6 +59,7 @@ onMount(()=>{
 });
 </script>
 
+
 <div class="container-teachers-registrations">
 
   <div class="wr-title">
@@ -68,12 +68,12 @@ onMount(()=>{
     <p class="course">{course.course}</p>
     <div>
       <p class="subject">{subject.subject}</p>
-      <p class="teacher">{teacher.name} {teacher.surnames}</p>
+      <p class="teacher">{student.name} {student.surnames}</p>
     </div>
     <br />
     <div
       class="container-circle"
-      class:visible={students.length !== 0 && notaTotal !== 0}
+      class:visible={answers.length !== 0 && notaTotal !== 0}
     >
       <div style="position: relative; display: flex;">
         <svg class="chart-circle" bind:this={chart}></svg>
@@ -87,15 +87,14 @@ onMount(()=>{
     </div>
   </div>
 
-  {#if students.length !== 0}
+  {#if answers.length !== 0}
     <div class="mg-top">
-      <p class="topic">{topic.topic}</p>
       <div class="wrapper">
 
-        {#each students as row, i}
+        {#each answers as row, i}
           <div>
             <div class="row-teacher">
-              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === students.length}>
+              <div class="box-point" class:border-top-left={i === 0} class:border-bottom-left={i + 1 === answers.length}>
                 <div class="point">
                   <div class="circle-green">&nbsp;</div>
                 </div>
@@ -104,18 +103,20 @@ onMount(()=>{
                   <div class="box-b">&nbsp;</div>
                 </div>
                 <div class="box-a">
-                  <div class="box-bb" class:border-left={i !== 0 && i + 1 <= students.length}>&nbsp;</div>
-                  <div class="box-b" class:border-left={i + 1 < students.length}>&nbsp;</div>
+                  <div class="box-bb" class:border-left={i !== 0 && i + 1 <= answers.length}>&nbsp;</div>
+                  <div class="box-b" class:border-left={i + 1 < answers.length}>&nbsp;</div>
                 </div>
               </div>
               <div class="box-course">
                 <div>
-                  <div class="info-course"><p class="activity">{row.name} {row.surnames}</p></div>
+                  <div class="info-course">
+                    <p class="activity">{row.topic}</p>
+                  </div>
                   <div class="info-p">
-                    <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
+                    <p class="activity">{row.activity}</p>
+                    <p>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</p>
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html sendHorizontal}</a>
               </div>
             </div>
           </div>
@@ -128,7 +129,7 @@ onMount(()=>{
 
 </div>
 
-{#if students.length === 0}
+{#if answers.length === 0}
   <div class="wr-none-data">
     <NoneData>No hay actividades para mostrar</NoneData>
   </div>
@@ -136,7 +137,7 @@ onMount(()=>{
 
 <style>
 .mg-top {
-  margin-top: 18px;
+  margin-top: 8px;
 }
 .teacher {
   font-size: 1.1em;
@@ -144,24 +145,12 @@ onMount(()=>{
   line-height: 23px;
   font-style: italic;
 }
-.box-link-subject {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-}
 :global {
   .box-link-subject > svg {
     width: 20px;
     color: orange;
     stroke-width: 3px;
   }
-}
-.topic {
-  font-size: 1.3em;
-  font-family: var(--font-normal);
-  line-height: 23px;
-  font-weight: 700;
-  color: brown;
 }
 :global {
   .btn-check > svg {
@@ -287,7 +276,7 @@ onMount(()=>{
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -296,9 +285,6 @@ onMount(()=>{
   box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
 @media(min-width: 800px) {
-  .box-link-subject {
-    align-items: center;
-  }
   .activity {
     font-size: 1.1em;
   }
@@ -311,19 +297,16 @@ onMount(()=>{
     gap: 3em;
   }
   .info-p {
-    gap: 1em;
     font-size: 0.9em;
-    flex-direction: row;
   }
   .subject {
     font-size: 1.1em;
   }
   .wr-title {
     position: sticky;
-    top: 90px;
+    top: 105px;
     height: fit-content;
-    margin-top: 14px;
-    margin-bottom: 0;
+    margin-top: 25px;
   }
 }
 </style>

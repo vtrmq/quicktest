@@ -1,58 +1,81 @@
 <script lang="ts">
 import { deserialize } from '$app/forms';
-import search from '$lib/assets/svg/search.svg?raw';
+import { goto } from '$app/navigation';
+import { page } from '$app/state';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
-import trash from '$lib/assets/svg/trash.svg?raw'
-import { Title, NoneData, OptionSelect, Toast, Dialog, Select, Input, LinkBack } from '$lib/components';
+import { Title, NoneData, OptionSelect, Toast, Select, Input, LinkBack } from '$lib/components'; // , Dialog
+import { extractParams } from "$lib/utils";
 
 let { data } = $props();
-let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
-let posScale: number = 0;
 let course = $state(data.course);
 let students = $state(data.students);
 let subjects = $state(data.subjects);
+let date_start = $state(data.dateStart);
+let date_end = $state(data.dateEnd);
+let subject = $state(data.subjectId);
 
-function handleActionShowWin(index: number) {
-  const scale = students[index].scale;
-  posScale = index;
-  dialog?.show({
-    type: 'delete',
-    message: `¿Quieres eliminar la escala: ${scale}?`,
+async function handleActionEnabled(index: number) {
+  const studentId = students[index].id;
+  const formData = new FormData();
+  const visible = students[index].visible === 1 ? 0 : 1; 
+  formData.append('studentId', studentId);
+  formData.append('visible', String(visible));
+  const response = await fetch('?/visible', {
+    method: 'POST',
+    body: formData
   });
+  const responseText = await response.text();
+  const result = deserialize(responseText);
+  if (result.type === "redirect") {
+    goto("/");
+  } else if (result.type === "success") {
+    students[index].visible = visible; 
+    toast?.view({
+      type: '',
+      message: `Estudiante ${visible === 1 ? 'habilitado' : 'inhabilitado'}`,
+      time: 3000
+    });
+  } else if (result.type === "failure") {
+    toast?.view({
+      type: '',
+      message: result.data?.message,
+      time: 3000
+    });
+  }
 }
 
-async function handleActionDelete(e: string) {
-  if (e === 'accept') {
-    const scaleId = students[posScale].scale_id.toString();
-    const formData = new FormData();
-    formData.append('scale_id', scaleId);
-
-    const response = await fetch('?/delete', {
-      method: 'POST',
-      body: formData
+function handleViewStatistic(index: number) {
+  if (date_start?.length === 0) {
+    toast?.view({
+      type: '',
+      message: "Selecciona la fecha incial",
+      time: 3000
     });
-
-    const responseText = await response.text();
-    const result = deserialize(responseText);
-    if (result.type === 'success' || result.type === 'failure') {
-      if (result.type === 'success') {
-        students = students.filter((_: any, i: number) => i !== posScale);
-      }
-      const responseData = result.data; 
-      toast?.view({
-        type: result.type,
-        message: responseData?.message,
-        time: 3000
-      });
-    }
-
+    return;
+  } else if (date_end?.length === 0) {
+    toast?.view({
+      type: '',
+      message: "Selecciona la fecha final",
+      time: 3000
+    });
+    return;
+  } else if (subject === 0) {
+    toast?.view({
+      type: '',
+      message: "Selecciona una asignatura",
+      time: 3000
+    });
+    return;
   }
+  const studentId = students[index].id;
+  const course = extractParams(page.url.href, ["courseId"]);
+  goto(`/teacher/student/statistic?courseId=${course.courseId}&studentId=${studentId}&dateStart=${date_start}&dateEnd=${date_end}&subjectId=${subject}`);
 }
 
 </script>
 
-<Dialog bind:this={dialog} action={handleActionDelete} />
+<!--Dialog bind:this={dialog} action={handleActionDelete} /-->
 <Toast bind:this={toast} />
 
 <div class="container-teachers-registrations">
@@ -66,17 +89,16 @@ async function handleActionDelete(e: string) {
     <p class="desc">Busca la estadística del curso o del estudiante seleccionando una asignatura.</p>
     <div>
       <div class="wr-inputs-date">
-        <Input type="date" label="Fecha incio" />
-        <Input type="date" label="Fecha final" />
+        <Input type="date" label="Fecha incio" bind:value={date_start} />
+        <Input type="date" label="Fecha final" bind:value={date_end} />
       </div>
       <div class="wr-links">
-        <Select --bg-select="#ffffff" label="Asignaturas">
-          <option>Seleccionar asignatura</option>
+        <Select --bg-select="#ffffff" label="Asignaturas" bind:value={subject}>
+          <option value={0}>Seleccionar asignatura</option>
           {#each subjects as subject}
-            <option value={subject.subject}>{subject.subject}</option>
+            <option value={subject.subject_id}>{subject.subject}</option>
           {/each}
         </Select>
-        <button class="button-search">{@html search}</button>
       </div>
     </div>
   </div>
@@ -101,12 +123,13 @@ async function handleActionDelete(e: string) {
               </div>
             </div>
             <div class="box-course">
-              <div class="info-course"><p class="scale">{row.name} {row.surnames}</p></div>
-              <div class="box-btn"><button class="btn-statistics">Estadísticas</button></div>
+              <div class="info-course"><p class="name-student" class:red={row.visible === 0}>{row.name} {row.surnames}</p></div>
+              <button class="btn-statistics" onclick={()=>handleViewStatistic(i)}>Estadísticas</button>
               <div class="box-select">
                 <OptionSelect>
-                  <a href="/teacher/scale/edit?scaleId={row.scale_id}">{@html pencil} <span>Habilitado</span></a>
-                  <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
+                  <button onclick={()=>handleActionEnabled(i)}>
+                    {@html pencil} <span>Habilitado</span>
+                  </button>
                 </OptionSelect>
               </div>
             </div>
@@ -126,6 +149,9 @@ async function handleActionDelete(e: string) {
 {/if}
 
 <style>
+.name-student.red {
+  color: red;
+}
 .wr-inputs-date {
   display: flex;
   gap: 1em;
@@ -134,20 +160,6 @@ async function handleActionDelete(e: string) {
   font-family: var(--font-normal);
   font-weight: 800;
   font-size: 1.1em;
-}
-.button-search {
-  width: 55px;
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50px;
-  cursor: pointer;
-  background: lavender;
-  transition: var(--transition);
-}
-.button-search:hover {
-  background: #e2e2f9;
 }
 :global {
   .button-search > svg {
@@ -173,8 +185,6 @@ async function handleActionDelete(e: string) {
     color: #fff;
     stroke-width: 3px;
   }
-}
-.box-btn {
 }
 .btn-statistics {
   padding: 0.4em 0.8em;
@@ -233,7 +243,7 @@ async function handleActionDelete(e: string) {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -249,14 +259,14 @@ async function handleActionDelete(e: string) {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .desc {
   font-size: 1.1em;
   font-family: var(--font-normal);
   line-height: 23px;
 }
-.scale {
+.name-student {
   font-size: 1.3em;
   font-weight: 800;
   font-family: var(--font-normal);

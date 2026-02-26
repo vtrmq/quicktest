@@ -1,6 +1,7 @@
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { dbPlatform } from '$lib/server/db';
+import type { Actions } from "@sveltejs/kit";
+import { dbPlatform, updateDB } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
@@ -8,6 +9,9 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   const teacherId = locals.user.id;
   const courseId = url.searchParams.get('courseId') ?? '0';
+  const dateStart = url.searchParams.get('dateStart') ?? '';
+  const dateEnd = url.searchParams.get('dateEnd') ?? '';
+  const subjectId = Number(url.searchParams.get('subjectId')) ?? 0;
 
   try {
 
@@ -26,7 +30,10 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       return {
         students: students.results,
         subjects: subjects.results,
-        course: course.results[0]
+        course: course.results[0],
+        dateStart,
+        dateEnd,
+        subjectId,
       };
     } else {
       throw "El curso no existe";
@@ -41,3 +48,47 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     }
   }
 };
+
+
+type Error = {
+  message: string;
+  redirect: boolean;
+};
+
+export const actions: Actions = {
+  visible: async ({ request, platform, locals }) => {
+
+    if (!locals.user || locals.user.profile !== 'T') {
+      throw redirect(303, '/');
+    }
+
+    try {
+
+      const formData = await request.formData();
+      const studentId = Number(formData.get('studentId'));
+      const visible = Number(formData.get('visible'));
+
+      const db = dbPlatform(platform);
+      if (!db) {
+        throw {
+          message: "DB: servicio no disponible",
+          redirect: false
+        };
+      }
+
+      const queryUpdate = `UPDATE users SET visible = ? WHERE id = ?`;
+      await updateDB(db, queryUpdate, visible, studentId);
+
+      return {success: true};
+
+    } catch (err) {
+      
+      const validationError = err as Error;
+      return fail(400, { 
+        message: validationError.message, 
+        redirec: validationError.redirect,
+      });
+
+    }
+  }
+}

@@ -318,7 +318,7 @@ async function handleActionDelete(e: string) {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -334,7 +334,7 @@ async function handleActionDelete(e: string) {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .desc {
   font-size: 1.1em;

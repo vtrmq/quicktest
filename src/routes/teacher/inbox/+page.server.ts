@@ -43,7 +43,7 @@ LEFT JOIN activities act ON act.activity_id = a.activity_id AND act.teacher_id =
 LEFT JOIN users u ON u.id = a.student_id
 WHERE 
     a.teacher_id = ?
-ORDER BY a.answer_id ASC
+ORDER BY a.answer_id DESC
 LIMIT ?
 OFFSET ?
 `).bind(teacherId, limit, offset).all();
