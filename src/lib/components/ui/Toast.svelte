@@ -72,7 +72,7 @@
   }
   .toast {
     background: var(--bg-toast);
-    box-shadow: rgb(0 0 0 / 14%) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 28%) 0px 5px 15px;
     padding: 0.6em 1em;
     border-radius: 50px;
     transition: 0.3s;
@@ -86,6 +86,7 @@
     font-family: var(--font-normal);
     font-size: 1.5em;
     line-height: 22px;
+    border: 2px solid #5a98c9;
   }
   .toast.top-normal {
     top: -120px;

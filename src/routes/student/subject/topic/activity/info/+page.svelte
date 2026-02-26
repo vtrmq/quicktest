@@ -48,7 +48,7 @@ onMount(()=>{
   activity_store = activityLocalstore.getActivity() as Item;
 
   if (info.activity.type_general === 'R') {
-    const params = extractParams(page.url.search, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId']);
+    const params = extractParams(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId']);
     if (activity_store?.activity?.activity_id === params.activityId && 
       activity_store?.activity?.course_id === params.courseId && 
       activity_store?.activity?.subject_id === params.subjectId && 
@@ -82,7 +82,7 @@ onMount(()=>{
             <p class="name-teacher">{info.teacher.name} {info.teacher.surnames}</p>
           </div>
           <div class="wr-content-activity">
-            <div class="info">{info.activity.activity}</div>
+            <div class="info activity">{info.activity.activity}</div>
             <p class="info">{typeActivity(info.activity.type_general)}</p>
             {#if info.activity.time}
               <p class="info">
@@ -117,6 +117,10 @@ onMount(()=>{
 {/if}
 
 <style>
+.activity {
+  color: brown;
+  font-weight: 600;
+}
 .wr-link-btn {
   display: flex;
   justify-content: center;

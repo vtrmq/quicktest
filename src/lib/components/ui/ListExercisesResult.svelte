@@ -4,6 +4,7 @@ let { info, items, handleActivity, handleViewResult } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
+
 type NotaFinal = {
   nota: string;
   percentage: number;
@@ -15,6 +16,7 @@ let itemResaltado = $state(-1);
 let scales = info.scales;
 let viewResult = $state(0);
 let notaFinal: NotaFinal = $state({nota: '', percentage: 0, scale: ''}) as NotaFinal;
+let student = info.student;
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
@@ -51,27 +53,30 @@ function handleViewResultX(option: string) {
 
 </script>
 
-<button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html menu}</button>
+<div class="wr-result-menu">
+  <div class="in-header-exerc">
+    {#if info.activity.type_general === 'R'}
+      {#if viewResult === 0}
+        <div class="wr-btns-resul-save-exerc">
+          <button class="btn-result-exerc" onclick={()=>handleViewResultX('result')}>Validar</button>
+        </div>
+      {:else}
+        <div class="wr-btns-resul-save-exerc">
+          <button class="btn-result-exerc" onclick={()=>handleViewResultX('activities')}>Resultados</button>
+        </div>
+      {/if}
+    {/if}
+  </div>
+  <button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html menu}</button>
+</div>
+
 <div class="container-edit-exercise" class:view-box-exerc={viewBox}>
   <div class="header-box-exercise">
-    <div class="in-header-exerc">
-      {#if info.activity.type_general === 'R'}
-        {#if viewResult === 0}
-          <div class="wr-btns-resul-save-exerc">
-            <button class="btn-result-exerc" onclick={()=>handleViewResultX('result')}>Resultados</button>
-            <div class="info-nota-exerc">
-              {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
-            </div>
-          </div>
-        {:else}
-          <div class="wr-btns-resul-save-exerc">
-            <button class="btn-result-exerc" onclick={()=>handleViewResultX('activities')}>Continuar</button>
-            <div class="info-nota-exerc">
-              {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
-            </div>
-          </div>
-        {/if}
+    <div class="info-nota-exerc">
+      {#if student !== undefined}
+        <div>{student.name} {student.surnames}</div>
       {/if}
+      <div>Nota: {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}</div>
     </div>
     <button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html circleX}</button>
   </div>
@@ -91,7 +96,7 @@ function handleViewResultX(option: string) {
               <div class="container-info-exerc">
                 <div class="wr-info-result-exerc">
                   <span class="label-activity-exercise" class:resaltar-exerc={itemResaltado === index}>{typeExerc(item.type)}</span>
-                  <span class="item-value-exerc">Nota: {formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
+                  <span class="item-value-exerc">{formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
                 </div>
                 {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
                   <div class="text-left-exerc">{item.exercise.content}</div>
@@ -115,6 +120,10 @@ function handleViewResultX(option: string) {
     color: #fff;
     stroke-width: 3px;
   }
+}
+.wr-result-menu {
+  display: flex;
+  gap: 1em;
 }
 .btn-view-close-exerc {
   width: 36px;

@@ -6,6 +6,7 @@ import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
 import { filtrarParametros, getDateTimeUTC } from "$lib/utils";
 import { Toast } from '$lib/components';
+import { activityLocalstore } from '$lib/store/activity_student';
 
 import { 
   HeaderExercise, 
@@ -110,6 +111,7 @@ async function handleSendActivity(activity: object, url: string) {
   const result = deserialize(resp);
 
   if (result.type === "success") {
+    activityLocalstore.clear();
     goto(url);
   } else if (result.type === "failure") {
     toast?.view({

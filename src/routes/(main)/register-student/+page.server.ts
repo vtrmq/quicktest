@@ -1,12 +1,14 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions } from "@sveltejs/kit";
 import bcrypt from 'bcryptjs';
-import { validateEmail, validateString, failForm, failServer, TIMEKVREG } from '$lib/utils';
-import { kvPlatformCodes } from '$lib/server/kv';
-import { dbPlatform, queryFirstDB } from '$lib/server/db';
-import { kvPut } from '$lib/server/kv';
-import { sendEmail, emailTemplates } from '$lib/server/email';
-import type { InfoEmail } from '$lib/types';
+import { validateEmail, validateString, failForm, failServer } from '$lib/utils'; // , TIMEKVREG
+import { dbPlatform, queryFirstDB, saveDB } from '$lib/server/db';
+//import { getDateTime } from '$lib/utils';
+
+//import { kvPlatformCodes } from '$lib/server/kv';
+//import { kvPut } from '$lib/server/kv';
+//import { sendEmail, emailTemplates } from '$lib/server/email';
+//import type { InfoEmail } from '$lib/types';
 
 export const actions: Actions = {
   default: async ({ request, platform }) => {
@@ -18,6 +20,7 @@ export const actions: Actions = {
     const phone = data.get('phone')?.toString().trim() ?? '';
     const password = data.get('password')?.toString().trim() ?? '';
     const code = data.get('code')?.toString().trim() ?? '';
+    const created_at = data.get('created_at')?.toString().trim() ?? '';
 
     try {
 
@@ -67,6 +70,20 @@ export const actions: Actions = {
         throw new failForm("El código no se encontró", "code");
       }
 
+      const course_id = course.course_id;
+      //const teacher_id = course.teacher_id;
+      const passw = await bcrypt.hash(password, 10)
+      //const created_at = getDateTime();
+
+      const queryUser = `INSERT INTO users (user_id, name, surnames, email, phone, password, profile, photo, blocked, school, created_at) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const response = await saveDB(db, queryUser, course_id, name, surnames, email, phone, passw, 'S', '', 'N', '', created_at);
+      const student_id  = response.last_row_id;
+
+      const queryCourse = `INSERT INTO courses_students (student_id, course_id) VALUES (?, ?)`;
+      await saveDB(db, queryCourse, student_id, course_id);
+
+      /*
       const kv = kvPlatformCodes(platform);
       if (!kv) {
         throw new failServer("KV: servicio no disponible");
@@ -94,6 +111,7 @@ export const actions: Actions = {
       if (response.type === 'failer') {
         throw new failServer(response.error);
       }
+      */
 
       return {
         success: true,

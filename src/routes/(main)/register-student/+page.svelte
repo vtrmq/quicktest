@@ -4,6 +4,8 @@ import type { SubmitFunction } from '@sveltejs/kit';
 import { enhance } from '$app/forms';
 import type { PageData, ActionData } from './$types';
 import { Title, Input, Button } from '$lib/components';
+import { getDateTime } from '$lib/utils';
+
 let { form }: {data: PageData, form: ActionData} = $props();
 let btnSave = $state<Button>();
 let isSend = $state(false);
@@ -57,15 +59,22 @@ const handleForm: SubmitFunction = () => {
         style="border" type="text" requested label="Código del curso" 
         value={form?.field?.code ?? ''} error={form?.msg} input={form?.input ?? ''} 
         name="code" />
+      <input name="created_at" type="hidden" value={getDateTime()} />
 
     </div>
     <Button bind:this={btnSave}>Registrarme</Button>
   </form>
 {:else}
+  <!--
   <Title>Datos enviados</Title>
   <div class="box-send">
     <p class="msg">Tus datos fueron enviados con éxito. Entra en el correo electrónico {email.length !== 0 ? `(${email})` : ''} y activa tu cuenta.</p>
     <p class="msg">No olvides revisar la sección de los correos no deseados</p>
+  </div>
+  -->
+  <Title>Datos enviados</Title>
+  <div class="box-send">
+    <p class="msg">Tus datos fueron enviados con éxito. Ya puedes ingresar a la plataforma.</p>
   </div>
 {/if}
 

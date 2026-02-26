@@ -7,11 +7,10 @@ import {
   NoneData, 
   LinkBack,
 } from '$lib/components';
+
 import { 
   filtrarParametros, 
   typeActivity,
-  formatDecimal,
-  decimal,
   drawChartCircle,
   scaleNota,
   extractParams,
@@ -76,8 +75,6 @@ onMount(() => {
   }
 });
 
-//console.log(activities)
-
 </script>
 
 <div class="container-teachers-registrations">
@@ -122,14 +119,13 @@ onMount(() => {
                     <span>Total:&nbsp;{nota.percentage}%&nbsp;{nota.scale}</span>
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}">{@html sendHorizontal}</a>
+                <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{@html sendHorizontal}</a>
               </div>
             </div>
           </div>
         {/each}
 
       </div>
-
 
         <div
             class="container-circle"
@@ -141,10 +137,7 @@ onMount(() => {
             </div>
             {#if infoTotal}
                 <h1 class="performance-chart">
-                    Desempeño: {decimal(
-                        formatDecimal(parseFloat(infoTotal.nota)),
-                    )}
-                    {infoTotal?.scale}
+                    Desempeño: {infoTotal?.scale}
                 </h1>
             {/if}
         </div>
@@ -154,6 +147,13 @@ onMount(() => {
   {/if}
 
 </div>
+
+<!--
+                    Desempeño: {decimal(
+                        formatDecimal(parseFloat(infoTotal.nota)),
+                    )}
+                    {infoTotal?.scale}
+-->
 
 {#if activities.length === 0}
   <div class="wr-none-data">

@@ -57,8 +57,15 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
         const result = await db.prepare(`SELECT nota FROM answers WHERE course_id = ? AND subject_id = ? AND topic_id = ? AND activity_id = ?`)
         .bind(courseId, subjectId, topicId, activityId).all();
         let sumaNota = 0;
-        for (let j = 0; j < result.results.length; j++) {
-          sumaNota += result.results[j].nota;
+        if (result.results.length !== 0) {
+          let count = 0;
+          for (let j = 0; j < result.results.length; j++) {
+            if (result.results[j].nota !== 0) {
+              sumaNota += result.results[j].nota;
+              count = count + 1;
+            }
+          }
+          sumaNota = sumaNota / count;
         }
         activitiesAll[i].nota = sumaNota;
         delete activitiesAll[i].items;

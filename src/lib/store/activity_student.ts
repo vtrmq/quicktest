@@ -161,6 +161,8 @@ export const activityLocalstore = {
           sumPoints = sumPoints + 1;
         } else if (_data[i].value === false && _data[i].resp === true) {
           sumPoints = sumPoints - 1;
+        } else if (_data[i].value === false && _data[i].resp === false && _data[i].resp_color.length !== 0) {
+          sumPoints = sumPoints - 1;
         }
       }
       const result = handleResultNota(totalPoints, sumPoints, scales);

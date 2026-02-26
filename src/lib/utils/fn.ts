@@ -314,7 +314,7 @@ export function scaleNota(
     percentage: Math.trunc(percentage),
   };
 }
-
+/*
 export function extractParams(search: string, param: string[]): Record<string, string | number> {
   const urlParams = new URLSearchParams(search);
   return param.reduce((acc, key) => {
@@ -324,6 +324,25 @@ export function extractParams(search: string, param: string[]): Record<string, s
     }
     return acc;
   }, {} as Record<string, string | number>);
+}
+*/
+
+export function extractParams(urlStr: string, keys: string[]): Record<string, string | number | null> {
+  const url = new URL(urlStr);
+  const params: Record<string, string | number | null> = {};
+
+  keys.forEach(key => {
+    const value = url.searchParams.get(key);
+    
+    // Intenta convertir a número si es posible, si no, devuelve la cadena
+    if (value !== null) {
+      params[key] = !isNaN(Number(value)) ? Number(value) : value;
+    } else {
+      params[key] = null;
+    }
+  });
+
+  return params;
 }
 
 export function compareDates(fechaStr: string): boolean {

@@ -7,10 +7,13 @@ import {
   LinkBack,
 } from '$lib/components';
 import { 
-  filtrarParametros, 
+  formatDecimal,
+  decimal,
   scaleNota,
   extractParams,
+  drawChartCircle,
 } from '$lib/utils';
+import { onMount } from 'svelte';
 
 type Teacher = { name: string, surnames: string };
 type Course = { course_id: number; course: string };
@@ -31,22 +34,46 @@ let topic: Topic = data.result?.topic;
 let teacher: Teacher = data.result?.teacher;
 let students: Student[] = data.result?.students;
 let scale = data.result?.scale
+let chart = $state<SVGElement>() as SVGElement;
+let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
 
 let root = $state('');
-//let origin = extractParams(page.url.href, ["origin"]);
-let url = extractParams(page.url.href, ["topicId", "courseId", "subjectId", "origin"]);
-//console.log(url)
-//console.log(data)
+console.log(page.url.href)
+let url = extractParams(page.url.href, ["courseId", "subjectId", "activityId", "origin", "topicId"]);
+console.log(url)
 
+root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
+/*
 if (url.origin === "topic") {
-  root = "/teacher/topic";
+  // /teacher/topic/activities?topicId=1&courseId=6&subjectId=6&origin=topic
 } else if (url.origin === "assign") {
-  let _root = filtrarParametros(page.url.href, ["topicId"]);
-  root = `/teacher/topic/assign?${_root}`;
+  //let _root = filtrarParametros(page.url.href, ["topicId"]);
+  root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
+  //root = `/teacher/topic/assign?${_root}`;
 }
+*/
 
 console.log(data)
 
+let notaTotal = $state(0);
+let countNotas = 0;
+type InfoTotal = { nota: string; percentage: number; scale: string };
+let infoTotal = $state<InfoTotal>();
+
+console.log(students)
+onMount(()=>{
+  for (let i = 0; i < students.length; i++) {
+    if (students[i].nota !== 0) {
+      notaTotal += students[i].nota;
+      countNotas++;
+    }
+  }
+  if (notaTotal !== 0) {
+    notaTotal = notaTotal / countNotas;
+    infoTotal = scaleNota(scale, notaTotal);
+    drawChartCircle(infoTotal.percentage, chart, valueDisplay);
+  }
+});
 </script>
 
 <div class="container-teachers-registrations">
@@ -58,6 +85,21 @@ console.log(data)
     <div>
       <p class="subject">{subject.subject}</p>
       <p class="teacher">{teacher.name} {teacher.surnames}</p>
+    </div>
+    <br />
+    <div
+      class="container-circle"
+      class:visible={students.length !== 0 && notaTotal !== 0}
+    >
+      <div style="position: relative; display: flex;">
+        <svg class="chart-circle" bind:this={chart}></svg>
+        <div class="value-display" bind:this={valueDisplay}></div>
+      </div>
+      {#if infoTotal}
+        <h1 class="performance-chart">
+          Desempeño: {infoTotal?.scale}
+        </h1>
+      {/if}
     </div>
   </div>
 
@@ -89,7 +131,7 @@ console.log(data)
                     <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
                   </div>
                 </div>
-                <!--a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}">{@html sendHorizontal}</a-->
+                <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html sendHorizontal}</a>
               </div>
             </div>
           </div>
@@ -296,7 +338,7 @@ console.log(data)
     position: sticky;
     top: 90px;
     height: fit-content;
-    margin-top: 10px;
+    margin-top: 14px;
     margin-bottom: 0;
   }
 }

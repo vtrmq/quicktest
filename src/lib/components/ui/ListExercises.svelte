@@ -178,7 +178,7 @@ function handleSendTest() {
                 <div class="wr-info-result-exerc">
                   <span class="label-activity-exercise" class:resaltar-exerc={itemResaltado === index}>{typeExerc(item.type)}</span>
                   {#if viewResult === 1}
-                    <span class="item-value-exerc">Nota: {formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
+                    <span class="item-value-exerc">{formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
                   {/if}
                 </div>
                 {#if item.type === 'morphosyntax' ||  item.type === 'test-pdf' || item.type === 'test-fs'}
