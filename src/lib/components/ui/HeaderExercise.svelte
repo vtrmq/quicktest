@@ -3,7 +3,7 @@ let { children } = $props();
 </script>
 
 <header class="header">
-{@render children()}
+  {@render children()}
 </header>
 
 <style>

@@ -16,6 +16,7 @@ type User = {
   password: string
   profile: UserProfile
   photo: ''
+  blocked: string
 }
 
 export const actions: Actions = {
@@ -59,6 +60,10 @@ export const actions: Actions = {
 
       if (!passwordMatch) {
         throw new MError('Contraseña incorrecta', 'password');
+      }
+
+      if (user.blocked === 'S') {
+        throw new MError('Usuario bloqueado', 'password');
       }
 
       // Crear sesión

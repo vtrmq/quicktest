@@ -255,7 +255,7 @@ onMount(() => {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -271,7 +271,7 @@ onMount(() => {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .subject {
   font-size: 1.2em;

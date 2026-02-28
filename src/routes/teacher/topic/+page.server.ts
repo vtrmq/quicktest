@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   const teacherId = locals.user.id;
   const page = Number(url.searchParams.get("page") ?? 1);
-  const limit = 10;
+  const limit = 50;
   const offset = (page - 1) * limit;
 
   try {
@@ -64,8 +64,8 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     const totalCount = totals?.total_count ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalCount / limit));
 
-    const stmt = db.prepare(`SELECT
-    -- Topics
+    const stmt = db.prepare(`
+SELECT
     T.topic_id,
     T.teacher_id,
     T.topic,
@@ -75,30 +75,22 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     T.order_by,
     T.visible,
     T.created_at,
-
-    -- Topic_subjects
     TS.topic_subject_id,
     TS.course_id,
     TS.subject_id,
-
-    -- Subjects
     S.subject AS subject_name,
-
-    -- Courses
     C.course AS course_name
-
-FROM topics AS T
-LEFT JOIN topic_subjects AS TS 
-    ON T.topic_id = TS.topic_id
-LEFT JOIN subjects AS S 
-    ON TS.subject_id = S.subject_id
-LEFT JOIN courses AS C
-    ON TS.course_id = C.course_id
-
-WHERE T.teacher_id = ?
-ORDER BY T.order_by ASC
-LIMIT ?
-OFFSET ?;
+FROM (
+    SELECT topic_id, teacher_id, topic, file, shadow_file, content, order_by, visible, created_at
+    FROM topics
+    WHERE teacher_id = ?
+    ORDER BY order_by ASC
+    LIMIT ?
+    OFFSET ?
+) AS T
+LEFT JOIN topic_subjects AS TS ON T.topic_id = TS.topic_id
+LEFT JOIN subjects AS S ON TS.subject_id = S.subject_id
+LEFT JOIN courses AS C ON TS.course_id = C.course_id;
 `);
 
     const rows = await stmt.bind(teacherId, limit, offset).all();

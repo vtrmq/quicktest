@@ -58,6 +58,39 @@
 
 }
 
+body {
+  overflow-y: scroll;
+}
+
+/* Aplicar a toda la página */
+html {
+  /* 1. Estándar moderno (Firefox y Chromium reciente) */
+  scrollbar-width: thin;          /* Grosor: thin o auto */
+  scrollbar-color: #888 #f1f1f1; /* color del thumb y del track */
+}
+
+/* 2. Específico para Chrome, Edge y Safari */
+body::-webkit-scrollbar {
+  width: 12px;               /* Ancho de la barra vertical */
+  height: 12px;              /* Alto de la barra horizontal */
+}
+
+body::-webkit-scrollbar-track {
+  background: #f1f1f1;       /* Color del fondo */
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #888;          /* Color de la barra */
+  border-radius: 6px;        /* Bordes redondeados */
+  border: 3px solid #f1f1f1; /* Espacio alrededor del thumb */
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: #555;          /* Color al pasar el mouse */
+}
+
+
+
 em {
   font-style: italic;
 }

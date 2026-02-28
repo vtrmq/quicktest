@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     }
 
     const [students, subjects, course] = await db.batch([
-      db.prepare(`SELECT u.id, u.name, u.surnames, u.visible FROM users u JOIN courses_students cs ON u.id = cs.student_id WHERE cs.course_id = ?`).bind(courseId),
+      db.prepare(`SELECT u.id, u.name, u.surnames, u.blocked FROM users u JOIN courses_students cs ON u.id = cs.student_id WHERE cs.course_id = ?`).bind(courseId),
       db.prepare(`SELECT subject_id, subject FROM subjects WHERE course_id = ? AND teacher_id = ?`).bind(courseId, teacherId),
       db.prepare(`SELECT course_id, course FROM courses WHERE course_id = ? AND teacher_id = ?`).bind(courseId, teacherId)
     ]);
@@ -56,7 +56,7 @@ type Error = {
 };
 
 export const actions: Actions = {
-  visible: async ({ request, platform, locals }) => {
+  blocked: async ({ request, platform, locals }) => {
 
     if (!locals.user || locals.user.profile !== 'T') {
       throw redirect(303, '/');
@@ -66,7 +66,7 @@ export const actions: Actions = {
 
       const formData = await request.formData();
       const studentId = Number(formData.get('studentId'));
-      const visible = Number(formData.get('visible'));
+      const blocked = formData.get('blocked');
 
       const db = dbPlatform(platform);
       if (!db) {
@@ -76,8 +76,8 @@ export const actions: Actions = {
         };
       }
 
-      const queryUpdate = `UPDATE users SET visible = ? WHERE id = ?`;
-      await updateDB(db, queryUpdate, visible, studentId);
+      const queryUpdate = `UPDATE users SET blocked = ? WHERE id = ?`;
+      await updateDB(db, queryUpdate, blocked, studentId);
 
       return {success: true};
 

@@ -5,15 +5,6 @@
     import { DataFrame, Title, Input, Button } from "$lib/components";
     let { form }: { form: ActionData } = $props();
     let btnLogin = $state<Button>();
-    /*
-  $effect(() => {
-    if (form) {
-      console.log(form)
-    }
-  });
-vtrmq@hotmail.com
-123456
-  */
     const handleForm: SubmitFunction = () => {
         btnLogin?.load(true);
         return async ({ update, result }) => {

@@ -372,7 +372,7 @@ async function handleActionDelete(e: string) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 1.5em 0;
+  margin: 2em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -398,7 +398,7 @@ async function handleActionDelete(e: string) {
   }
   .wr-title {
     position: sticky;
-    top: 90px;
+    top: 100px;
     height: fit-content;
     margin-top: 10px;
     margin-bottom: 0;

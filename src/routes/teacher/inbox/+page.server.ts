@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   const teacherId = locals.user.id;
   const page = Number(url.searchParams.get("page") ?? 1);
-  const limit = 10;
+  const limit = 50;
   const offset = (page - 1) * limit;
 
   try {
@@ -18,6 +18,14 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     if (!db) {
       throw "DB: servicio no disponible";
     }
+
+    const totalsQuery = `SELECT COUNT(p.answer_id) AS total_count FROM answers p WHERE p.teacher_id = ?`;
+
+    type Totals = { total_count: number; total_amount: number };
+    const stmtPage = db.prepare(totalsQuery);
+    const totals: Totals = await stmtPage.bind(teacherId).first();
+    const totalCount = totals?.total_count ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
 
     const activitiesResult = await db.prepare(`
 SELECT 
@@ -49,7 +57,13 @@ OFFSET ?
 `).bind(teacherId, limit, offset).all();
 
     return {
-      answers: activitiesResult.results
+      answers: activitiesResult.results,
+      pagination: {
+        page,
+        totalPages,
+        limit,
+        totalCount,
+      }
     };
 
   } catch (error) {

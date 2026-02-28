@@ -26,6 +26,8 @@
 
   let info: DataProfile = $derived(userStore.data ?? {});
   onMount(()=>{
+    const body = document.getElementsByTagName('body')[0]
+    body.style.overflowY = 'scroll'
     if (Object.entries(data).length !== 0) {
       isVisible = true;
     }

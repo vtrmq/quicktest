@@ -18,10 +18,10 @@ let subject = $state(data.subjectId);
 async function handleActionEnabled(index: number) {
   const studentId = students[index].id;
   const formData = new FormData();
-  const visible = students[index].visible === 1 ? 0 : 1; 
+  const blocked = students[index].blocked === 'S' ? 'N' : 'S'; 
   formData.append('studentId', studentId);
-  formData.append('visible', String(visible));
-  const response = await fetch('?/visible', {
+  formData.append('blocked', blocked);
+  const response = await fetch('?/blocked', {
     method: 'POST',
     body: formData
   });
@@ -30,10 +30,10 @@ async function handleActionEnabled(index: number) {
   if (result.type === "redirect") {
     goto("/");
   } else if (result.type === "success") {
-    students[index].visible = visible; 
+    students[index].blocked = blocked; 
     toast?.view({
       type: '',
-      message: `Estudiante ${visible === 1 ? 'habilitado' : 'inhabilitado'}`,
+      message: `Estudiante ${blocked === 'S' ? 'habilitado' : 'inhabilitado'}`,
       time: 3000
     });
   } else if (result.type === "failure") {
@@ -86,21 +86,26 @@ function handleViewStatistic(index: number) {
     <p class="course">
       {course.course}
     </p>
-    <p class="desc">Busca la estadística del curso o del estudiante seleccionando una asignatura.</p>
-    <div>
-      <div class="wr-inputs-date">
-        <Input type="date" label="Fecha incio" bind:value={date_start} />
-        <Input type="date" label="Fecha final" bind:value={date_end} />
+
+    {#if students.length !== 0}
+      <p class="desc">Busca la estadística del estudiante seleccionando una asignatura.</p>
+      <div>
+        <div class="wr-inputs-date">
+          <Input type="date" label="Fecha incio" bind:value={date_start} />
+          <Input type="date" label="Fecha final" bind:value={date_end} />
+        </div>
+        <div class="wr-links">
+          <Select --bg-select="#ffffff" label="Asignaturas" bind:value={subject}>
+            <option value={0}>Seleccionar asignatura</option>
+            {#each subjects as subject}
+              <option value={subject.subject_id}>{subject.subject}</option>
+            {/each}
+          </Select>
+        </div>
       </div>
-      <div class="wr-links">
-        <Select --bg-select="#ffffff" label="Asignaturas" bind:value={subject}>
-          <option value={0}>Seleccionar asignatura</option>
-          {#each subjects as subject}
-            <option value={subject.subject_id}>{subject.subject}</option>
-          {/each}
-        </Select>
-      </div>
-    </div>
+    {:else}
+      <p class="desc">Busca la estadística del estudiante.</p>
+    {/if}
   </div>
 
   {#if students.length !== 0}
@@ -123,12 +128,16 @@ function handleViewStatistic(index: number) {
               </div>
             </div>
             <div class="box-course">
-              <div class="info-course"><p class="name-student" class:red={row.visible === 0}>{row.name} {row.surnames}</p></div>
+              <div class="info-course"><p class="name-student" class:red={row.blocked === 'S'}>{row.name} {row.surnames}</p></div>
               <button class="btn-statistics" onclick={()=>handleViewStatistic(i)}>Estadísticas</button>
               <div class="box-select">
                 <OptionSelect>
                   <button onclick={()=>handleActionEnabled(i)}>
-                    {@html pencil} <span>Habilitado</span>
+                    {#if row.blocked === 'N'}
+                      {@html pencil} <span>Bloquear</span>
+                    {:else if row.blocked === 'S'}
+                      {@html pencil} <span>Desbloquear</span>
+                    {/if}
                   </button>
                 </OptionSelect>
               </div>
@@ -193,6 +202,7 @@ function handleViewStatistic(index: number) {
   font-size: 0.9em;
   font-family: var(--font-normal);
   background: #cae2cf;
+  box-shadow: #97bb9e 0px 4px 0px 0px;
 }
 .box-course {
   padding: 1em 0;

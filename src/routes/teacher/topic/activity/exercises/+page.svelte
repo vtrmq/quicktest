@@ -20,23 +20,6 @@ import { filtrarParametros } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 import { onDestroy } from 'svelte';
 
-/*
-type Words = {
-  id: number;
-  word: string;
-};
-type Point = {
-  answers: [{resp: '', image: '', rst: false, rss: false, word: '' }]; 
-  images: []; 
-  image: ''; 
-  words: Words[];
-  question: '';
-  answersFS: [{id: number, word: string;}];
-  text: number;
-  audio: string;
-}
- */
-
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
   response: {"morphosyntax": string, "value": boolean};
@@ -79,8 +62,6 @@ type Exercise = {
 }
 
 let { data } = $props();
-//console.log(data)
-
 let items = data.items;
 let type = $state('info');
 

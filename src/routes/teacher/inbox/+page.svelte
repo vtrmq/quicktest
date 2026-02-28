@@ -1,26 +1,39 @@
 <script lang="ts">
-    import { NoneData } from "$lib/components";
-    import { typeActivity } from "$lib/utils";
+import { NoneData, Pagination } from "$lib/components";
+import { typeActivity } from "$lib/utils";
 
-    let { data } = $props();
+let { data } = $props();
 
-    type Result = {
-      activity: string;
-      activity_id: number;
-      course: string;
-      course_id: number;
-      name: string;
-      nota: number;
-      performance: string;
-      student_id: number;
-      subject: string;
-      subject_id: number;
-      surnames: string;
-      topic: string;
-      topic_id: number;
-      type_general: string;
-    };
-    const result: Result[] = data.answers as Result[];
+type Result = {
+  activity: string;
+  activity_id: number;
+  course: string;
+  course_id: number;
+  name: string;
+  nota: number;
+  performance: string;
+  student_id: number;
+  subject: string;
+  subject_id: number;
+  surnames: string;
+  topic: string;
+  topic_id: number;
+  type_general: string;
+};
+type PaginationResult = {
+  limit: number;
+  page: number;
+  totalCount: number;
+  totalPages: number;
+}
+//const result: Result[] = data.answers as Result[];
+let pagination: PaginationResult = $state({limit: 0, page: 0, totalCount: 0, totalPages: 0});
+
+let result: Result[] = $derived(data.answers);
+
+$effect(() => {
+  pagination = data.pagination as PaginationResult;
+});
 </script>
 
 <div class="container-topics">
@@ -74,7 +87,13 @@
           </div>
         </div>
       {/each}
+
     </div>
+      <div>
+        {#if pagination.totalPages > 1}
+          <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+        {/if}
+      </div>
   {/if}
 </div>
 

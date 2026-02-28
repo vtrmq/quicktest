@@ -52,6 +52,7 @@ export const actions: Actions = {
         throw new failServer("KV: servicio no disponible");
       }
 
+      /*
       let infoTeacher: UserRegister = {
         user_id: locals.user.id,
         name,
@@ -74,10 +75,10 @@ export const actions: Actions = {
         if (response.type === 'failer') {
           throw new failServer(response.error);
         }
-
       } else {
         throw new failForm("El correo electrónico ya existe", "email");
       }
+      */
 
     } catch (error) {
       

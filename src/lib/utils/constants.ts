@@ -8,7 +8,8 @@ export const FOLDER_USER_PHOTOS = 'user-photos';
 export const FOLDER_IMAGES = 'images';
 export const FOLDER_AUDIOS = 'audios';
 export const FOLDER_FILES = 'files';
-export const R2_DOMAIN = "https://pub-5704f7fdaf98447e9d7b7ba7db62af68.r2.dev"
+//export const R2_DOMAIN = "https://pub-5704f7fdaf98447e9d7b7ba7db62af68.r2.dev"
+export const R2_DOMAIN = "https://localschool.online"
 
 export const CLIENTAUTHINFO = 'client-auth-info';
 export const PUBLIC_BASE_EMAIL = 'https://mailersend.localschool.online/mailersend';

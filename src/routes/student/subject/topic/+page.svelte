@@ -178,7 +178,7 @@ $effect(() => {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -194,7 +194,7 @@ $effect(() => {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .wr-none-data {
   padding: 3em 0;
@@ -227,7 +227,7 @@ $effect(() => {
   font-family: var(--font-normal);
   font-size: 1.1em;
   font-weight: 600;
-  margin-top: 0.3em;
+  margin: 0.3em 0;
 }
 .name-course {
   font-size: 1.3em;

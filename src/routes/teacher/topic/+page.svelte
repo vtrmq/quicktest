@@ -11,7 +11,6 @@ import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog, Pagination } from '$lib/components';
 
 let { data } = $props();
-//console.log($state.snapshot(data))
 let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
@@ -40,11 +39,10 @@ type PaginationResult = {
 }
 
 let pagination: PaginationResult | undefined = $state({limit: 0, page: 0, totalCount: 0, totalPages: 0});
-let topics: Topic[] = $state(data.topics as Topic[]);
+let topics: Topic[] = $derived(data.topics as Topic[]);
 
 $effect(() => {
   pagination = data.pagination;
-  topics = data.topics as Topic[];
 });
 
 function handleViewSubject(i: number, cant: number) {
@@ -304,7 +302,7 @@ async function handleActionDelete(e: string) {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -320,7 +318,7 @@ async function handleActionDelete(e: string) {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .desc {
   font-size: 1.1em;
@@ -358,7 +356,7 @@ async function handleActionDelete(e: string) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 1.5em 0;
+  margin: 2em 0;
   display: flex;
   flex-direction: column;
 }
@@ -380,7 +378,7 @@ async function handleActionDelete(e: string) {
   }
   .wr-title {
     position: sticky;
-    top: 90px;
+    top: 100px;
     height: fit-content;
     margin-top: 10px;
     margin-bottom: 0;

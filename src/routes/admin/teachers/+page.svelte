@@ -278,7 +278,8 @@ async function handleActionDelete(e: string) {
   margin-top: 0.5em;
 }
 .blocked {
-  background: #ffb6de;
+  background: #d30475;
+  color: #fff;
 }
 .wr-pay-select {
   display: flex;

@@ -79,7 +79,7 @@ to {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 1em;
+  padding: 0.5em 1em;
   border-radius: 5px;
   cursor: pointer;
   outline: none;
@@ -87,7 +87,6 @@ to {
   font-size: 1em;
   background: var(--purple);
   color: #fff;
-  height: 100%;
   box-shadow: var(--purple-border) 0px 4px 0px 0px;
   transition: var(--transition);
 }

@@ -10,10 +10,6 @@ import list from '$lib/assets/images/online-exam.png';
 import seleccionarPalabra from '$lib/assets/images/seleccionar-palabra.png';
 import relacionar from '$lib/assets/images/relacion.png';
 import refresh from '$lib/assets/svg/refresh-cw.svg?raw';
-//import arrowDownUp from '$lib/assets/svg/arrow-down-up.svg?raw';
-//import rectangleEllipsis from '$lib/assets/svg/rectangle-ellipsis.svg?raw';
-//import baseLine from '$lib/assets/svg/baseline.svg?raw';
-//import pointer from '$lib/assets/svg/pointer.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import image from '$lib/assets/svg/image.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
@@ -59,7 +55,7 @@ const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
-let viewBox = $state(true); // false
+let viewBox = $state(false); // false
 let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
@@ -105,41 +101,6 @@ let arrayQuestionsTestFS: questionsTestFS[] = $state([]);
 let questionTestFS: questionsTestFS = $state( { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 })
 const chars = ['A', 'B', 'C', 'D', 'E'];
 
-/*
-let questionTest: questionsTest = $state(
-  { 
-    question: 'En Svelte y SvelteKit, no puedes interpolar directamente una variable dentro de un atributo como href usando {variable} dentro de una cadena de texto como ?{root}, ya que Svelte no lo interpretará correctamente.', 
-    images: [], 
-    answers: [
-      {
-        resp: 'Eliminar por valor (usando filter)', 
-        image: '', 
-        rst: false, 
-        rss: false 
-      },
-      {
-        resp: 'Eliminar por índice (usando splice)', 
-        image: '', 
-        rst: false, 
-        rss: false 
-      },
-      {
-        resp: 'Eliminar el último elemento (usando pop)', 
-        image: '', 
-        rst: false, 
-        rss: false 
-      },
-      {
-        resp: 'Eliminar el primero (usando shift)', 
-        image: '', 
-        rst: false, 
-        rss: false 
-      },
-    ] 
-  }
-);
-*/
-
 //console.log(items)
 
 function reset() {
@@ -157,11 +118,9 @@ function reset() {
   optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
-  //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 0 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
   arrayQuestionsTestPDF = [];
   arrayQuestionsTestFS = [];
-  //optionSuboptions = [{option: ''}];
 }
 
 function handleViewBoxExercise() {
@@ -191,7 +150,6 @@ function handleIntro(ty: string) {
   optionSuboptions = [];
   leftWords = [{word: ''}];
   rightWords = [{word: ''}];
-  //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
   questionTestFS = { text: '', image: '', audio: '', answersFS: [], words: [], value: 0 };
 
   stateExercise = 'new';
@@ -201,17 +159,6 @@ function handleIntro(ty: string) {
 
 function handlePlusOption() {
   optionSuboptions = [...optionSuboptions, {id: crypto.randomUUID(), option: ''}];
-  /*
-  if (optionSuboptions.length < 5) {
-    optionSuboptions = [...optionSuboptions, {id: crypto.randomUUID(), option: ''}];
-  } else {
-    toast?.view({
-      type: 'fail',
-      message: 'Las palabras alcanzaron el límite',
-      time: 4000
-      });
-  }
-  */
 }
 
 /*
@@ -696,8 +643,8 @@ function handleDone() {
       time: timeLecture
     }
 
-    console.log(indexExercise, stateExercise)
-    console.log(activity)
+    //console.log(indexExercise, stateExercise)
+    //console.log(activity)
 
     if (stateExercise === 'new') {
       items.push(activity);
@@ -866,7 +813,7 @@ function handleDone() {
   }
 
   activityLocalstore.set(items);
-  console.log($state.snapshot(items));
+  //console.log($state.snapshot(items));
   sheet = 'ejercises';
   reset();
 }
@@ -909,8 +856,8 @@ async function handleImageSelect(image: string) {
 async function handleFileSelect(file_name: string, file_pdf: string) {
   fileName = file_name;
   fileExam = `${root_file}/${file_pdf}`;
-  console.log(fileName)
-  console.log(fileExam)
+  //console.log(fileName)
+  //console.log(fileExam)
   //questionTest.images.push(localText);
 }
 
@@ -978,8 +925,8 @@ function handleEditActivity(index: number) {
   const type = items[index].type;
   stateExercise = 'update';
 
-  console.log(type)
-  console.log($state.snapshot(items))
+  //console.log(type)
+  //console.log($state.snapshot(items))
 
   if (type === 'select') {
     question = items[index].exercise.question;
@@ -1037,7 +984,7 @@ function handleCancelUpdate() {
 function handleEditTestPoint(point: number) {
   posItemPoint = point;
   questionTest = arrayQuestionsTest[posItemPoint]
-  console.log($state.snapshot(questionTest))
+  //console.log($state.snapshot(questionTest))
   sheet = 'new-point';
 }
 
@@ -1204,9 +1151,11 @@ function handleChangeCountPoint(e: Event, index: number) {
 }
 
 let totalValuesPoint = $derived.by(calculateValue);
+/*
 $effect(()=>{
   console.log(totalValuesPoint)
 });
+*/
 
 /*
 let totalValuesPoint = $state(0);

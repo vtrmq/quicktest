@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   const studentId = locals.user.id;
   const page = Number(url.searchParams.get("page") ?? 1);
-  const limit = 10;
+  const limit = 50;
   const offset = (page - 1) * limit;
 
   try {
@@ -19,47 +19,58 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       throw "DB: servicio no disponible";
     }
 
-    const activitiesResult = await db.prepare(`
-SELECT 
-    a.*,
-    isub.date_end,
-    isub.course_id,
-    isub.subject_id,
-    isub.inbox_student_id,
-    c.course,
-    s.subject,
-    ans.answer_id,
-    ans.nota,
-    ans.performance
+    const totalsQuery = `
+  SELECT COUNT(a.activity_id) AS total_count
+  FROM courses_students cs
+  JOIN inbox_student isub ON cs.course_id = isub.course_id
+  JOIN activities a ON isub.activity_id = a.activity_id
+  WHERE cs.student_id = ?
+    AND a.visible = 1
+    AND (a.items IS NOT NULL OR a.file IS NOT NULL)
+`;
+type Totals = { total_count: number };
+const stmtPage = db.prepare(totalsQuery);
+const totals: Totals = await stmtPage.bind(studentId).first();
+const totalCount = totals?.total_count ?? 0;
+const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+
+const activitiesResult = await db.prepare(`
+  SELECT 
+      a.*,
+      isub.date_end,
+      isub.course_id,
+      isub.subject_id,
+      isub.inbox_student_id,
+      c.course,
+      s.subject,
+      ans.answer_id,
+      ans.nota,
+      ans.performance
   FROM courses_students cs
   JOIN inbox_student isub ON cs.course_id = isub.course_id
   JOIN activities a ON isub.activity_id = a.activity_id
   JOIN courses c ON isub.course_id = c.course_id
   JOIN subjects s ON isub.subject_id = s.subject_id
   LEFT JOIN answers ans ON 
-    ans.activity_id = a.activity_id 
-    AND ans.subject_id = s.subject_id
-    AND ans.student_id = cs.student_id
+      ans.activity_id = a.activity_id 
+      AND ans.subject_id = s.subject_id
+      AND ans.student_id = cs.student_id
   WHERE cs.student_id = ?
-    AND a.visible = 1
+      AND a.visible = 1
+      AND (a.items IS NOT NULL OR a.file IS NOT NULL)
   ORDER BY isub.inbox_student_id ASC
   LIMIT ? OFFSET ?
 `).bind(studentId, limit, offset).all();
 
-
-    let activitiesAll: any = [];
-    if (activitiesResult.results !== null) {
-      for (let i = 0; i < activitiesResult.results.length; i++) {
-        if (activitiesResult.results[i].items !== null || activitiesResult.results[i].file !== null) {
-          activitiesAll.push(activitiesResult.results[i]);
-        }
-      }
+return {
+    activities: activitiesResult.results,
+    pagination: {
+        page,
+        totalPages,
+        limit,
+        totalCount,
     }
-
-    return {
-      //activities: activitiesResult.results
-      activities: activitiesAll
-    };
+};
 
   } catch (error) {
     return { 
