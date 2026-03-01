@@ -89,11 +89,11 @@ $effect(() => {
       {/each}
 
     </div>
-      <div>
-        {#if pagination.totalPages > 1}
-          <Pagination page={pagination.page} totalPages={pagination.totalPages} />
-        {/if}
-      </div>
+    <div>
+      {#if pagination.totalPages > 1}
+        <Pagination page={pagination.page} totalPages={pagination.totalPages} />
+      {/if}
+    </div>
   {/if}
 </div>
 

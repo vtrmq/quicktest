@@ -175,7 +175,7 @@ async function handleActionDelete(e: string) {
 
 {#if topics.length === 0}
   <div class="wr-none-data">
-    <NoneData>No hay datos para mostrar</NoneData>
+    <NoneData>No hay temas para mostrar</NoneData>
   </div>
 {/if}
 

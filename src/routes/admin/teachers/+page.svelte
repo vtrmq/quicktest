@@ -123,7 +123,6 @@ async function handleSearch(event: Event) {
 
 async function handleEnableDisabled(index: number) {
   const blocked = teachers[index].teacher.blocked === 'N' ? 'S' : 'N';
-  teachers[index].teacher.blocked = blocked;
   const teacherId = teachers[index].teacher.id.toString();
 
   const formData = new FormData();
@@ -136,6 +135,7 @@ async function handleEnableDisabled(index: number) {
   });
 
   if (response.ok) {
+    teachers[index].teacher.blocked = blocked;
     toast?.view({
       type: 'success',
       message: blocked === 'N' ? 'Docente habilitado' : 'Docente bloqueado',
@@ -240,10 +240,10 @@ async function handleActionDelete(e: string) {
                     <button onclick={()=>handleEnableDisabled(i)}>
                       {#if row.teacher.blocked === 'N'}
                         {@html shieldCheck} 
-                        <span>Habilitado</span>
+                        <span>Bloquear</span>
                       {:else}
                         {@html shieldAlert} 
-                        <span>Bloqueado</span>
+                        <span>Desbloquear</span>
                       {/if}
                     </button>
                     <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar docente</span></button>
@@ -331,7 +331,7 @@ async function handleActionDelete(e: string) {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 70px;
+  width: 60px;
   height: 150px;
   justify-content: center;
   align-items: center;
@@ -346,7 +346,7 @@ async function handleActionDelete(e: string) {
   display: grid;
   align-items: center;
   gap: 1em;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 60px 1fr;
 }
 .desc {
   font-size: 1em;
@@ -386,7 +386,7 @@ async function handleActionDelete(e: string) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 1.5em 0;
+  margin: 1.1em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;

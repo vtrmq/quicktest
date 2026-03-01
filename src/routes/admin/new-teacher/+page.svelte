@@ -3,6 +3,7 @@ import type { ActionData } from './$types';
 import type { SubmitFunction } from '@sveltejs/kit';
 import { enhance } from '$app/forms';
 import { DataFrame, Title, Input, Button, LinkBack, Toast } from '$lib/components';
+import { getDateTime } from '$lib/utils';
 
 let { form }: { form: ActionData } = $props();
 let btnSave = $state<Button>();
@@ -30,7 +31,7 @@ const handleForm: SubmitFunction = () => {
 
 <div class="wr-form-login">
   <DataFrame width="500px">
-    <LinkBack href="/admin/pre-registration">Inscripciones</LinkBack>
+    <LinkBack href="/admin/list-teachers">Inscripciones</LinkBack>
     <form method="POST" use:enhance={handleForm} novalidate>
       <Title>Nuevo docente</Title>
       <div class="body-form">
@@ -50,6 +51,7 @@ const handleForm: SubmitFunction = () => {
           style="border" type="text" requested label="Celular" 
           value={form?.field?.phone ?? ''} error={form?.msg} input={form?.input ?? ''} 
           name="phone" />
+        <input name="created_at" type="hidden" value={getDateTime()} />
       </div>
       <Button bind:this={btnSave}>Guardar</Button>
     </form>

@@ -33,8 +33,8 @@
 
   // Opciones para Admin
   const adminOptions: MenuOption[] = [
-    { label: 'Inscripciones', icon: mail, href: '/admin/pre-registration' },
-    { label: 'Nuevo docente', icon: newTeacher, href: '/admin/new-teacher' },
+    { label: 'Lista de docentes', icon: mail, href: '/admin/list-teachers' },
+    //{ label: 'Nuevo docente', icon: newTeacher, href: '/admin/new-teacher' },
     { label: 'Administrar docentes', icon: teachers, href: '/admin/teachers' },
     { label: 'Estadísticas', icon: chartPie, href: '/admin/statistics' },
     { label: 'Mi Perfil', icon: perfil, href: '/admin/profile' },

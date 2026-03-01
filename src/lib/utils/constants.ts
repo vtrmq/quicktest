@@ -71,7 +71,7 @@ export const SESSION_CONFIG = {
 };
 
 export const DASHBOARDS: Record<UserProfile, string> = {
-  'A': '/admin/pre-registration',
+  'A': '/admin/list-teachers',
   'T': '/teacher/inbox', 
   'S': '/student/inbox'
 };

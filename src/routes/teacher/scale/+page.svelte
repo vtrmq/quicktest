@@ -117,7 +117,7 @@ async function handleActionDelete(e: string) {
 
 {#if scales.length === 0}
   <div class="wr-none-data">
-    <NoneData>{data.message}</NoneData>
+    <NoneData>No hay escala valorativa</NoneData>
   </div>
 {/if}
 
