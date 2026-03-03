@@ -1,6 +1,7 @@
 <script lang="ts">
 import { EditText, LinkBack, Toolbar, ImageContent, VideoContent, Vignette, Toast } from "$lib/components";
 import { deserialize } from '$app/forms';
+
 let { data } = $props();
 let content = $state(JSON.parse(data.topic.content) ?? []);
 let posLine = $state(-1);
@@ -11,9 +12,22 @@ let toast = $state<Toast | null>(null);
 let isLoad = $state(false);
 let topicId = data.topic.topic_id;
 
+console.log(JSON.parse(data.topic.content))
+type Point = {
+  resp: string;
+  image: string;
+  rss: boolean;
+  rst: boolean;
+};
+type Question = {
+  question: string;
+  points: Point;
+  image: string;
+};
+
 type DataInput = {
   id: number;
-  data: {text: string; type: string; isEdit: boolean};
+  data: {text: string; type: string; isEdit: boolean, questions: Question[]};
   action: 'delete' | 'ok' | 'up' | 'down'
 }
 

@@ -41,6 +41,30 @@ function handleActionShowWin(i: number) {
 async function handleActionWin(e: string) {
   if (e === 'accept') {
     teachers = teachers.filter((_: any, index: number) => index !== posTeacher);
+    const formData = new FormData();
+    formData.append('teacher_id', String(teacherId));
+
+    const response = await fetch('?/delete', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      toast?.view({
+        type: 'success',
+        message: 'Docente eliminado',
+        time: 3000
+      });
+    } else {
+      const errData = await response.json();
+      toast?.view({
+        type: 'success',
+        message: errData.error.message,
+      });
+    }
+
+    /*
+    teachers = teachers.filter((_: any, index: number) => index !== posTeacher);
     const response = await fetch('/api/admin/delete-preregister', {
       method: 'POST',
       body: JSON.stringify({teacherId}),
@@ -53,6 +77,7 @@ async function handleActionWin(e: string) {
       type: 'success',
       message: resp.message,
     });
+    */
   }
 }
 

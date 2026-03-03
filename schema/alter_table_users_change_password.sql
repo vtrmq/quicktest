@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN change_password BOOLEAN DEFAULT FALSE;

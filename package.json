@@ -16,6 +16,7 @@
 		"@sveltejs/kit": "^2.48.4",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@types/node": "^24.10.0",
+		"@types/youtube": "^0.1.2",
 		"svelte": "^5.43.6",
 		"svelte-check": "^4.3.3",
 		"typescript": "^5.9.3",

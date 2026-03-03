@@ -17,4 +17,3 @@ export type TeacherPayment = {
   created_at: string;
   payment_setting: string | null;
 }
-

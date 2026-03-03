@@ -201,7 +201,7 @@ export const actions: Actions = {
     }
   },
 
-  visible: async ({ request, locals, platform }) => {
+  delete: async ({ request, locals, platform }) => {
     if (!locals.user) { throw redirect(303, '/'); }
     if (locals.user.profile !== 'A') { throw redirect(303, '/unauthorized'); }
 

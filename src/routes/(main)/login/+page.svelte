@@ -1,22 +1,22 @@
 <script lang="ts">
-    import type { ActionData } from "./$types";
-    import type { SubmitFunction } from "@sveltejs/kit";
-    import { enhance } from "$app/forms";
-    import { DataFrame, Title, Input, Button } from "$lib/components";
-    let { form }: { form: ActionData } = $props();
-    let btnLogin = $state<Button>();
-    const handleForm: SubmitFunction = () => {
-        btnLogin?.load(true);
-        return async ({ update, result }) => {
-            if (result.type === "failure") {
-                btnLogin?.load(false);
-            }
-            await update();
-        };
-    };
+import type { ActionData } from "./$types";
+import type { SubmitFunction } from "@sveltejs/kit";
+import { enhance } from "$app/forms";
+import { DataFrame, Title, Input, Button } from "$lib/components";
+let { form }: { form: ActionData } = $props();
+let btnLogin = $state<Button>();
+const handleForm: SubmitFunction = () => {
+  btnLogin?.load(true);
+  return async ({ update, result }) => {
+    if (result.type === "failure") {
+      btnLogin?.load(false);
+    }
+    await update();
+  };
+};
 </script>
 
-<!-- vtrmq09@gmail.com admin123, vtrmq@hotmail.com 123456 -->
+<!-- vtrmq09@gmail.com admin123, vtrmq@hotmail.com 123456 vtrmq09@hotmail.com -->
 
 <div class="wr-form-login">
     <DataFrame width="400px">

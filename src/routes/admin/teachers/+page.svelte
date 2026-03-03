@@ -167,7 +167,7 @@ async function handleActionDelete(e: string) {
     const formData = new FormData();
     formData.append('teacher_id', teacherId);
 
-    const response = await fetch('?/visible', {
+    const response = await fetch('?/delete', {
       method: 'POST',
       body: formData
     });
