@@ -12,17 +12,19 @@ let toast = $state<Toast | null>(null);
 let isLoad = $state(false);
 let topicId = data.topic.topic_id;
 
-console.log(JSON.parse(data.topic.content))
-type Point = {
-  resp: string;
-  image: string;
+type Response = {
+  question: string;
   rss: boolean;
   rst: boolean;
 };
-type Question = {
+type Point = {
   question: string;
-  points: Point;
   image: string;
+  response: Response[]
+};
+type Question = {
+  points: Point[];
+  time_pause: string;
 };
 
 type DataInput = {
@@ -32,7 +34,7 @@ type DataInput = {
 }
 
 if (content.length === 0) {
-  content.push( {type: 'title', text: data.topic.topic, size: 0, isEdit: false} )
+  content.push( {type: 'title', text: data.topic.topic, size: 0, isEdit: false, questions: []} )
   /*
   content.push(
     {type: 'title', text: data.topic.topic, size: 0, isEdit: false}, 
@@ -149,7 +151,7 @@ function handleBtnToolbar(action: string) {
   } else if (action === 'image') {
     content.splice(indexContent + 1, 0, {type: action, text: '', size: 60, isEdit: true});
   } else if (action === 'video') {
-    content.splice(indexContent + 1, 0, {type: action, text: '', size: 0, isEdit: true});
+    content.splice(indexContent + 1, 0, {type: action, text: '', size: 0, isEdit: true, questions: []});
   } else if (action === 'vignette') {
     content.splice(indexContent + 1, 0, {type: action, text: [{item: ''}], size: 0, isEdit: true});
   }

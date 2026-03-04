@@ -13,6 +13,7 @@ export { default as Toolbar } from './layout/edit/Toolbar.svelte';
 export { default as ImageContent } from './layout/edit/Image.svelte';
 export { default as VideoContent } from './layout/edit/Video.svelte';
 export { default as Vignette } from './layout/edit/Vignette.svelte';
+export { default as WinTestEdit } from './layout/edit/WinTestEdit.svelte';
 
 
 // COMPONENTS UI

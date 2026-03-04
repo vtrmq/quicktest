@@ -2,14 +2,18 @@
 import arrowUp from '$lib/assets/svg/arrow-up.svg?raw';
 import arrowDown from '$lib/assets/svg/arrow-down.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
+import test from '$lib/assets/svg/message-square-text.svg?raw';
 import { EditBtn, Toast } from '$lib/components';
 import { onMount, onDestroy } from 'svelte'; // ✅ onMount está aquí
+import { WinTestEdit } from "$lib/components";
 
-let { data, handleEvent = ()=>{}, id, onEvent = ()=>{} } = $props();
+let { data, handleEvent = ()=>{}, id, onEvent = ()=>{}, option = "dev" } = $props();
 let textarea = $state<HTMLTextAreaElement>();
 let localText = $derived(data.text);
 let isEdit = $derived(data.isEdit);
 let toast = $state<Toast | null>(null);
+let winTestEdit = $state<WinTestEdit | null>(null);
+let questions = $state(data.questions);
 
 // ──────────────────────────────────────────────────────
 //  YouTube Player API & Tracking
@@ -87,8 +91,12 @@ const startTrackingTime = () => {
     if (player && isPlaying) {
       currentTime = player.getCurrentTime();
       duration = player.getDuration();
+      const time = `${Math.floor(currentTime / 60)}:${(Math.floor(currentTime) % 60).toString().padStart(2, '0')}`
+      console.log(option)
+      console.log(currentTime)
+      console.log(time)
     }
-  }, 1000);
+  }, 500);
 };
 
 const stopTrackingTime = () => {
@@ -145,12 +153,22 @@ function handle(action: string) {
     toast?.view({ type: 'success', message: 'Coloca el link del video' });
     return;
   }
-  const info = {text: localText, type: data.type, size: 0, isEdit};
+  if (action === "test") {
+    winTestEdit?.show();
+    return;
+  }
+  const info = {text: localText, type: data.type, size: 0, isEdit, questions};
   handleEvent({data: info, action, id});
 }
+
+function handleSendQuestions(qs: any) {
+  questions = JSON.parse(qs);
+}
+
 </script>
 
 <Toast bind:this={toast} />
+<WinTestEdit bind:this={winTestEdit} {questions} handleSend={handleSendQuestions} />
 
 <div class="container-iframe">
   {#if !isEdit}
@@ -183,9 +201,10 @@ function handle(action: string) {
       </div>
       <div class="wr-btns">
         <EditBtn onclick={()=>handle('ok')}>Listo</EditBtn>
-        <EditBtn onclick={()=>handle('delete')}>{@html trash}</EditBtn>
+        <EditBtn onclick={()=>handle('test')}>{@html test}</EditBtn>
         <EditBtn onclick={()=>handle('up')}>{@html arrowUp}</EditBtn>
         <EditBtn onclick={()=>handle('down')}>{@html arrowDown}</EditBtn>
+        <EditBtn onclick={()=>handle('delete')}>{@html trash}</EditBtn>
       </div>
     </div>
   {/if}
