@@ -33,6 +33,12 @@ type DataInput = {
   action: 'delete' | 'ok' | 'up' | 'down'
 }
 
+type Result = {
+  type: string;
+  message?: string;
+  data?: {message: string; type: string;}
+};
+
 if (content.length === 0) {
   content.push( {type: 'title', text: data.topic.topic, size: 0, isEdit: false, questions: []} )
   /*
@@ -156,12 +162,6 @@ function handleBtnToolbar(action: string) {
     content.splice(indexContent + 1, 0, {type: action, text: [{item: ''}], size: 0, isEdit: true});
   }
 }
-
-type Result = {
-  type: string;
-  message?: string;
-  data?: {message: string; type: string;}
-};
 
 async function handleActionSave() {
   if (returnContent()) {

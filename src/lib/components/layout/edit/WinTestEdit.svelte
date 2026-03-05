@@ -1,7 +1,12 @@
 <script lang="ts">
-import { onDestroy, onMount } from 'svelte';
+import { onDestroy, onMount, tick } from 'svelte';
 import { fade } from 'svelte/transition';
-import { TextArea, Input } from "$lib/components"
+import trash from '$lib/assets/svg/trash.svg?raw';
+import receiptText from '$lib/assets/svg/receipt-text.svg?raw';
+import circleX from '$lib/assets/svg/circle-x.svg?raw';
+import filePlus from '$lib/assets/svg/file-plus.svg?raw';
+import pencil from '$lib/assets/svg/pencil.svg?raw';
+import { TextArea, Input, Dialog, OptionSelect } from "$lib/components"
 
 type Answer = {
   answer: string;
@@ -22,10 +27,20 @@ let { questions, handleSend } : {questions: Question[], handleSend: (e: any)=>vo
 let body: any;
 let isDisplay = $state(false);
 let isEdit = $state(false);
+let bodyTest = $state() as HTMLDivElement;
+let dialog = $state<Dialog | null>(null);
 
 // Datos de cada test del video
 let points: Point[] = $state([]);
 let questionTest: Point = $state({ question: '', image: '', points: [] })
+let questionsAll: Question[] = $state(questions);
+let stateTest = $state("new");
+let indexTest = -1;
+let indexQuestion = -1;
+let questionTestCopy: Point = $state({ question: '', image: '', points: [] })
+let optionDelete = '';
+let posTestDelete = -1;
+let posQuestionDelete = -1;
 
 export function show() {
   isDisplay = !isDisplay;
@@ -52,8 +67,13 @@ onDestroy(()=>{
   body.style.overflowY = 'scroll'
 });
 
-function handleNewQuestion() {
-  questions.push({points: [], time_pause: ''});
+async function handleNewQuestion() {
+  questionsAll.push({points: [], time_pause: ''});
+  await tick();
+  bodyTest.scrollTo({
+    top: bodyTest.scrollHeight,
+    behavior: 'smooth'
+  });
 }
 
 function handleRemoveItem(index: number) {
@@ -67,74 +87,138 @@ function handleAddPoint() {
 function handleAddQuestion() {
   points.push(questionTest);
   isEdit = !isEdit;
-  questions[posQuestion].points.push(...points);
+  questionsAll[posQuestion].points.push(...points);
   questionTest = { question: '', image: '', points: [] };
   points = [];
   // AQUI ENVIAR questions AL COMPONENTE Video.svelte
-  handleSend(JSON.stringify(questions))
+  handleSend(JSON.stringify(questionsAll))
 }
 
 function handleSelectItem(pos:number, point: number, index: number) {
-  console.log($state.snapshot(questions))
-  console.log(pos, point, index)
-  //handleSend(questions)
-  //arrayQuestionsTest[point].answers[index].rst = !arrayQuestionsTest[point].answers[index].rst;
-  handleSend(JSON.stringify(questions))
+  questionsAll[pos].points[point].points[index].rst = !questionsAll[pos].points[point].points[index].rst;
+  handleSend(JSON.stringify(questionsAll))
 }
 
 let posQuestion = -1;
-function handleInsertQuuestion(inx: number) {
+function handleInsertQuestion(inx: number) {
   posQuestion = inx;
   questionTest = { question: '', image: '', points: [] };
   points = [];
   isEdit = !isEdit;
+  stateTest = "new";
 }
 
 function handleCancelQuestion() {
+  if (stateTest === "update") {
+    questionsAll[indexTest].points[indexQuestion] = questionTestCopy;
+  }
   isEdit = !isEdit;
   questionTest = { question: '', image: '', points: [] };
+  questionTestCopy = { question: '', image: '', points: [] };
   points = [];
+  stateTest = "new";
+}
+
+function handleActionDelete(e: string) {
+  if (e === 'accept' && optionDelete === "test") {
+    questionsAll = questionsAll.filter((_: any, i: number) => i !== posTestDelete);
+    posQuestionDelete = -1;
+    handleSend(JSON.stringify(questionsAll))
+  } else if (e === 'accept' && optionDelete === "question") {
+    const points = JSON.parse(JSON.stringify(questionsAll[posTestDelete].points));
+    const _points = points.filter((_: any, i: number) => i !== posQuestionDelete);
+    questionsAll[posTestDelete].points = _points;
+    handleSend(JSON.stringify(questionsAll))
+  }
+}
+
+function handleActionShowWinTest(indexTest: number, option: string) {
+  posTestDelete = indexTest;
+  optionDelete = option;
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar el test #${indexTest + 1}?`,
+  });
+}
+
+function handleActionShowWinQuestion(indexTest: number, indexQuestion: number, option: string) {
+  posTestDelete = indexTest;
+  posQuestionDelete = indexQuestion;
+  optionDelete = option;
+  dialog?.show({
+    type: 'delete',
+    message: `¿Quieres eliminar la pregunta #${indexQuestion + 1}?`,
+  });
+}
+
+function handleEditQuestion(_indexTest: number, _indexQuestion: number) {
+  indexTest = _indexTest;
+  indexQuestion = _indexQuestion;
+  stateTest = "update";
+  questionTest = questionsAll[indexTest].points[indexQuestion]
+  questionTestCopy = JSON.parse(JSON.stringify(questionTest));
+  isEdit = !isEdit;
+}
+
+function handleUpdateQuestion() {
+  questionsAll[indexTest].points[indexQuestion] = questionTest;
+  questionTest = { question: '', image: '', points: [] };
+  isEdit = !isEdit;
 }
 
 </script>
 
+<Dialog bind:this={dialog} action={handleActionDelete} />
 <svelte:window onkeydown={handleCloseWin} />
 
 {#if isDisplay}
   <div class="container-win-test" transition:fade={{ duration: 200 }}>
     <div class="container-test">
       <div class="header-test">
-        <h1>Editar test</h1>
+        <h1 class="t-title">Editar test</h1>
         <div class="btns-tp">
-          <button class="btn-new-point" onclick={()=>handleNewQuestion()}>X</button>
-          <button class="btn-close" onclick={()=>handleCloseEventWin()}>X</button>
+          <button class="btn-new-point-test-edit" onclick={()=>handleNewQuestion()}>{@html filePlus}</button>
+          <button class="btn-close-win-test-edit" onclick={()=>handleCloseEventWin()}>{@html circleX}</button>
         </div>
       </div>
-      <div class="container-body-test" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0">
+      <div class="container-body-test" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0" bind:this={bodyTest}>
         <div class="body-test">
           {#if !isEdit}
 
-            {#each questions as question, inx}
+            {#each questionsAll as question, inx}
               <!-- Variable que tiene todas la preguntas del video -->
+              <div class="num-test">Test {inx + 1}</div>
               <div class="row-time">
                 <Input type="text" name="time_pause" label="Tiempo de la pausa" bind:value={question.time_pause} />
-                <button onclick={()=>handleInsertQuuestion(inx)}>A</button>
-                <button>B</button>
+                <button onclick={()=>handleInsertQuestion(inx)} class="btn-insert">{@html receiptText}</button>
+                <button class="btn-delete" onclick={()=>handleActionShowWinTest(inx, "test")}>{@html trash}</button>
               </div>
 
               <div class="container-items-answer">
                 {#each question.points as qs, point}
-                  <p class="question">{qs.question}</p>
-
-                  {#each qs.points as rs, index}
-                    <div class="container-answer" onclick={()=>handleSelectItem(inx, point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point={rs.rst}>
-                      <div class="wr-label-point"><div class="label-resp" class:rst-point={rs.rst}>Respuesta {index + 1}</div></div>
-                      <div class="wr-input-item">
-                        <div class="answer-item">{rs.answer}</div>
+                  <div>
+                    <div class="wr-point-number-test"><div class="point-number-test">{point + 1}</div></div>
+                    <div class="row-question">
+                      <p class="question">{qs.question}</p>
+                      <div class="wr-opt-select">
+                        <OptionSelect>
+                          <button onclick={()=>handleEditQuestion(inx, point)}>{@html pencil} <span>Editar</span></button>
+                          <button onclick={()=>handleActionShowWinQuestion(inx, point, "question")}>{@html trash} <span>Eliminar</span></button>
+                        </OptionSelect>
                       </div>
                     </div>
-                  {/each}
 
+                    <div class="wr-points">
+                      {#each qs.points as rs, index}
+                        <div class="container-answer" onclick={()=>handleSelectItem(inx, point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point={rs.rst}>
+                          <div class="wr-label-point"><div class="label-resp" class:rst-point={rs.rst}>Respuesta {index + 1}</div></div>
+                          <div class="wr-input-item">
+                            <div class="answer-item">{rs.answer}</div>
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
                 {/each}
               </div>
             {/each}
@@ -161,13 +245,16 @@ function handleCancelQuestion() {
                   </div>
                 {/each}
 
-                <div>
-                  <button onclick={()=>handleAddPoint()}>Colocar punto</button>
-                  <button onclick={()=>handleAddQuestion()}>Adicionar pregunta</button>
-                  <button onclick={()=>handleCancelQuestion()}>Cancelar</button>
+                <div class="wr-btns-te">
+                  <button class="btn-te ins-p" onclick={()=>handleAddPoint()}>Colocar punto</button>
+                  {#if stateTest === "new"}
+                    <button class="btn-te add-p" onclick={()=>handleAddQuestion()}>Adicionar</button>
+                  {:else if stateTest === "update"}
+                    <button class="btn-te add-p" onclick={()=>handleUpdateQuestion()}>Actualizar</button>
+                  {/if}
+                  <button class="btn-te cancel-p" onclick={()=>handleCancelQuestion()}>Cancelar</button>
                 </div>
               </div>
-
 
             </div>
           {/if}
@@ -178,14 +265,94 @@ function handleCancelQuestion() {
 {/if}
 
 <style>
+.ins-p {
+  background: #89d989;
+  transition: var(--transition);
+}
+.ins-p:hover {
+  background: #73d573;
+}
+.add-p {
+  background: #ffca68;
+  transition: var(--transition);
+}
+.add-p:hover {
+  background: #ebb551;
+}
+.cancel-p {
+  background: #fdaeae;
+  transition: var(--transition);
+}
+.cancel-p:hover {
+  background: #f38f8f;
+}
+.wr-btns-te {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border-top: 1px solid #cdcdcd;
+  border-bottom: 1px solid #cdcdcd;
+  padding: 0.8em;
+}
+.btn-te {
+  padding: 0.8em 1em;
+  font-family: var(--font-normal);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.t-title {
+  font-family: var(--font-bold);
+  font-size: 1.4em;
+}
+.num-test {
+  font-family: var(--font-normal);
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+.wr-points {
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+  margin-top: 2em;
+}
+.btn-insert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  cursor: pointer;
+}
+:global {
+  .btn-insert > svg {
+    width: 20px;
+    color: #0268b9;
+  }
+}
+.btn-delete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  cursor: pointer;
+}
+.row-question {
+  display: flex;
+  gap: 2em;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: 1em 0 2em;
+}
 .row-time {
   display: flex;
-  gap: 1em;
+  gap: 2em;
   align-items: center;
+  border-top: 4px solid #2196F3;
+  padding-top: 2em;
 }
 .question {
   font-family: var(--font-normal);
-  padding-bottom: 1em;
   line-height: 28px;
   font-size: var(--font-size);
 }
@@ -291,7 +458,7 @@ function handleCancelQuestion() {
   display: flex;
   gap: 0.6em;
 }
-.btn-new-point {
+.btn-new-point-test-edit {
   width: 40px;
   height: 40px;
   display: flex;
@@ -302,10 +469,16 @@ function handleCancelQuestion() {
   cursor: pointer;
   transition: var(--transition);
 }
-.btn-new-point:hover {
-  background: #b9dd8e;
+.btn-new-point-test-edit:hover {
+  background: #d1f1ab;
 }
-.btn-close {
+:global {
+  .btn-new-point-test-edit > svg {
+    width: 27px;
+    color: #00a707;
+  }
+}
+.btn-close-win-test-edit {
   width: 40px;
   height: 40px;
   display: flex;
@@ -316,8 +489,14 @@ function handleCancelQuestion() {
   cursor: pointer;
   transition: var(--transition);
 }
-.btn-close:hover {
-  background: #f1c6c6;
+.btn-close-win-test-edit:hover {
+  background: #f7dada;
+}
+:global {
+  .btn-close-win-test-edit > svg {
+    width: 30px;
+    color: #ff3d00;
+  }
 }
 .body-test {
   width: 100%;
