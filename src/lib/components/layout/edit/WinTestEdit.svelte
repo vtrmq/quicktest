@@ -24,7 +24,7 @@ type Question = {
 };
 
 let { questions, handleSend } : {questions: Question[], handleSend: (e: any)=>void} = $props();
-let body: any;
+let body = document.documentElement as HTMLElement;
 let isDisplay = $state(false);
 let isEdit = $state(false);
 let bodyTest = $state() as HTMLDivElement;
@@ -46,6 +46,7 @@ export function show() {
   isDisplay = !isDisplay;
   const body = document.getElementsByTagName('body')[0]
   body.style.overflowY = 'hidden'
+  body.style.height = '100vh'
 }
 
 function handleCloseWin(e:KeyboardEvent) {
@@ -172,34 +173,35 @@ function handleUpdateQuestion() {
 <svelte:window onkeydown={handleCloseWin} />
 
 {#if isDisplay}
-  <div class="container-win-test" transition:fade={{ duration: 200 }}>
-    <div class="container-test">
-      <div class="header-test">
-        <h1 class="t-title">Editar test</h1>
-        <div class="btns-tp">
-          <button class="btn-new-point-test-edit" onclick={()=>handleNewQuestion()}>{@html filePlus}</button>
-          <button class="btn-close-win-test-edit" onclick={()=>handleCloseEventWin()}>{@html circleX}</button>
+  <div class="container-win-test-wt" transition:fade={{ duration: 200 }}>
+    <div class="container-test-wt">
+      <div class="header-test-wt">
+        <h1 class="t-title-wt">Editar test</h1>
+        <div class="btns-tp-wt">
+          <button class="btn-new-point-test-edit-wt" onclick={()=>handleNewQuestion()}>{@html filePlus}</button>
+          <button class="btn-close-win-test-edit-wt" onclick={()=>handleCloseEventWin()}>{@html circleX}</button>
         </div>
       </div>
-      <div class="container-body-test" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0" bind:this={bodyTest}>
-        <div class="body-test">
+
+      <div class="container-body-test-wt" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0" bind:this={bodyTest}>
+        <div class="body-test-wt">
           {#if !isEdit}
 
             {#each questionsAll as question, inx}
               <!-- Variable que tiene todas la preguntas del video -->
-              <div class="num-test">Test {inx + 1}</div>
-              <div class="row-time">
+              <div class="num-test-wt">Test {inx + 1}</div>
+              <div class="row-time-wt">
                 <Input type="text" name="time_pause" label="Tiempo de la pausa" bind:value={question.time_pause} />
-                <button onclick={()=>handleInsertQuestion(inx)} class="btn-insert">{@html receiptText}</button>
-                <button class="btn-delete" onclick={()=>handleActionShowWinTest(inx, "test")}>{@html trash}</button>
+                <button onclick={()=>handleInsertQuestion(inx)} class="btn-insert-wt">{@html receiptText}</button>
+                <button class="btn-delete-wt" onclick={()=>handleActionShowWinTest(inx, "test")}>{@html trash}</button>
               </div>
 
-              <div class="container-items-answer">
+              <div class="container-items-answer-wt">
                 {#each question.points as qs, point}
                   <div>
                     <div class="wr-point-number-test"><div class="point-number-test">{point + 1}</div></div>
-                    <div class="row-question">
-                      <p class="question">{qs.question}</p>
+                    <div class="row-question-wt">
+                      <p class="question-wt">{qs.question}</p>
                       <div class="wr-opt-select">
                         <OptionSelect>
                           <button onclick={()=>handleEditQuestion(inx, point)}>{@html pencil} <span>Editar</span></button>
@@ -208,12 +210,12 @@ function handleUpdateQuestion() {
                       </div>
                     </div>
 
-                    <div class="wr-points">
+                    <div class="wr-points-wt">
                       {#each qs.points as rs, index}
-                        <div class="container-answer" onclick={()=>handleSelectItem(inx, point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point={rs.rst}>
-                          <div class="wr-label-point"><div class="label-resp" class:rst-point={rs.rst}>Respuesta {index + 1}</div></div>
-                          <div class="wr-input-item">
-                            <div class="answer-item">{rs.answer}</div>
+                        <div class="container-answer-wt" onclick={()=>handleSelectItem(inx, point, index)} onkeyup={()=>{}} role="button" tabindex="0" class:rst-point-wt={rs.rst}>
+                          <div class="wr-label-point-wt"><div class="label-resp-wt" class:rst-point-wt={rs.rst}>Respuesta {index + 1}</div></div>
+                          <div class="wr-input-item-wt">
+                            <div class="answer-item-wt">{rs.answer}</div>
                           </div>
                         </div>
                       {/each}
@@ -227,32 +229,32 @@ function handleUpdateQuestion() {
             <div>
               <TextArea name="def" label="Pregunta" bind:value={questionTest.question} --height-text-area="80px" isError={false} />
               <br>
-              <h1 class="label-response">Respuestas</h1>
+              <h1 class="label-response-wt">Respuestas</h1>
 
-              <div class="container-items-answer">
+              <div class="container-items-answer-wt">
 
                 {#each questionTest.points as answer, index}
-                  <div class="container-answer">
+                  <div class="container-answer-wt">
 
-                    <div class="wr-input-item">
-                      <textarea class="textarea-item" bind:value={answer.answer}></textarea>
+                    <div class="wr-input-item-wt">
+                      <textarea class="textarea-item-wt" bind:value={answer.answer}></textarea>
                     </div>
 
-                    <div class="wr-btn-img-item">
-                      <button class="btn-remove-item" onclick={()=>handleRemoveItem(index)}>Quitar</button>
+                    <div class="wr-btn-img-item-wt">
+                      <button class="btn-remove-item-wt" onclick={()=>handleRemoveItem(index)}>Quitar</button>
                     </div>
 
                   </div>
                 {/each}
 
-                <div class="wr-btns-te">
-                  <button class="btn-te ins-p" onclick={()=>handleAddPoint()}>Colocar punto</button>
+                <div class="wr-btns-te-wt">
+                  <button class="btn-te-wt ins-p-wt" onclick={()=>handleAddPoint()}>Colocar punto</button>
                   {#if stateTest === "new"}
-                    <button class="btn-te add-p" onclick={()=>handleAddQuestion()}>Adicionar</button>
+                    <button class="btn-te-wt add-p-wt" onclick={()=>handleAddQuestion()}>Adicionar</button>
                   {:else if stateTest === "update"}
-                    <button class="btn-te add-p" onclick={()=>handleUpdateQuestion()}>Actualizar</button>
+                    <button class="btn-te-wt add-p-wt" onclick={()=>handleUpdateQuestion()}>Actualizar</button>
                   {/if}
-                  <button class="btn-te cancel-p" onclick={()=>handleCancelQuestion()}>Cancelar</button>
+                  <button class="btn-te-wt cancel-p-wt" onclick={()=>handleCancelQuestion()}>Cancelar</button>
                 </div>
               </div>
 
@@ -263,276 +265,3 @@ function handleUpdateQuestion() {
     </div>
   </div>
 {/if}
-
-<style>
-.ins-p {
-  background: #89d989;
-  transition: var(--transition);
-}
-.ins-p:hover {
-  background: #73d573;
-}
-.add-p {
-  background: #ffca68;
-  transition: var(--transition);
-}
-.add-p:hover {
-  background: #ebb551;
-}
-.cancel-p {
-  background: #fdaeae;
-  transition: var(--transition);
-}
-.cancel-p:hover {
-  background: #f38f8f;
-}
-.wr-btns-te {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  border-top: 1px solid #cdcdcd;
-  border-bottom: 1px solid #cdcdcd;
-  padding: 0.8em;
-}
-.btn-te {
-  padding: 0.8em 1em;
-  font-family: var(--font-normal);
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-.t-title {
-  font-family: var(--font-bold);
-  font-size: 1.4em;
-}
-.num-test {
-  font-family: var(--font-normal);
-  font-weight: 500;
-  margin-bottom: 0.5em;
-}
-.wr-points {
-  display: flex;
-  flex-direction: column;
-  gap: 3em;
-  margin-top: 2em;
-}
-.btn-insert {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  cursor: pointer;
-}
-:global {
-  .btn-insert > svg {
-    width: 20px;
-    color: #0268b9;
-  }
-}
-.btn-delete {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  cursor: pointer;
-}
-.row-question {
-  display: flex;
-  gap: 2em;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-  padding: 1em 0 2em;
-}
-.row-time {
-  display: flex;
-  gap: 2em;
-  align-items: center;
-  border-top: 4px solid #2196F3;
-  padding-top: 2em;
-}
-.question {
-  font-family: var(--font-normal);
-  line-height: 28px;
-  font-size: var(--font-size);
-}
-.answer-item {
-  width: 100%;
-  resize: none;
-  background: transparent;
-  font-family: var(--font-normal);
-  font-size: var(--font-size);
-  padding: 0.4em 0.5em;
-  border-radius: var(--border-radius);
-  line-height: 28px;
-}
-.label-resp {
-  background: var(--border-item);
-  font-family: var(--font-normal);
-  font-size: 0.88em;
-  padding: 5px 10px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  transition: var(--transition);
-}
-.label-resp.rst-point {
-  background: #11d511;
-}
-.wr-label-point {
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  width: 100%;
-  top: -22px;
-  left: 0;
-}
-.btn-remove-item {
-  padding: 0.2em 0.5em;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #f1baa9;
-  font-family: var(--font-normal);
-}
-.wr-btn-img-item {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-}
-.textarea-item {
-  resize: none;
-  width: 100%;
-  resize: none;
-  background: transparent;
-  height: 65px;
-  font-family: var(--font-normal);
-  font-size: var(--font-size);
-  padding: 0.4em 0.5em;
-  border-radius: var(--border-radius);
-  line-height: 23px;
-}
-.wr-input-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  /*border: 1px solid var(--color-border-input);*/
-  border-radius: var(--border-radius);
-  padding: 2px 3px 2px 0;
-  transition: var(--transition);
-  background: #fff;
-  border: 1px solid #fff;
-}
-.wr-input-item:focus-within {
-  border: 1px solid #6049eb;
-  box-shadow: 0px 0px 0px 4px rgba(119, 112, 255, 0.2);
-}
-.container-answer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  background: var(--border-item);
-  padding: 8px;
-  border-radius: var(--border-radius);
-  position: relative;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
-}
-.container-answer.rst-point {
-  background: #11d511;
-  box-shadow: rgb(0 167 0) 0px 7px 0px 0px;
-}
-.label-response {
-  font-family: var(--font-normal);
-  font-weight: 900;
-  font-size: 1em;
-}
-.container-items-answer {
-  margin: 1em 0 5em;
-  display: flex;
-  flex-direction: column;
-  gap: 3em;
-}
-
-
-.btns-tp {
-  display: flex;
-  gap: 0.6em;
-}
-.btn-new-point-test-edit {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #cfebae;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.btn-new-point-test-edit:hover {
-  background: #d1f1ab;
-}
-:global {
-  .btn-new-point-test-edit > svg {
-    width: 27px;
-    color: #00a707;
-  }
-}
-.btn-close-win-test-edit {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #ffe3e3;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.btn-close-win-test-edit:hover {
-  background: #f7dada;
-}
-:global {
-  .btn-close-win-test-edit > svg {
-    width: 30px;
-    color: #ff3d00;
-  }
-}
-.body-test {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 2em 1em;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  min-height: 100%;
-}
-.header-test {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #e7e7e7;
-  height: var(--height-header);
-  align-items: center;
-  padding: 0 0.5em;
-}
-.container-body-test {
-  height: calc(100% - var(--height-header));
-  overflow-y: auto;
-}
-.container-test {
-  background: #fff;
-  height: 100%;
-  width: 100%;
-}
-.container-win-test {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--bg-screen);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 160;
-}
-</style>

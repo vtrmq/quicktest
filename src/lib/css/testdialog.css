@@ -1,0 +1,298 @@
+.container-body-test-wt {
+  height: calc(100% - var(--height-header));
+  overflow-y: auto;
+}
+.container-body-test-wt {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+.container-body-test-wt::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.container-body-test-wt::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.container-body-test-wt::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+.container-body-test-wt::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.ins-p-wt {
+  background: #89d989;
+  transition: var(--transition);
+}
+.ins-p-wt:hover {
+  background: #73d573;
+}
+.add-p-wt {
+  background: #ffca68;
+  transition: var(--transition);
+}
+.add-p-wt:hover {
+  background: #ebb551;
+}
+.cancel-p-wt {
+  background: #fdaeae;
+  transition: var(--transition);
+}
+.cancel-p-wt:hover {
+  background: #f38f8f;
+}
+.wr-btns-te-wt {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border-top: 1px solid #cdcdcd;
+  border-bottom: 1px solid #cdcdcd;
+  padding: 0.8em;
+}
+.btn-te-wt {
+  padding: 0.8em 1em;
+  font-family: var(--font-normal);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.t-title-wt {
+  font-family: var(--font-bold);
+  font-size: 1.4em;
+}
+.num-test-wt {
+  font-family: var(--font-normal);
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+.wr-points-wt {
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+  margin-top: 2em;
+}
+.btn-insert-wt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  cursor: pointer;
+}
+.btn-insert-wt > svg {
+  width: 20px;
+  color: #0268b9;
+}
+.btn-delete-wt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  cursor: pointer;
+}
+.btn-delete-wt > svg {
+  width: 20px;
+  color: #eb3800;
+}
+.row-question-wt {
+  display: flex;
+  gap: 2em;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: 1em 0 2em;
+}
+.row-time-wt {
+  display: flex;
+  gap: 2em;
+  align-items: center;
+  border-top: 4px solid #2196F3;
+  padding-top: 2em;
+}
+.question-wt {
+  font-family: var(--font-normal);
+  line-height: 28px;
+  font-size: var(--font-size);
+}
+.answer-item-wt {
+  width: 100%;
+  resize: none;
+  background: transparent;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  padding: 0.4em 0.5em;
+  border-radius: var(--border-radius);
+  line-height: 28px;
+}
+.label-resp-wt {
+  background: var(--border-item);
+  font-family: var(--font-normal);
+  font-size: 0.88em;
+  padding: 5px 10px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  transition: var(--transition);
+}
+.label-resp-wt.rst-point-wt {
+  background: #11d511;
+}
+.wr-label-point-wt {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  top: -22px;
+  left: 0;
+}
+.btn-remove-item-wt {
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #f1baa9;
+  font-family: var(--font-normal);
+}
+.wr-btn-img-item-wt {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+}
+.textarea-item-wt {
+  resize: none;
+  width: 100%;
+  resize: none;
+  background: transparent;
+  height: 65px;
+  font-family: var(--font-normal);
+  font-size: var(--font-size);
+  padding: 0.4em 0.5em;
+  border-radius: var(--border-radius);
+  line-height: 23px;
+}
+.wr-input-item-wt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /*border: 1px solid var(--color-border-input);*/
+  border-radius: var(--border-radius);
+  padding: 2px 3px 2px 0;
+  transition: var(--transition);
+  background: #fff;
+  border: 1px solid #fff;
+}
+.wr-input-item-wt:focus-within {
+  border: 1px solid #6049eb;
+  box-shadow: 0px 0px 0px 4px rgba(119, 112, 255, 0.2);
+}
+.container-answer-wt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  background: var(--border-item);
+  padding: 8px;
+  border-radius: var(--border-radius);
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: rgb(161 178 225) 0px 7px 0px 0px;
+}
+.container-answer-wt.rst-point-wt {
+  background: #11d511;
+  box-shadow: rgb(0 167 0) 0px 7px 0px 0px;
+}
+.label-response-wt {
+  font-family: var(--font-normal);
+  font-weight: 900;
+  font-size: 1em;
+}
+.container-items-answer-wt {
+  margin: 1em 0 5em;
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+}
+.btns-tp-wt {
+  display: flex;
+  gap: 0.6em;
+}
+.btn-new-point-test-edit-wt {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #cfebae;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-new-point-test-edit-wt:hover {
+  background: #d1f1ab;
+}
+.btn-new-point-test-edit-wt > svg {
+  width: 27px;
+  color: #00a707;
+}
+.btn-close-win-test-edit-wt {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffe3e3;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-close-win-test-edit-wt:hover {
+  background: #f7dada;
+}
+.btn-close-win-test-edit-wt > svg {
+  width: 30px;
+  color: #ff3d00;
+}
+.body-test-wt {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2em 1em;
+  /*box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;*/
+  min-height: 100%;
+}
+.header-test-wt {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e7e7e7;
+  height: var(--height-header);
+  align-items: center;
+  padding: 0 0.5em;
+}
+.container-test-wt {
+  background: #fff;
+  height: 100%;
+  width: 100%;
+}
+.container-win-test-wt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999; /* Dentro del contexto del fullscreen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-screen);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+*/
+}

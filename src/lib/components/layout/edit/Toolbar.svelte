@@ -61,10 +61,6 @@ to {
     color: #333;
   }
 }
-.btn-save-content > span {
-  position: relative;
-  top: -2px;
-}
 .wr-btns {
   display: flex;
   align-items: center;

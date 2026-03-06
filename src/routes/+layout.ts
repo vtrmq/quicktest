@@ -10,3 +10,4 @@ import "$lib/css/test.css";
 import "$lib/css/character.css";
 import "$lib/css/testpdf.css";
 import "$lib/css/listexercises.css";
+import "$lib/css/testdialog.css";
