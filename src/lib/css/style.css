@@ -62,6 +62,12 @@ body {
   overflow-y: scroll;
 }
 
+audio {
+  border-radius: 50px;
+  box-shadow: rgb(100 100 111 / 33%) 0px 2px 10px 0px;
+  max-height: 44px;
+}
+
 /* Aplicar a toda la página */
 html {
   /* 1. Estándar moderno (Firefox y Chromium reciente) */
@@ -88,6 +94,9 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover {
   background: #555;          /* Color al pasar el mouse */
 }
+.hidden {
+  display: none;
+}
 
 
 
@@ -112,6 +121,9 @@ ol {
 .pointer {
   cursor: pointer;
 }
+.red {
+  color: red;
+}
 
 .container-circle {
   display: none;
@@ -119,6 +131,7 @@ ol {
   align-items: center;
   flex-direction: column;
   gap: 1em;
+  margin-bottom: 2em;
 }
 .container-circle.visible {
   display: flex;

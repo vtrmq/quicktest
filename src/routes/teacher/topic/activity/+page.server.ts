@@ -47,9 +47,14 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 `).bind(teacherId, topicId, topicId, teacherId)
 ]);
 
+    const activitiesAll = activities.results || [];
+    for (let i = 0; i < activitiesAll.length; i++) {
+      activitiesAll[i].items = activitiesAll[i].items !== null ? JSON.parse(activitiesAll[i].items) : null;
+    }
+
     const result = {
       topic: topic.results[0] || null,
-      activities: activities.results || []
+      activities: activitiesAll,
     };
 
     return { result }

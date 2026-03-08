@@ -10,6 +10,7 @@ import { onMount } from "svelte";
 import { activityLocalstore } from "$lib/store/activity_student";
 
 let { data } = $props();
+console.log(data)
 
 type PaginationResult = {
   limit: number;

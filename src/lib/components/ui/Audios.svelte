@@ -114,7 +114,8 @@ async function handleChange(event: Event) {
 
 function handleSelectAudio(index: number) {
   handleShowAudios(false);
-  onSelectAudio(audios[index].shadow_audio);
+  onSelectAudio(audios[index]);
+  //onSelectAudio(audios[index].shadow_audio);
 }
 
 function handlePage(p: string) {
@@ -219,7 +220,6 @@ onDestroy(()=>{
 }
 .audio {
   width: 100%;
-  height: 40px;
 }
 .wr-box-btns-actions {
   display: flex;

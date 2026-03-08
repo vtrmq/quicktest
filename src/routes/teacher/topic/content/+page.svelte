@@ -1,8 +1,13 @@
 <script lang="ts">
-import { EditText, LinkBack, Toolbar, ImageContent, VideoContent, Vignette, Toast } from "$lib/components";
+import { FOLDER_AUDIOS, R2_DOMAIN } from '$lib/utils';
+import { EditText, LinkBack, Toolbar, ImageContent, VideoContent, Vignette, Toast, Audios, Dialog } from "$lib/components";
+import { typeActivity, quitarExtension } from "$lib/utils";
 import { deserialize } from '$app/forms';
+import trash from '$lib/assets/svg/trash.svg?raw'
+import fileSpreadsheet from '$lib/assets/svg/file-spreadsheet.svg?raw';
 
 let { data } = $props();
+let dialog = $state<Dialog | null>(null);
 let content = $state(JSON.parse(data.topic.content) ?? []);
 let posLine = $state(-1);
 let indexContent = $state(-1);
@@ -11,6 +16,15 @@ let visibleToolbar = $state(false);
 let toast = $state<Toast | null>(null);
 let isLoad = $state(false);
 let topicId = data.topic.topic_id;
+let audio = $state<Audios | null>(null);
+const root = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
+
+type Extra = {
+  type_activity: string;
+  items: any;
+};
+let activities = $state(data.activities);
+let extras: Extra[] = $state(data.extras);
 
 type Response = {
   question: string;
@@ -41,31 +55,7 @@ type Result = {
 
 if (content.length === 0) {
   content.push( {type: 'title', text: data.topic.topic, size: 0, isEdit: false, questions: []} )
-  /*
-  content.push(
-    {type: 'title', text: data.topic.topic, size: 0, isEdit: false}, 
-    {type: 'image', text: 'https://blog.openreplay.com/images/a-practical-introduction-to-svelte/images/hero.png', size: 80, isEdit: false}, 
-    {type: 'paragraph', text: 'Los sustantivos son las palabras que nombran personas, objetos e ideas. This approach significantly improves startup times compared to traditional plugin managers.', size: 0, isEdit: false},
-    {type: 'paragraph', text: 'Using lazy.nvim provides a modern, fast, and highly customizable plugin manager for Neovim that handles plugin loading lazily, meaning plugins are only loaded when needed based on events, commands, file types, or key mappings', size: 0, isEdit: false},
-    {type: 'vignette', 
-      text: [
-        {item: 'Para quitar el icono o viñeta de un elemento <li>, usa la propiedad CSS list-style: none'}, 
-        {item: 'Acceder a variables de entorno (como claves de API).'},
-        {item: 'Conectarte a una base de datos (por ejemplo, con Prisma).'},
-        {item: 'Hacer peticiones a APIs externas sin exponer claves al cliente.'},
-      ], 
-      size: 0, isEdit: false}, 
-    {type: 'subtitle', text: 'El tema flexoki.nvim', size: 0, isEdit: false}, 
-    {type: 'image', text: 'https://logowik.com/content/uploads/images/xxx-logo-vector-1721342098.webp', size: 60, isEdit: false}, 
-    {type: 'paragraph', text: 'Los sustantivos son las palabras que nombran personas, objetos e ideas. This approach significantly improves startup times compared to traditional plugin managers.', size: 0, isEdit: false},
-    {type: 'video', text: 'https://www.youtube.com/watch?v=LvL5v4OR4KQ', size: 0, isEdit: false}, 
-    {type: 'paragraph', text: 'In Kansō, there are two kinds of colors: PaletteColors and ThemeColors; PaletteColors are defined directly as RGB Hex strings, and have arbitrary names that recall their actual color. Conversely, ThemeColors are named and grouped semantically on the basis of their actual function.', size: 0, isEdit: false},
-    {type: 'paragraph', text: 'In short, a palette defines all the available colors, while a theme maps the PaletteColors to specific ThemeColors and the same palette color may be assigned to multiple theme colors.', size: 0, isEdit: false},
-    {type: 'video', text: 'https://www.youtube.com/watch?v=p0eyWoajuP8', size: 0, isEdit: false}, 
-  );
-  */
 }
-//console.log($state.snapshot(content))
 
 function handleAction(info: DataInput) {
   if (info.action === 'ok') {
@@ -172,6 +162,7 @@ async function handleActionSave() {
   const formData = new FormData();
   formData.append('topicId', topicId);
   formData.append('content', JSON.stringify(content));
+  formData.append('extras', JSON.stringify(extras));
 
   const response = await fetch('?/save', {
     method: 'POST',
@@ -185,9 +176,54 @@ async function handleActionSave() {
   }
 }
 
+type AudiosAll = {
+  name: string;
+  shadow_audio: string;
+};
+
+async function handleAudioSelect(audio: AudiosAll) {
+  //let localAudio: string = `${root_audio}/${_audio}`;
+  if (extras.length === 0) {
+    extras.push({type_activity: "audios", items: [{name: audio.name, shadow_audio: audio.shadow_audio}]});
+  } else {
+    for (let i = 0; i < extras.length; i++) {
+      if (extras[i].type_activity === "audios") {
+        extras[i].items.push({name: audio.name, shadow_audio: audio.shadow_audio});
+      }
+    }
+  }
+}
+
+function handleShowAudio() {
+  audio?.handleShowAudios();
+}
+
+function handleActionRemoveExtra(e: string) {
+  if (e === 'accept') {
+    let items = JSON.parse(JSON.stringify(extras[posItemExtra.index].items));
+    items = items.filter((_: any, i: number) => i !== posItemExtra.item);
+    extras[posItemExtra.index].items = items;
+  }
+}
+
+let posItemExtra = {index: -1, item: -1};
+function handleActionShowWin(index: number, item: number) {
+  posItemExtra = {index, item};
+  let message = '';
+  switch (extras[index].type_activity) {
+    case "audios": message = "¿Quieres quitar el audio?"; break;
+  }
+  dialog?.show({
+    type: 'delete',
+    message,
+  });
+}
+
 </script>
 
 <Toast bind:this={toast} />
+<Audios bind:this={audio} onSelectAudio={handleAudioSelect} />
+<Dialog bind:this={dialog} action={handleActionRemoveExtra} />
 
 <div class="content">
   <div class="header-content">
@@ -211,11 +247,152 @@ async function handleActionSave() {
       <div class="line" class:visible={index === posLine}></div>
     </div>
   {/each}
+
+  {#if activities.length !== 0}
+    <div class="container-activities">
+      <h1 class="act">Actividades del tema</h1>
+      <div class="wr-activities">
+        {#each activities as activity}
+          <div class="container-activity">
+            <div class="wrapper-container-activity">
+              <div class="name-activity">{activity.activity}</div>
+              <div>Tipo: {typeActivity(activity.type_general)}</div>
+              {#if activity.time !== null}
+                <div>Tiempo: {activity.time} min</div>
+              {/if}
+              {#if (activity.items === null && activity.file === null) || (activity.items.length === 0 && activity.file === null)}
+                <div class="red">La actividad no tiene ejercicios</div>
+              {/if}
+            </div>
+            <a class="link-subject" href="/teacher/topic/activity/exercises?topicId={activity.topic_id}&activityId={activity.activity_id}&origin=content">{@html fileSpreadsheet}</a>
+          </div>
+        {/each}
+      </div>
+    </div>
+  {/if}
+
+  {#each extras as activity, index}
+    {#if activity.type_activity === "audios" && activity.items.length !== 0}
+      <div class="container-activities">
+        <h1 class="act">Audios</h1>
+        <div class="container-audios">
+          {#each activity.items as audio, item}
+            <div class="wr-audios">
+              <div class="wr-audio-text">
+                <audio class="audio" src="{root}/{audio.shadow_audio}" controls></audio>
+                <div class="name-audio">{quitarExtension(audio.name)}</div>
+                <button class="btn-trash" onclick={()=>handleActionShowWin(index, item)}>{@html trash}</button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
+  {/each}
+
 </div>
 
-<Toolbar {isLoad} visible={visibleToolbar} {handleEyeLine} {handleActionSave} {noneSpace} {handleBtnToolbar} />
+<Toolbar 
+  {isLoad} 
+  visible={visibleToolbar} 
+  {handleEyeLine} 
+  {handleActionSave} 
+  {noneSpace} 
+  {handleBtnToolbar} {handleShowAudio} />
 
 <style>
+:global {
+  .link-subject > svg {
+    width: 24px;
+    color: #4CAF50;
+    stroke-width: 2px;
+  }
+}
+.wrapper-container-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+.wr-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.btn-trash {
+  width: 35px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  background: transparent;
+  cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 4px;
+}
+:global {
+  .btn-trash > svg {
+    width: 22px;
+    color: #f35656;
+  }
+}
+.container-audios {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.wr-audio-text {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.4em;
+  align-items: center;
+}
+.name-audio {
+  padding: 0.5em;
+  width: 100%;
+  font-size: 1em;
+  text-align: center;
+  border-radius: 5px;
+  font-family: var(--font-normal);
+}
+.wr-audios {
+  display: flex;
+  gap: 1em;
+  border-radius: 8px;
+  background: #ffffff;
+  height: max-content;
+  box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
+  padding: 1.8em 1em 1em;
+  position: relative;
+}
+.act {
+  font-family: var(--font-bold);
+  font-size: 1.4em;
+  margin-bottom: 1em;
+  color: brown;
+  padding-left: 0.6em;
+}
+.name-activity {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+.container-activity {
+  border-radius: 8px;
+  background: #f0ffff8a;
+  height: max-content;
+  width: 100%;
+  box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
+  padding: 1em;
+  gap: 1em;
+  display: flex;
+  font-family: var(--font-normal);
+  justify-content: space-between;
+}
+.container-activities {
+  padding: 2em 0;
+}
 .header-content {
   display: flex;
   justify-content: space-between;
@@ -261,11 +438,11 @@ async function handleActionSave() {
 }
 .content {
   padding: 1em 0 5em;
-  margin: 0 auto 4em;
+  margin: 0 auto;
 }
 @media (min-width: 700px) {
   .content {
-    padding: 1em 1em 5em;
+    padding: 1em 1em 0;
     margin: 0 auto 6em;
     max-width: 600px;
   }

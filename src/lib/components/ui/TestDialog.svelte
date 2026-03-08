@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
 
 type Answer = {
@@ -58,13 +59,22 @@ function handleClose() {
   isWin = false;
 }
 
+function reset() {
+  const body = document.getElementsByTagName('body')[0];
+  body.style.overflowY = 'scroll'
+  body.style.height = '';
+}
+
 function handleContinue() {
   isWin = false;
   isDisplay = !isDisplay;
-  const body = document.getElementsByTagName('body')[0]
-  body.style.overflowY = 'auto'
+  reset();
   handleStartVideo();
 }
+
+onDestroy(()=>{
+  reset();
+});
 
 </script>
 
@@ -73,16 +83,16 @@ function handleContinue() {
     <div class="win-body">
       {#if finished && countErrors === 0}
         <div class="wr-svg"><span>🎉</span></div>
-        <div class="msg">Felicidades!!</div>
+        <div class="msg">¡Muy bien! Test completado</div>
         <div class="wr-btn-close"><button class="btn-close" onclick={handleContinue}>Continuar</button></div>
       {:else}
         <div class="wr-svg"><span>☹️</span></div>
         {#if points.length === 1}
-          <div class="msg">Test incorrecto</div>
+          <div class="msg">¡Casi lo logras! Inténtalo de nuevo</div>
         {:else}
           <div class="msg">Tienes {countErrors === 1 ? "un punto incorrecto" : `${countErrors} puntos incorrectos`}</div>
         {/if}
-        <div class="wr-btn-close"><button class="btn-close" onclick={handleClose}>Inténtalo nuevamente</button></div>
+        <div class="wr-btn-close"><button class="btn-close" onclick={handleClose}>Continua con el test</button></div>
       {/if}
     </div>
   </div>

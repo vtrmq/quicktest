@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state';
-import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
+import fileSpreadsheet from '$lib/assets/svg/file-spreadsheet.svg?raw';
 import { 
   Title, 
   NoneData, 
@@ -69,6 +69,7 @@ onMount(()=>{
     <div>
       <p class="subject">{subject.subject}</p>
       <p class="teacher">{teacher.name} {teacher.surnames}</p>
+      <p class="topic">{topic.topic}</p>
     </div>
     <br />
     <div
@@ -88,8 +89,7 @@ onMount(()=>{
   </div>
 
   {#if students.length !== 0}
-    <div class="mg-top">
-      <p class="topic">{topic.topic}</p>
+    <div>
       <div class="wrapper">
 
         {#each students as row, i}
@@ -115,7 +115,7 @@ onMount(()=>{
                     <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html sendHorizontal}</a>
+                <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html fileSpreadsheet}</a>
               </div>
             </div>
           </div>
@@ -135,9 +135,6 @@ onMount(()=>{
 {/if}
 
 <style>
-.mg-top {
-  margin-top: 18px;
-}
 .teacher {
   font-size: 1.1em;
   font-family: var(--font-normal);
@@ -153,7 +150,7 @@ onMount(()=>{
   .box-link-subject > svg {
     width: 20px;
     color: orange;
-    stroke-width: 3px;
+    stroke-width: 2px;
   }
 }
 .topic {
@@ -287,7 +284,7 @@ onMount(()=>{
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -309,6 +306,7 @@ onMount(()=>{
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3em;
+    margin-top: 0.5em;
   }
   .info-p {
     gap: 1em;
@@ -322,7 +320,7 @@ onMount(()=>{
     position: sticky;
     top: 90px;
     height: fit-content;
-    margin-top: 14px;
+    margin-top: 10px;
     margin-bottom: 0;
   }
 }

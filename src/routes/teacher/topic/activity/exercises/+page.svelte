@@ -16,7 +16,7 @@ import {
   PointOutEdit, 
   TestPDFEdit,
 } from '$lib/components';
-import { filtrarParametros } from '$lib/utils';
+import { extractParams } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 import { onDestroy } from 'svelte';
 
@@ -65,11 +65,9 @@ let { data } = $props();
 let items = data.items;
 let type = $state('info');
 
-const root = filtrarParametros(page.url.href, ['topicId']);
-
+const root = extractParams(page.url.href, ['topicId', 'origin']);
 let indexExercise = $state(-1);
 let containerBody = $state() as HTMLDivElement;
-
 let intro = $state(true);
 
 // ======================================================================
@@ -131,7 +129,11 @@ onDestroy(()=>{
 </script>
 
 <HeaderExercise>
-  <LinkBack href="/teacher/topic/activity?{root}" --color-link="#fff">Actividades</LinkBack>
+  {#if root.origin === "content"}
+    <LinkBack href="/teacher/topic/content?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack>
+  {:else if root.origin === "activity"}
+    <LinkBack href="/teacher/topic/activity?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack>
+  {/if}
   <EditExercise params={{activityId: data.activityId, topicId: data.topicId}} topic={data.topic} activity={data.activity} items={items} {handleActivity} />
 </HeaderExercise>
 

@@ -13,6 +13,8 @@ let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let posActivity: number = 0;
 
+//console.log(data)
+
 type Topic = {
   topic_id: number;
   topic: string;
@@ -71,16 +73,6 @@ async function handleActionDelete(e: string) {
 }
 
 async function handleSend(index: number) {
-  /*
-  if (activities[index].items === null) {
-    toast?.view({
-      type: 'success',
-      message: 'La actividad no tiene ejercicios',
-      time: 3000
-    });
-    return;
-  }
-  */
   const activityId = activities[index].activity_id.toString();
   goto(`/teacher/topic/activity/send?topicId=${topic.topic_id}&activityId=${activityId}`);
 }
@@ -130,15 +122,21 @@ async function handleSend(index: number) {
                       {/if}
                     </p>
                   </div>
-                  {#if row.has_inbox === 0}
-                    <button class="none-send" onclick={()=>handleSend(i)}>No enviado</button>
+
+                  {#if row.items !== null || row.file !== null}
+                    {#if row.has_inbox === 0}
+                      <button class="none-send" onclick={()=>handleSend(i)}>No enviado</button>
+                    {:else}
+                      <button class="send" onclick={()=>handleSend(i)}>Enviado</button>
+                    {/if}
                   {:else}
-                    <button class="send" onclick={()=>handleSend(i)}>Enviado</button>
+                    <div class="red">La actividad no tiene ejercicios</div>
                   {/if}
+
                 </div>
                 <div class="box-select">
                   <OptionSelect>
-                    <a href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}">{@html fileText} <span>Ejercicios</span></a>
+                    <a href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}&origin=activity">{@html fileText} <span>Ejercicios</span></a>
                     <a href="/teacher/topic/activity/edit?topicId={topic.topic_id}&activityId={row.activity_id}">{@html pencil} <span>Editar</span></a>
                     <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
                   </OptionSelect>

@@ -53,12 +53,14 @@ function handleCloseWin(e:KeyboardEvent) {
   if (isDisplay && e.key === 'Escape') {
     isDisplay = !isDisplay;
     body.style.overflowY = 'scroll'
+    body.style.height = ''
   }
 }
 function handleCloseEventWin() {
   if (isDisplay) {
     isDisplay = !isDisplay;
     body.style.overflowY = 'scroll'
+    body.style.height = ''
   }
 }
 onMount(()=>{
@@ -66,6 +68,7 @@ onMount(()=>{
 });
 onDestroy(()=>{
   body.style.overflowY = 'scroll'
+  body.style.height = ''
 });
 
 async function handleNewQuestion() {

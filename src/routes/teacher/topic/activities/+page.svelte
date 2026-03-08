@@ -86,12 +86,12 @@ onMount(() => {
     <div>
       <p class="subject">{subject.subject}</p>
       <p class="teacher">{teacher.name} {teacher.surnames}</p>
+      <p class="topic">{topic.topic}</p>
     </div>
   </div>
 
   {#if activities.length !== 0}
-    <div class="mg-top">
-      <p class="topic">{topic.topic}</p>
+    <div>
       <div class="wrapper">
 
         {#each activities as row, i}
@@ -162,9 +162,6 @@ onMount(() => {
 {/if}
 
 <style>
-.mg-top {
-  margin-top: 18px;
-}
 .teacher {
   font-size: 1.1em;
   font-family: var(--font-normal);
@@ -314,7 +311,7 @@ onMount(() => {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0 3em;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -336,6 +333,7 @@ onMount(() => {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3em;
+    margin-top: 0.5em;
   }
   .info-p {
     gap: 1em;

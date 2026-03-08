@@ -7,8 +7,10 @@ import image from '$lib/assets/svg/image.svg?raw';
 import receiptText from '$lib/assets/svg/receipt-text.svg?raw';
 import tvMinimalPlay from '$lib/assets/svg/tv-minimal-play.svg?raw';
 import refreshCCW from '$lib/assets/svg/refresh-ccw.svg?raw';
+import save from '$lib/assets/svg/save.svg?raw';
+import audio from '$lib/assets/svg/audio-lines.svg?raw';
 
-let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpace = false, handleActionSave } = $props();
+let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpace = false, handleActionSave, handleShowAudio } = $props();
 
 </script>
 
@@ -26,11 +28,12 @@ let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpac
     <div class="wr-btns">
       <button class="btn-save-content" onclick={handleActionSave}>
         {#if !isLoad}
-          <span>Guardar</span>
+          <span class="span-save">{@html save}</span>
         {:else}
-          {@html refreshCCW}
+          <span class="span-save-refresh">{@html refreshCCW}</span>
         {/if}
       </button>
+      <button class="btn-view-space" onclick={()=>handleShowAudio()}>{@html audio}</button>
       <button class="btn-view-space" onclick={handleEyeLine} class:rs={noneSpace}>{@html scanLine}</button>
     </div>
   {/if}
@@ -38,7 +41,10 @@ let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpac
 
 <style>
 :global {
-  .btn-save-content > svg {
+  .btn-save-content > .span-save > svg {
+    width: 22px;
+  }
+  .btn-save-content > .span-save-refresh > svg {
     width: 22px;
     animation: girar 1.5s linear infinite;
   }
@@ -65,7 +71,7 @@ to {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1em;
+  gap: 0.5em;
   background: #fff;
   padding: 6px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
@@ -74,6 +80,7 @@ to {
 }
 .btn-view-space {
   height: 32px;
+  width: 40px;
   padding: 0 0.6em;
   background: #01a701;
   border-radius: 6px;
@@ -95,10 +102,10 @@ to {
   font-size: 1em;
   height: 32px;
   padding: 0 1em;
-  width: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 40px;
 }
 .btn-toolbar {
   width: 38px;

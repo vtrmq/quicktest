@@ -54,6 +54,7 @@ export { default as FilesPDF } from './ui/FilesPDF.svelte';
 export { default as FooterMsg } from './ui/FooterMsg.svelte';
 export { default as Chonometer } from './ui/Chronometer.svelte';
 export { default as TestDialog } from './ui/TestDialog.svelte';
+export { default as Video } from './ui/VideoContent.svelte';
 
 // Activities
 export { default as SelectEdit } from './ui/SelectEdit.svelte';

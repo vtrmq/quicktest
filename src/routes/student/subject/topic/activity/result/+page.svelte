@@ -105,13 +105,15 @@
     {#if back.origin === "inbox"}
       <LinkBack
         href="/student/inbox"
-        --color-link="#fff">Volver</LinkBack
-      >
+        --color-link="#fff">Volver</LinkBack>
     {:else if back.origin === "activity"}
       <LinkBack
         href="/student/subject/topic/activity?{search}"
-        --color-link="#fff">Volver</LinkBack
-      >
+        --color-link="#fff">Volver</LinkBack>
+    {:else if back.origin === "content"}
+      <LinkBack
+        href="/student/subject/topic/content?{search}"
+        --color-link="#fff">Volver</LinkBack>
     {/if}
         <ListExercisesResult
             {info}

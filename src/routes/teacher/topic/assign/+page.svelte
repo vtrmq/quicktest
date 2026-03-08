@@ -392,7 +392,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   }
   .box-subjects {
     font-size: 1em;
-    padding: 1em 1em 0.5em 1px;
+    padding: 1.5em 1em 0.5em 1px;
   }
   .container-teachers-registrations {
     display: grid;

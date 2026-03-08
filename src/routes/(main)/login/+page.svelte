@@ -28,7 +28,7 @@ const handleForm: SubmitFunction = () => {
                     type="text"
                     requested
                     label="Correo electrónico"
-                    value={form?.data?.email ?? ""}
+                    value={form?.data?.email ?? "vtrmq09@hotmail.com"}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="email"
@@ -38,7 +38,7 @@ const handleForm: SubmitFunction = () => {
                     type="password"
                     requested
                     label="Contraseña"
-                    value={form?.data?.password ?? ""}
+                    value={form?.data?.password ?? "123456"}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="password"

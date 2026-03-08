@@ -1,14 +1,9 @@
 <script lang="ts">
-import arrowUp from '$lib/assets/svg/arrow-up.svg?raw';
-import arrowDown from '$lib/assets/svg/arrow-down.svg?raw';
-import trash from '$lib/assets/svg/trash.svg?raw';
-import test from '$lib/assets/svg/message-square-text.svg?raw';
 import expand from '$lib/assets/svg/expand.svg?raw';
 import minimize from '$lib/assets/svg/minimize.svg?raw';
 import play from '$lib/assets/svg/play.svg?raw';
-import { EditBtn, Toast } from '$lib/components';
 import { onMount } from 'svelte';
-import { WinTestEdit, TestDialog } from "$lib/components";
+import { TestDialog } from "$lib/components";
 
 type Answer = {
   answer: string;
@@ -25,13 +20,9 @@ type Question = {
   time_pause: string;
 };
 
-let { data, handleEvent = ()=>{}, id, onEvent = ()=>{} } = $props();
-
-let textarea = $state<HTMLTextAreaElement>();
+let { data } = $props();
 let localText = $derived(data.text);
 let isEdit = $derived(data.isEdit);
-let toast = $state<Toast | null>(null);
-let winTestEdit = $state<WinTestEdit | null>(null);
 let testDialog = $state<TestDialog | null>(null);
 let questions: Question[] = $state(data.questions);
 
@@ -49,7 +40,6 @@ let rangeElement = $state<HTMLInputElement>();
 let isDragging = $state(false);
 
 let progressPercent = $derived(duration > 0 ? (currentTime / duration) * 100 : 0);
-// Coloque esto en varias funciones, si hay algún problema quitarlo if (!player) return;
 
 const loadYouTubeAPI = (): Promise<void> => {
   return new Promise((resolve) => {
@@ -193,33 +183,6 @@ $effect(() => {
   }
 });
 
-function viewTextArea() {
-  destroyYouTubePlayer();
-  onEvent(id);
-}
-
-function handleTextAreaInput(e: Event) {
-  const target = e.target as HTMLTextAreaElement;
-  localText = target.value;
-}
-
-function handle(action: string) {
-  if (action === 'ok' && localText.trim().length === 0) {
-    toast?.view({ type: 'success', message: 'Coloca el link del video' });
-    return;
-  }
-  if (action === "test") {
-    winTestEdit?.show();
-    return;
-  }
-  const info = {text: localText, type: data.type, size: 0, isEdit, questions};
-  handleEvent({data: info, action, id});
-}
-
-function handleSendQuestions(qs: any) {
-  questions = JSON.parse(qs);
-}
-
 function handleRangeStart() {
   isDragging = true;
 }
@@ -254,9 +217,6 @@ function handleStartVideo() {
 
 </script>
 
-<Toast bind:this={toast} />
-<WinTestEdit bind:this={winTestEdit} {questions} handleSend={handleSendQuestions} />
-
 <div class="video-wrapper" bind:this={videoWrapper}>
   
   <TestDialog bind:this={testDialog} {handleStartVideo} />
@@ -268,7 +228,6 @@ function handleStartVideo() {
         <div class="youtube-player" bind:this={playerDiv}></div>
 
         <div class="range-container">
-          <!-- ✅ CAMBIO: Usar background linear-gradient en el container en lugar de un div separado -->
           <div class="range-track">
             <div 
               class="range-fill" 
@@ -296,35 +255,7 @@ function handleStartVideo() {
         <button class="btn-fullscreen" onclick={toggleFullscreen}>
           {#if isFullscreen}{@html minimize}{:else}{@html expand}{/if}
         </button>
-        
-        {#if !isFullscreen}
-          <button class="btn-select-video" onclick={viewTextArea}>Editar</button>
-        {/if}
 
-        <div class="video-time-overlay">
-          ⏱️ {Math.floor(currentTime / 60)}:{(Math.floor(currentTime) % 60).toString().padStart(2, '0')}
-        </div>
-
-      </div>
-    {:else}
-      <div class="wr-textarea">
-        <div>
-          <textarea 
-            spellcheck="false"
-            oninput={(e)=>handleTextAreaInput(e)} 
-            bind:this={textarea} 
-            class="textarea" 
-            name="video"
-            placeholder="Coloca el link del video"
-          >{localText}</textarea>
-        </div>
-        <div class="wr-btns">
-          <EditBtn onclick={()=>handle('ok')}>Listo</EditBtn>
-          <EditBtn onclick={()=>handle('test')}>{@html test}</EditBtn>
-          <EditBtn onclick={()=>handle('up')}>{@html arrowUp}</EditBtn>
-          <EditBtn onclick={()=>handle('down')}>{@html arrowDown}</EditBtn>
-          <EditBtn onclick={()=>handle('delete')}>{@html trash}</EditBtn>
-        </div>
       </div>
     {/if}
   </div>
@@ -332,7 +263,6 @@ function handleStartVideo() {
 
 <style>
 
-/* ✅ CAMBIO: Nueva estructura con track y fill como hijos */
 .range-container {
   position: absolute;
   bottom: 0;
@@ -343,14 +273,12 @@ function handleStartVideo() {
   display: flex;
   align-items: center;
   padding: 0 10px;
-  /*background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);*/
   --thumb-size: 16px;
   --track-height: 6px;
   --fill-color: #2196F3;
   --thumb-color: #2196F3;
 }
 
-/* ✅ CAMBIO: Track que contiene el fill y el input */
 .range-track {
   position: relative;
   width: 100%;
@@ -358,12 +286,7 @@ function handleStartVideo() {
   background: #FF9800;
   border-radius: 3px;
 }
-/*
-.range-container:hover .range-track {
-  height: 10px;
-}
-*/
-/* ✅ CAMBIO: Fill que crece desde la izquierda hasta el porcentaje */
+
 .range-fill {
   position: absolute;
   left: 0;
@@ -373,16 +296,14 @@ function handleStartVideo() {
   border-radius: 3px;
   pointer-events: none;
   z-index: 1;
-  /* ✅ CAMBIO: El truco - extender más allá del 100% para compensar el thumb */
   max-width: calc(100% - var(--thumb-size) / 2);
 }
 
-/* ✅ CAMBIO: Input range que ocupa todo el ancho incluyendo el área del thumb */
 .video-range {
   position: absolute;
-  left: calc(var(--thumb-size) / -2); /* ✅ Centrar el track del input */
+  left: calc(var(--thumb-size) / -2);
   right: calc(var(--thumb-size) / -2);
-  width: calc(100% + var(--thumb-size)); /* ✅ Ancho total + thumb */
+  width: calc(100% + var(--thumb-size));
   height: 100%;
   top: 0;
   -webkit-appearance: none;
@@ -408,7 +329,7 @@ function handleStartVideo() {
   background: var(--thumb-color);
   border: 2px solid #fff;
   cursor: grab;
-  margin-top: -5px; /* Centrar en track de 6px */
+  margin-top: -5px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   transition: transform 0.1s;
   position: relative;
@@ -524,34 +445,8 @@ function handleStartVideo() {
   color: #fff;
 }
 
-.video-wrapper:fullscreen .btn-select-video {
-  display: none;
-}
-
 :global(.container-win-test-wt) {
   z-index: 9999 !important;
-}
-
-.btn-select-video {
-  position: absolute;
-  right: 11px;
-  width: 80px;
-  height: 50px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000000;
-  color: #fff;
-  font-size: 1.1em;
-  font-family: var(--font-normal);
-  font-weight: 800;
-  top: 12px;
-  z-index: 10;
-}
-
-.wr-textarea {
-  width: 100%;
 }
 
 .wr-iframe {
@@ -576,40 +471,6 @@ function handleStartVideo() {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.wr-btns {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  background: #fff;
-  border-radius: 40px;
-  box-shadow: rgb(0 0 0 / 15%) 0px 3px 8px;
-}
-
-.textarea {
-  width: 100%;
-  resize: none;
-  background: transparent;
-  font-family: var(--font-normal);
-  font-size: 1.1em;
-  line-height: 30px;
-}
-
-.video-time-overlay {
-  position: absolute;
-  bottom: 20px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.9em;
-  font-family: var(--font-normal);
-  pointer-events: none;
-  z-index: 5;
 }
 
 @media(min-width: 700px) {

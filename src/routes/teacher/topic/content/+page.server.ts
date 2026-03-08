@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from './$types';
-import { dbPlatform, queryFirstDB, updateDB } from '$lib/server/db';
+import { dbPlatform, updateDB, queryFirstDB, saveDB } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
@@ -18,11 +18,33 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       throw "DB: servicio no disponible";
     }
 
-    const topic = await queryFirstDB(db, 'SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ? AND visible = 1', topicId, teacherId);
+    //const topic = await queryFirstDB(db, 'SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ? AND visible = 1', topicId, teacherId);
+    
+    const [topic, activities, extras] = await db.batch([
+      db.prepare('SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ? AND visible = 1')
+      .bind(topicId, teacherId),
+      db.prepare('SELECT activity_id, topic_id, activity, type_general, time, file, items FROM activities WHERE teacher_id = ? AND topic_id = ? AND visible = 1')
+      .bind(teacherId, topicId),
+      db.prepare('SELECT items FROM activities_extra WHERE teacher_id = ? AND topic_id = ?')
+      .bind(teacherId, topicId),
+    ]);
+
+    const _activitiesAll = activities.results || [];
+    let _activities: any = [];
+    for (let i = 0; i < _activitiesAll.length; i++) {
+      _activitiesAll[i].items = _activitiesAll[i].items !== null ? JSON.parse(_activitiesAll[i].items) : null;
+      _activities.push(_activitiesAll[i]);
+    }
+
+    //console.log("====================")
+    //console.log(extras.results.length)
+
     return { 
       type: 'success',
-      topic,
+      topic: topic.results[0] || null,
+      activities: _activities,
       message: '',
+      extras: extras.results.length === 0 ? [] : JSON.parse(extras.results[0].items)
     };
 
   } catch (err) {
@@ -53,9 +75,33 @@ export const actions: Actions = {
       const data = await request.formData();
       const topicId = Number(data.get('topicId'));
       const content = data.get('content');
+      const extras = String(data.get('extras'));
 
       const query = 'UPDATE topics SET content = ? WHERE topic_id = ? AND teacher_id = ?';
       await updateDB(db, query, content, topicId, teacherId);
+
+      //console.log(JSON.parse(extras))
+
+      if (JSON.parse(extras).length !== 0) {
+        const query_act = 'SELECT * FROM activities_extra WHERE teacher_id = ? AND topic_id = ?';
+        const result = await queryFirstDB(db, query_act, teacherId, topicId);
+        if (result === null) {
+          const query = 'INSERT INTO activities_extra (teacher_id, topic_id, items) VALUES (?, ?, ?)';
+          await saveDB(db, query, teacherId, topicId, extras);
+        } else {
+          //console.log("Actualizar")
+          //console.log(result)
+          const query = 'UPDATE activities_extra SET items = ? WHERE topic_id = ? AND teacher_id = ?';
+          await updateDB(db, query, extras, topicId, teacherId);
+        }
+      } else {
+        // Eliminar registro
+        const query_act = 'SELECT * FROM activities_extra WHERE teacher_id = ? AND topic_id = ?';
+        const result = await queryFirstDB(db, query_act, teacherId, topicId);
+        if (result !== null) {
+          console.log("Eliminar registro")
+        }
+      }
 
       return { 
         type: 'success',

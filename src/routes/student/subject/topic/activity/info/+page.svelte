@@ -74,6 +74,8 @@ onMount(()=>{
         <div>
           {#if info.origin === 'inbox'}
             <LinkBack href="/student/inbox">Bandeja</LinkBack>
+          {:else if info.origin === 'content'}
+            <LinkBack href="/student/subject/topic/content?{root}">Contenido</LinkBack>
           {:else}
             <LinkBack href="/student/subject/topic/activity?{root}">Actividades del tema</LinkBack>
           {/if}

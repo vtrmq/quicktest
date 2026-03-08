@@ -35,6 +35,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       db.prepare(`SELECT topic_id, topic FROM topics WHERE topic_id = ?`).bind(topicId),
 
       // Actividades y asnwers
+      // Coloque esto: AND ans.subject_id = isub.subject_id 
       db.prepare(`
         SELECT 
           a.*,
@@ -47,6 +48,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
         JOIN activities a ON isub.activity_id = a.activity_id
         LEFT JOIN answers ans ON 
           ans.activity_id = a.activity_id 
+          AND ans.subject_id = isub.subject_id 
           AND ans.student_id = ?
         WHERE isub.teacher_id = ?
           AND isub.course_id = ?

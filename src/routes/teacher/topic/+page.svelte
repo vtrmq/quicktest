@@ -129,15 +129,20 @@ async function handleActionDelete(e: string) {
                 <div class="info-pay">
                   <div>
                     <div>
-                      <button onclick={()=>handleViewSubject(i, row.subjects.length)} class="btn-view-subjects">
-                        <span class="svg-subject">
-                          {#if `subj-${i}` === subjId}
-                            {@html minus}
-                          {:else}
-                            {@html plus}
-                          {/if}
-                        </span> 
-                        {row.subjects.length === 0 ? 'Tema no asignado' : `Cursos y asignaturas`}</button>
+                      {#if row.subjects.length !== 0}
+                        <button onclick={()=>handleViewSubject(i, row.subjects.length)} class="btn-view-subjects">
+                          <span class="svg-subject">
+                            {#if `subj-${i}` === subjId}
+                              {@html minus}
+                            {:else}
+                              {@html plus}
+                            {/if}
+                          </span> 
+                          Cursos y asignaturas
+                        </button>
+                      {:else}
+                        <span class="red">Tema no asignado</span>
+                      {/if}
                     </div>
                     <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
                       {#each row.subjects as subject}
@@ -363,7 +368,7 @@ async function handleActionDelete(e: string) {
 @media(min-width: 800px) {
   .box-subjects {
     font-size: 1em;
-    padding: 1em 1em 0.5em 0.5em;
+    padding: 1.5em 1em 0.5em 0.5em;
   }
   .container-teachers-registrations {
     display: grid;

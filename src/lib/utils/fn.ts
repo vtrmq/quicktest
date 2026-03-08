@@ -3,6 +3,17 @@ type Words = {
   word: string;
 };
 
+export function quitarExtension(nombreArchivo: string): string {
+  // Busca el último punto y corta la cadena hasta esa posición
+  const ultimoPunto = nombreArchivo.lastIndexOf('.');
+  
+  // Si no hay puntos o el punto es el primer carácter (archivo oculto), 
+  // devolvemos el nombre original
+  if (ultimoPunto <= 0) return nombreArchivo;
+  
+  return nombreArchivo.substring(0, ultimoPunto);
+}
+
 export function barajarArray(array: Words[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

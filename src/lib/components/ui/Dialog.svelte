@@ -56,7 +56,7 @@ function handleChangeCheck(e: boolean) {
           <p class="message">{@html data.message}</p>
         </div>
         <div class="wr-checkbox">
-          Confirmar eliminación <CheckBox name="checkbox" checked={isChecked} onchange={handleChangeCheck}/>
+          Confirmar operación <CheckBox name="checkbox" checked={isChecked} onchange={handleChangeCheck}/>
         </div>
         <div class="container-btns">
           <Button bg="none" onclick={()=>handleAction('cancel')}>{data.type === 'delete' ? 'Cancelar' : 'Cerrar'}</Button>
