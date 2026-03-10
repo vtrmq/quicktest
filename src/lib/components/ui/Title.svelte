@@ -10,5 +10,6 @@
     font-family: var(--font-bold);
     width: fit-content;
     color: var(--color-title);
+    text-align: var(--aling, "left");
   }
 </style>

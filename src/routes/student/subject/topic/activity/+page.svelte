@@ -181,7 +181,7 @@ onMount(() => {
                   <div class="wr-links">
                     {#if row.answered === 0 && isDateEnd(row.date_end)}
                       <a
-                        class="link"
+                        class="link unlerline"
                         href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={result
                         .course
                         .course_id}&subjectId={result
@@ -197,7 +197,7 @@ onMount(() => {
                       </p>
                     {:else if row.answered === 1}
                       <a
-                        class="link"
+                        class="link unlerline"
                         href="/student/subject/topic/activity/result?teacherId={row.teacher_id}&courseId={result
                         .course
                         .course_id}&subjectId={result
@@ -263,7 +263,6 @@ onMount(() => {
   color: brown;
 }
 .link {
-  text-decoration: none;
   font-size: 1em;
   color: #0d85e5;
 }

@@ -151,7 +151,7 @@ onMount(() => {
                   <div class="wr-links">
                     {#if !row.answer_id && isDateEnd(row.date_end)}
                       <a
-                        class="link"
+                        class="link unlerline"
                         href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox"
                       >Ver detalles</a
                       >
@@ -161,7 +161,7 @@ onMount(() => {
                       </p>
                     {:else if row.answer_id}
                       <a
-                        class="link"
+                        class="link unlerline"
                         href="/student/subject/topic/activity/result?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox"
                       >Ver resultado</a
                       >
@@ -211,7 +211,6 @@ onMount(() => {
   font-size: 1.1em;
 }
 .link {
-  text-decoration: none;
   font-size: 1em;
   color: #0d85e5;
 }

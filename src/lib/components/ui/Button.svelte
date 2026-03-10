@@ -81,7 +81,7 @@ export function disabled(_isDisabled: boolean) {
   background: #f12f5c;
 }
 .button {
-  width: 100%;
+  width: var(--width-btn, 100%);
   height: 50px;
   border-radius: 70px;
   font-family: var(--font-bold);

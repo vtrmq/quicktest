@@ -6,16 +6,17 @@ import { Toast, Select, Input } from '$lib/components';
 let { activity, indexExercise = -1, intro = true } = $props();
 
 type ArrWordBox = {
-  label: {"morphosyntax": string, "description": string};
-  response: {"morphosyntax": string, "value": boolean};
-  width: string; 
-  sw: boolean; 
-  min: number; 
-  max: number; 
-  size: number; 
+  errors: [];
   border: boolean;
+  label: {"morphosyntax": string, "description": string};
+  max: number; 
+  min: number; 
   resaltar: boolean;
+  response: {"morphosyntax": string, "value": boolean};
+  size: number; 
+  sw: boolean; 
   type: string;
+  width: string; 
 }
 type LabelText = {
   word: string;
@@ -357,6 +358,7 @@ function handleAddRow() {
   let arr: ArrWordBox[] = []
   for (let i = 0; i < arrWords.length; i++) {
     arr.push({
+      errors: [],
       label: {"morphosyntax": "", "description": ""}, 
       response: {"morphosyntax": "", "value": false}, 
       width: '', 

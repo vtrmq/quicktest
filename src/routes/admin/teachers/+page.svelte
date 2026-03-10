@@ -221,6 +221,8 @@ async function handleActionDelete(e: string) {
                   {#if values && values.paid === true}
                     <div class="circle-green">&nbsp;</div>
                   {:else if values && values.paid === false}
+                    <div class="circle-orange">&nbsp;</div>
+                  {:else}
                     <div class="circle-gray">&nbsp;</div>
                   {/if}
                 </button>
@@ -296,6 +298,13 @@ async function handleActionDelete(e: string) {
 }
 .circle-gray {
   background: #ff5fbe;
+  width: 18px;
+  height: 18px;
+  border-radius: 60px;
+  box-shadow: rgb(17 17 26 / 63%) 0px 4px 15px, rgb(17 17 26 / 42%) 0px 0px 6px;
+}
+.circle-orange {
+  background: orange;
   width: 18px;
   height: 18px;
   border-radius: 60px;

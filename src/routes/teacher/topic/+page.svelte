@@ -99,7 +99,7 @@ async function handleActionDelete(e: string) {
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
+  <div class="wr-info-page">
     <Title>Temas</Title>
     <p class="desc">Crea los temas de clase para cada una de tus asignaturas.</p>
     <LinkBtn href="/teacher/topic/new" --max-width-link-btn="230px">{@html plus} Crear tema</LinkBtn>
@@ -353,13 +353,6 @@ async function handleActionDelete(e: string) {
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
   margin: 2em 0;
   display: flex;
@@ -380,13 +373,6 @@ async function handleActionDelete(e: string) {
   }
   .desc {
     font-size: 1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 100px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

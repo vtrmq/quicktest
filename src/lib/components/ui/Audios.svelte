@@ -3,13 +3,14 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { onDestroy } from 'svelte';
 import { fade } from 'svelte/transition';
+import mic from '$lib/assets/svg/mic.svg?raw';
 import check from '$lib/assets/svg/check.svg?raw';
 import refreshCCW from '$lib/assets/svg/refresh-ccw.svg?raw';
 import chevronLeft from '$lib/assets/svg/chevron-left.svg?raw'
 import chevronRight from '$lib/assets/svg/chevron-right.svg?raw'
 import upload from '$lib/assets/svg/upload.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
-import { Title, Button, BtnX, Dialog } from '$lib/components';
+import { Title, Button, BtnX, Dialog, AudioRecorder } from '$lib/components';
 import { FOLDER_AUDIOS, R2_DOMAIN, removeExtension } from '$lib/utils';
 
 type Audios = {
@@ -33,7 +34,8 @@ let fileInput = $state<HTMLInputElement | null>(null);
 let pages = $state(0);
 let totalPages = $state(0);
 let posAudio = 0;
-
+let isAction = $state(true);
+let btnAdd = $state<Button>();
 const isFirst = $derived(pages <= 1);
 const isLast = $derived(pages >= totalPages);
 
@@ -109,6 +111,7 @@ async function handleChange(event: Event) {
     }
     btnSave?.load(false);
     audios = result.audios;
+    isAction = true;
   }
 }
 
@@ -172,6 +175,7 @@ onDestroy(()=>{
         <p class="message">{message}</p>
       {:else if type === 2}
         <BtnX onclick={()=>handleShowAudios(false)} />
+        {#if isAction}
         <div>
           <div class="container-btns-album">
             <Title --color-title="#fff">Colección de audios</Title>
@@ -204,8 +208,25 @@ onDestroy(()=>{
           {/if}
           <div class="container-btns-image">
             <Button icon={upload} bg="green" onclick={() => fileInput?.click()} bind:this={btnSave} align="auto">Subir audio</Button>
+            <Button icon={mic} bg="green" onclick={()=> isAction = !isAction} bind:this={btnAdd} align="auto">Grabar</Button>
           </div>
         </div>
+
+        {:else if !isAction}
+
+          <div>
+            <div class="container-btns-album">
+              <Title --color-title="#fff" --aling="center">Grabar audio y descargar</Title>
+              <div><AudioRecorder /></div>
+            </div>
+            <div class="container-btns-image">
+              <Button icon={upload} bg="green" onclick={() => fileInput?.click()} bind:this={btnSave} align="auto">Subir audio</Button>
+              <Button bg="red" onclick={()=> isAction = !isAction} align="auto">Cancelar</Button>
+            </div>
+          </div>
+          
+        {/if}
+
       {/if}
     </div>
   </div>

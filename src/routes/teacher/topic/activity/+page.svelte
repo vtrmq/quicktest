@@ -84,7 +84,7 @@ async function handleSend(index: number) {
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
+  <div class="wr-info-page">
     <LinkBack href="/teacher/topic">Temas</LinkBack>
     <Title>Actividades</Title>
     <p class="topic">{topic.topic}</p>
@@ -125,9 +125,9 @@ async function handleSend(index: number) {
 
                   {#if row.items !== null || row.file !== null}
                     {#if row.has_inbox === 0}
-                      <button class="none-send" onclick={()=>handleSend(i)}>No enviado</button>
+                      <button class="none-send unlerline" onclick={()=>handleSend(i)}>Enviar actividad</button>
                     {:else}
-                      <button class="send" onclick={()=>handleSend(i)}>Enviado</button>
+                      <button class="send unlerline" onclick={()=>handleSend(i)}>Asignaturas</button>
                     {/if}
                   {:else}
                     <div class="red">La actividad no tiene ejercicios</div>
@@ -166,6 +166,7 @@ async function handleSend(index: number) {
   font-family: var(--font-normal);
   font-size: 1em;
   cursor: pointer;
+  margin-top: 5px;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
@@ -177,6 +178,7 @@ async function handleSend(index: number) {
   font-family: var(--font-normal);
   font-size: 1em;
   cursor: pointer;
+  margin-top: 5px;
 }
 .activity {
   font-size: 1.1em;
@@ -299,13 +301,6 @@ async function handleSend(index: number) {
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
   margin: 2em 0;
   display: flex;
@@ -328,13 +323,6 @@ async function handleSend(index: number) {
   }
   .desc {
     font-size: 1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 90px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

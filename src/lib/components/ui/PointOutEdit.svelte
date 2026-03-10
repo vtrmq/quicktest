@@ -8,6 +8,7 @@ import { activityLocalstore } from '$lib/store/activity';
 type Option = { id: string; option: string };
 
 type PlacedOption = {
+  errors: [];
   id: string;
   option: string;
   x: number;
@@ -254,12 +255,13 @@ function onPointerDown(e: PointerEvent) {
   if (selectedOption) {
     placedOptions.push({
       //id: crypto.randomUUID(),
+      errors: [],
       id: selectedOption.id,
       option: selectedOption.option,
+      resp: '',
       value: false,
       x,
       y,
-      resp: ''
     });
     selectedOption = null;
     redraw();
@@ -428,128 +430,3 @@ function handleDraw() {
   </div>
 
 </div>
-
-<!--
-<style>
-.btn-word-option {
-  font-family: var(--font-normal);
-  padding: 0.4em;
-  border-radius: 4px;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  background: #0aa74f;
-  color: #fff;
-  height: 32px;
-  box-shadow: green 0px 4px 0px 0px;
-}
-.designer {
-  width: 100%;
-  height: 100%;
-  max-width: 500px;
-  margin: auto;
-  background: #fff;
-  display: grid;
-  grid-template-rows: 50px 1fr 70px;
-  border: 2px solid #333;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.image-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  touch-action: none;
-  overflow-y: auto;
-}
-
-.stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
-
-.stage img {
-  width: 100%;
-  height: 100%;
-  object-fit: fill; /* contain 🔥 clave */
-  display: block;
-}
-
-/* CANVAS */
-.stage canvas {
-  position: absolute;
-  inset: 0;
-}
-
-.placed {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: grab;
-  font-family: var(--font-normal);
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: white;
-  border: 1px solid #333;
-  white-space: nowrap;
-  min-width: 50px;
-  height: 30px;
-}
-
-
-.options {
-  background: #d1e1dc;
-  display: flex;
-  overflow-x: auto;
-  padding: 0px 10px 5px;
-  gap: 0.6em;
-  border-top: 2px solid #333;
-  align-items: center;
-}
-
-.options button.selected {
-  background: #333;
-  color: white;
-}
-.options button:disabled {
-  background: #838c91;
-  color: #fff;
-}
-
-</style>
--->
-
-
-  <!--div
-    class="image-container"
-    bind:this={container}
-    onpointerdown={onPointerDown}
-    onpointerup={onPointerUp}
-    onpointermove={onPointerMove}
-  >
-    <img src={imagenPointOut} draggable="false" alt="" />
-
-    <canvas bind:this={canvas}></canvas>
-
-    {#each placedOptions as item (item.id)}
-      <button
-        class="placed"
-        style="
-          left: {item.x * 100}%;
-          top: {item.y * 100}%;
-        "
-        onpointerdown={(e) => startDrag(e, item.id)}
-      >
-        {item.option}
-        <span class="remove" onpointerdown={(e) => removeOption(e, item.id)} onkeyup={()=>{}} role="button" tabindex="0">✕</span>
-      </button>
-    {/each}
-  </div-->

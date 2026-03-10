@@ -17,6 +17,9 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       throw "DB: servicio no disponible";
     }
 
+    const queryActivities = 'SELECT COUNT(activity_id) AS total_activities FROM activities WHERE teacher_id = ? AND topic_id = ?';
+    const resultActivities = await queryFirstDB(db, queryActivities, teacherId, topicId);
+
     const queryTopic = 'SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ?';
     const resultTopic = await queryFirstDB(db, queryTopic, topicId, teacherId);
     const query = `
@@ -71,7 +74,8 @@ GROUP BY c.course_id;
     return { 
       type: 'success',
       topicId,
-      topic: resultTopic.topic,
+      topic: resultTopic,
+      activities: resultActivities.total_activities,
       courses: data,
       message: ''
     };

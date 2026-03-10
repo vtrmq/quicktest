@@ -12,8 +12,14 @@ let { nextPaymentMonth, changemount }: Props = $props();
 const info: any = MONTH;
 const today = new Date();
 const monthCurrent = today.getMonth() + 1;
-let posMonth = nextPaymentMonth === null ? monthCurrent : nextPaymentMonth;
-let month = $state(nextPaymentMonth === null ? info[monthCurrent] : info[nextPaymentMonth]);
+let posMonth = $state(0);
+let month = $state(0);
+
+$effect(()=>{
+  posMonth = nextPaymentMonth === null ? monthCurrent : nextPaymentMonth;
+  month = nextPaymentMonth === null ? info[monthCurrent] : info[nextPaymentMonth];
+});
+//let month = $state(nextPaymentMonth === null ? info[monthCurrent] : info[nextPaymentMonth]);
 
 function handleClickSlider(move: string) {
   if (move === 'left') {

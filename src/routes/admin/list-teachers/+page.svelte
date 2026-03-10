@@ -5,6 +5,7 @@ import trash from '$lib/assets/svg/trash.svg?raw'
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import shieldCheck from '$lib/assets/svg/shield-check.svg?raw'
 import shieldAlert from '$lib/assets/svg/shield-alert.svg?raw'
+import { MONTH } from "$lib/utils";
 
 type PaginationResult = {
   limit: number;
@@ -19,7 +20,6 @@ let dialog = $state<Dialog | null>(null);
 let teacherId: number = 0;
 let posTeacher: number = -1;
 let toast = $state<Toast>();
-
 let teachersDerived = $derived(data.teachers ?? []);
 let teachers = $state<any[]>([]);
 
@@ -27,6 +27,8 @@ $effect(() => {
   teachers = teachersDerived;
   pagination = data.pagination as PaginationResult;
 });
+
+//console.log($inspect(teachers))
 
 function handleActionShowWin(i: number) {
   const teacher = teachers.find((_: any, index: number) => i === index);
@@ -138,6 +140,11 @@ async function handleEnableDisabled(index: number) {
                 <p>{teacher.teacher.email}</p>
                 <p>{teacher.teacher.phone}</p>
               </div>
+              {#if teacher.payment_setting.id === null}
+                <a href="/admin/teachers?search={teacher.teacher.name} {teacher.teacher.surnames}" class="day-price red">No tiene día de pago ni precio</a>
+              {:else}
+                <div class="info-date-price">{MONTH[teacher.payment_setting.next_payment_month]} {teacher.payment_setting.pay_day} (${teacher.payment_setting.price})</div>
+              {/if}
             </div>
           </div>
           <div class="box-select">
@@ -174,6 +181,20 @@ async function handleEnableDisabled(index: number) {
 {/if}
 
 <style>
+.info-date-price {
+  font-family: var(--font-normal);
+  color: brown;
+  margin-top: 0.3em;
+}
+.day-price {
+  font-family: var(--font-normal);
+  font-size: 1em;
+  margin-top: 0.5em;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+  display: inline-block;
+}
 .blocked {
   background: #d30475;
   color: #fff;
@@ -239,7 +260,7 @@ async function handleEnableDisabled(index: number) {
   margin-bottom: 1.5em;
 }
 .wrapper {
-  margin: 1em 0;
+  margin: 2em 0;
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -249,6 +270,12 @@ async function handleEnableDisabled(index: number) {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3em;
+  }
+  .wrapper {
+    margin: 1em 0;
+  }
+  .day-price {
+    font-size: 0.9em;
   }
 }
 </style>

@@ -28,9 +28,10 @@ type AnswersTest = {
   success: boolean;
 };
 type questionsTest = {
-  question: string;
-  images: string[];
+  errors: 0;
   answers: AnswersTest[];
+  images: string[];
+  question: string;
   value: number;
 };
 type Words = {
@@ -83,6 +84,7 @@ let typeExercise = $state('normal');
 let timeLecture = $state(60);
 
 type pointTestPDF = {
+  errors: number;
   points: { char: string, rst: boolean, rss: boolean }[];
   value: number;
   success: boolean;
@@ -90,7 +92,7 @@ type pointTestPDF = {
 let arrayQuestionsTestPDF: pointTestPDF[] = $state([]);
 
 //let answersTest: AnswersTest[] = $state([{resp: '', image: '', rst: false, rss: false, value: 0 }]);
-let questionTest: questionsTest = $state({ question: '', images: [], answers: [], value: 1 })
+let questionTest: questionsTest = $state({ errors: 0, question: '', images: [], answers: [], value: 1 })
 let indexExercise = -1;
 let posItemPoint = $state(-1);
 let itemResaltado = $state(-1);
@@ -367,7 +369,6 @@ function splitWordsSelect() {
       words: arrWords,
       question,
       content,
-      //selection_options,
       optionSuboptions,
     },
     value: 0,
@@ -821,7 +822,7 @@ function handleDone() {
 function handleAddPoint() {
   sheet = 'new-point';
   //answersTest = [{resp: '', image: '', rst: false, rss: false, value: 1 }];
-  questionTest = { question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0, success: false }], value: 1 };
+  questionTest = { errors: 0, question: '', images: [], answers: [{resp: '', image: '', rst: false, rss: false, value: 0, success: false }], value: 1 };
   posItemPoint = -1;
 }
 
@@ -1118,6 +1119,7 @@ function handleAddPointTestPDF() {
     points.push({ char: chars[i], rst: false, rss: false });
   }
   arrayQuestionsTestPDF.push({
+    errors: 0,
     points,
     value: 1,
     success: false
@@ -2020,6 +2022,7 @@ $effect(()=>{
   transition: var(--transition);
   height: 32px;
   padding: 0.4em;
+  box-shadow: #c37400 0px 4px 0px 0px;
 }
 @keyframes girar {
 from {
@@ -2523,10 +2526,10 @@ to {
   }
 }
 @media (min-width: 500px) {
-  .btn-new, .btn-save-exercise {
+  .btn-new, .btn-save-exercise, .add-point-test {
     font-size: 0.85em;
   }
-  .btn-new:hover {
+  .btn-new:hover, .add-point-test:hover {
     background: #f9d6ad;
   }
 }

@@ -67,10 +67,10 @@ $effect(() => {
                   <div class="subject">{row.topic}</div>
                   <div class="wr-content-activity">
                     {#if row.content !== null}
-                      <a class="link" href="/student/subject/topic/content?teacherId={teacherId}&courseId={courseId}&subjectId={subjectId}&topicId={row.topic_id}">Contenido</a>
+                      <a class="link unlerline" href="/student/subject/topic/content?teacherId={teacherId}&courseId={courseId}&subjectId={subjectId}&topicId={row.topic_id}">Contenido</a>
                     {/if}
                     {#if row.has_inbox !== 0}
-                      <a class="link" href="/student/subject/topic/activity?teacherId={teacherId}&courseId={courseId}&subjectId={subjectId}&topicId={row.topic_id}">Actividades</a>
+                      <a class="link unlerline" href="/student/subject/topic/activity?teacherId={teacherId}&courseId={courseId}&subjectId={subjectId}&topicId={row.topic_id}">Actividades</a>
                     {/if}
                   </div>
                 </div>
@@ -101,7 +101,6 @@ $effect(() => {
   border-radius: 6px;
 }
 .link {
-  text-decoration: none;
   font-size: 1em;
   color: #0d85e5;
 }

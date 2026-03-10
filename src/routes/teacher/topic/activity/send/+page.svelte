@@ -86,7 +86,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   } else {
     dialog?.show({
       type: 'delete',
-      message: `¿Quieres quitar la actividad de la asignatura seleccionada?`,
+      message: `¿Quieres quitar la actividad de la asignatura?`,
     });
   }
 }
@@ -167,8 +167,8 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
-    <LinkBack href="/teacher/topic/activity?{root}">Temas</LinkBack>
+  <div class="wr-info-page">
+    <LinkBack href="/teacher/topic/activity?{root}">Actividades</LinkBack>
     <Title>Enviar actividad</Title>
     <p class="topic">{topic.topic}</p>
     <p class="activity">{activity.activity}</p>
@@ -439,13 +439,6 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
   margin: 0 0 2em;
   display: flex;
@@ -476,13 +469,6 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   }
   .desc {
     font-size: 1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 90px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

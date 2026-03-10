@@ -71,6 +71,14 @@ async function handleActionDelete(e: string) {
 
 
 async function handleSelectSubject(_indexCourse: number, _indexSubject: number) {
+  if (data.topic.content === null && data.activities === 0) {
+    toast?.view({
+      type: '',
+      message: "El tema no tiene contenido ni actividades",
+      time: 3600
+    });
+    return;
+  }
   indexCourse = _indexCourse;
   indexSubject = _indexSubject;
   courseId = courses[indexCourse].course_id;
@@ -96,7 +104,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   } else {
     dialog?.show({
       type: 'delete',
-      message: `¿Quieres eliminar el tema de la asignatura seleccionada?`,
+      message: `¿Quieres quitar el tema de la asignatura?`,
     });
   }
 }
@@ -108,10 +116,10 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
+  <div class="wr-info-page">
     <LinkBack href="/teacher/topic">Temas</LinkBack>
     <Title>Asignar tema</Title>
-    <p class="topic">{data.topic}</p>
+    <p class="topic">{data.topic.topic}</p>
     <p class="desc">Selecciona las asignaturas a las que quieres asignar el tema.</p>
   </div>
 
@@ -370,13 +378,6 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
   margin: 2em 0;
   display: flex;
@@ -404,13 +405,6 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   }
   .desc {
     font-size: 1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 90px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

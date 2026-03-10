@@ -178,3 +178,28 @@ body {
   color: var(--color);
 }
 */
+
+
+
+.unlerline {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+
+.wr-info-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}
+@media(min-width: 800px) {
+  .wr-info-page {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    margin-top: 25px;
+    margin-bottom: 0;
+  }
+}

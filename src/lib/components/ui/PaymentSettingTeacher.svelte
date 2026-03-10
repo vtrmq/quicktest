@@ -113,7 +113,9 @@ function handleChangeMonth(posMonth: number) {
   {#if setting.payment_setting.pay_day === null}
     <p class="label">Establece día de pago y precio</p>
   {:else if values}
-    <div><span class="label">{values.literalMonth} {values.pay_day}</span>&nbsp;&nbsp;<span class="price">${values.price}</span></div>
+    <div class="wr-date-price">
+      <span class="label">Fecha de pago y precio:</span>
+      <span class="price">{values.literalMonth} {values.pay_day} (${values.price})</span></div>
   {/if}
 </button>
 
@@ -158,6 +160,12 @@ function handleChangeMonth(posMonth: number) {
 {/if}
 
 <style>
+.wr-date-price {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 0.5em;
+}
 .price {
   font-size: 1.1em;
   font-family: var(--font-normal);

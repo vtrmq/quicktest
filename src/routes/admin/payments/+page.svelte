@@ -52,8 +52,10 @@ type PaginationResult = {
 const teacher: Teacher = $derived(data.teacher);
 let payments: Payments[] = $derived(data.payments);
 //const pagination = $derived(data.pagination);
-let next_payment_month: number = data.teacher.next_payment_month;
+//let next_payment_month: number = data.teacher.next_payment_month;
 let pagination: PaginationResult = $state({limit: 0, page: 0, totalAmount: 0, totalCount: 0, totalPages: 0});
+
+let next_payment_month = $state(data.teacher.next_payment_month)
 
 $effect(() => {
   pagination = data.pagination;
@@ -69,8 +71,12 @@ let total: number = $derived.by(()=>{
 });
 */
 
-const handleForm: SubmitFunction = () => {
+const handleFormPrice: SubmitFunction = ({ formData }) => {
   btnSave?.load(true);
+
+  const _datePrice = formData.get('date') as string;
+  let datePrice = parseInt(_datePrice.split('-')[1]); 
+
   return async ({ update, result }) => {
     if (result.type === 'failure') {
       btnSave?.load(false);
@@ -81,8 +87,17 @@ const handleForm: SubmitFunction = () => {
         toast?.view({ type: 'success', message: data.message });
       }
     } else {
-      toast?.view({ type: 'success', message: 'Pago adicionado', time: 3000 });
+
+      if (datePrice + 1 === 12) {
+        next_payment_month = 1;
+      } else {
+        next_payment_month = datePrice + 1;
+      }
+      //console.log(next_payment_month)
+      handleSaveMonth(false);
       btnSave?.load(false);
+
+      toast?.view({ type: 'success', message: 'Pago adicionado', time: 3000 });
       await update();
     }
   };
@@ -129,9 +144,10 @@ function handleChangeMonth(posMonth: number) {
   next_payment_month = posMonth;
 }
 
-async function handleSaveMonth() {
+async function handleSaveMonth(sw: boolean = true) {
   const teacher_id = teacher.teacher_id;
   const payment_id = teacher.payment_id;
+
   const formData = new FormData();
   formData.append('teacher_id', teacher_id.toString());
   formData.append('payment_id', payment_id.toString());
@@ -144,7 +160,7 @@ async function handleSaveMonth() {
   });
 
   btnSaveMount?.load(false);
-  if (response.ok) {
+  if (response.ok && sw) {
     toast?.view({
       type: 'success',
       message: 'Mes de pago actualizado',
@@ -172,7 +188,7 @@ async function handleSaveMonth() {
     </div>
 
     <DataFrame width="690px">
-      <form class="form" method="POST" action="?/add" use:enhance={handleForm} novalidate>
+      <form class="form" method="POST" action="?/add" use:enhance={handleFormPrice} novalidate>
         <h2 class="name">{teacher.name} {teacher.surnames}</h2>
         <div class="body-form">
           <div class="row-form">
@@ -197,9 +213,9 @@ async function handleSaveMonth() {
       <div class="label">Mes siguiente a pagar</div>
       <div class="wr-slider">
         <SliderMonth 
-          nextPaymentMonth={teacher.next_payment_month} 
+          nextPaymentMonth={next_payment_month} 
           changemount={handleChangeMonth} />
-        <Button bind:this={btnSaveMount} onclick={handleSaveMonth}>Guardar</Button>
+        <Button bind:this={btnSaveMount} onclick={()=>handleSaveMonth(true)}>Guardar</Button>
       </div>
     </div>
 

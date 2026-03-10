@@ -8,7 +8,7 @@ let subjects = data.subjects
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
+  <div class="wr-info-page">
     <Title>Mis asignaturas</Title>
     <p class="course">{data.course}</p>
     <p class="desc">Registra más asignaturas adicionando el código del curso.</p>
@@ -92,7 +92,7 @@ let subjects = data.subjects
   }
 }
 .box-course {
-  padding: 1em 0;
+  padding: 0.5em 0;
   position: relative;
 }
 .circle-green {
@@ -165,13 +165,6 @@ let subjects = data.subjects
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
   margin: 2em 0;
   display: flex;
@@ -206,13 +199,6 @@ let subjects = data.subjects
   }
   .desc {
     font-size: 1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 105px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

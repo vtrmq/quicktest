@@ -16,7 +16,7 @@ const handleForm: SubmitFunction = () => {
 };
 </script>
 
-<!-- vtrmq09@gmail.com admin123, vtrmq@hotmail.com 123456 vtrmq09@hotmail.com -->
+<!-- vtrmq09@gmail.com admin123, vtrmq@hotmail.com 123456 vtrmq09@hotmail.com morita7115@gmail.com  3195760657-->
 
 <div class="wr-form-login">
     <DataFrame width="400px">
@@ -28,7 +28,7 @@ const handleForm: SubmitFunction = () => {
                     type="text"
                     requested
                     label="Correo electrónico"
-                    value={form?.data?.email ?? "vtrmq09@hotmail.com"}
+                    value={form?.data?.email ?? ""}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="email"
@@ -38,7 +38,7 @@ const handleForm: SubmitFunction = () => {
                     type="password"
                     requested
                     label="Contraseña"
-                    value={form?.data?.password ?? "123456"}
+                    value={form?.data?.password ?? ""}
                     error={form?.error}
                     input={form?.input ?? ""}
                     name="password"

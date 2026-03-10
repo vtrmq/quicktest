@@ -27,6 +27,7 @@
   font-size: 1em;
   font-family: var(--font-normal);
   color: #0bc5b4;
+  margin-top: 0.4em;
 }
 .container-info {
   display: flex;

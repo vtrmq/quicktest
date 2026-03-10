@@ -91,7 +91,7 @@ const handleForm: SubmitFunction = () => {
         {/each}
       </div>
       <div class="wr-btns">
-        <Button type="button" onclick={handleAddField}>Agregar asignatura</Button>
+        <Button type="button" onclick={handleAddField} --width-btn="550px">Agregar asignatura</Button>
         <Button bind:this={btnSave}>Guardar</Button>
       </div>
     </form>
@@ -129,7 +129,7 @@ const handleForm: SubmitFunction = () => {
 }
 .wr-btns {
   display: flex;
-  gap: 2em;
+  gap: 1em;
 }
   .wr-form-reg {
     display: flex;
