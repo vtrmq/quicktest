@@ -16,6 +16,8 @@ let subjectId: number = 0;
 let indexCourse: number = 0;
 let indexSubject: number = 0;
 
+console.log(data)
+
 type Result = {
   type: string;
   message?: string;
@@ -79,6 +81,16 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
     });
     return;
   }
+
+  if (data.scale === 0) {
+    toast?.view({
+      type: '',
+      message: "Debes tener escala valorativa",
+      time: 3000
+    });
+    return;
+  }
+
   indexCourse = _indexCourse;
   indexSubject = _indexSubject;
   courseId = courses[indexCourse].course_id;

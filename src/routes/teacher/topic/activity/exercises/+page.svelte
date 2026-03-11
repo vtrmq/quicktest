@@ -139,61 +139,64 @@ onDestroy(()=>{
 
 <!--Toast bind:this={toast} /-->
 
-{#if visible}
-<div class="container-body" bind:this={containerBody} transition:fade>
 
-    {#if type === 'info'}
+{#if type === 'info'}
 
-      <div class="container-info">
-        <h1 class="topic">{data.topic}</h1>
-        <h2 class="activity">{data.activity}</h2>
-      </div>
+  <div class="container-info">
+    <h1 class="topic">{data.topic}</h1>
+    <h2 class="activity">{data.activity}</h2>
+  </div>
 
-    {:else}
+{:else}
 
-      {#key indexExercise}
-        {#if type === 'select'}
+  {#if visible}
+    <div class="container-body" bind:this={containerBody} transition:fade>
 
-          <SelectEdit {indexExercise} {activity} />
+        {#key indexExercise}
+          {#if type === 'select'}
 
-        {:else if type === 'character'}
+            <SelectEdit {indexExercise} {activity} />
 
-          <CharacterEdit {indexExercise} {activity} {infoData} />
+          {:else if type === 'character'}
 
-        {:else if type === 'test'}
+            <CharacterEdit {indexExercise} {activity} {infoData} />
 
-          <TestEdit {activity} {infoData} />
+          {:else if type === 'test'}
 
-        {:else if type === 'test-pdf'}
+            <TestEdit {activity} {infoData} />
 
-          <TestPDFEdit {testPDF} />
+          {:else if type === 'test-pdf'}
 
-        {:else if type === 'match'}
+            <TestPDFEdit {testPDF} />
 
-          <MatchEdit {indexExercise} {activity} {infoData} />
+          {:else if type === 'match'}
 
-        {:else if type === 'test-fs'}
+            <MatchEdit {indexExercise} {activity} {infoData} />
 
-          <TestFsEdit {activity} />
+          {:else if type === 'test-fs'}
 
-        {:else if type === 'morphosyntax'}
+            <TestFsEdit {activity} />
 
-          <MorphosyntaxEdit {indexExercise} {activity} {intro} />
+          {:else if type === 'morphosyntax'}
 
-        {:else if type === 'point-out'}
+            <MorphosyntaxEdit {indexExercise} {activity} {intro} />
 
-          <PointOutEdit {indexExercise} {activity} {intro} />
+          {:else if type === 'point-out'}
 
-        {/if}
-      {/key}
+            <PointOutEdit {indexExercise} {activity} {intro} />
+
+          {/if}
+        {/key}
+
+    </div>
   {/if}
-
-</div>
 {/if}
 
 <style>
 .container-info {
   padding: 2em 0;
+  top: 5em;
+  position: relative;
 }
 .topic {
   font-size: 1.7em;

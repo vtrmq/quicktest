@@ -9,6 +9,7 @@ type Option = { id: string; option: string };
 
 type PlacedOption = {
   errors: [];
+  origin: string;
   id: string;
   option: string;
   x: number;
@@ -254,9 +255,9 @@ function onPointerDown(e: PointerEvent) {
   ========================== */
   if (selectedOption) {
     placedOptions.push({
-      //id: crypto.randomUUID(),
+      id: crypto.randomUUID(),
       errors: [],
-      id: selectedOption.id,
+      origin: selectedOption.id,
       option: selectedOption.option,
       resp: '',
       value: false,
@@ -419,11 +420,12 @@ function handleDraw() {
   </div>
 
   <!-- Opciones -->
+  <!-- disabled={placedOptions.some(p => p.option === opt.option)} -->
   <div class="options-point-out">
     {#each optionSuboptions as opt}
       <button
         class="btn-word-option-point-out"
-        disabled={placedOptions.some(p => p.option === opt.option)}
+        
         onclick={() => {mode = 'place'; selectedOption = opt}}
         class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
     {/each}

@@ -304,7 +304,7 @@ onMount(() => {
   padding: 3em 0;
 }
 .wrapper {
-  margin: 1.5em 0 3em;
+  margin: 2em 0 3em;
   display: flex;
   flex-direction: column;
   border-radius: 8px;

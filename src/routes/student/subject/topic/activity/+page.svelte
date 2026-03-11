@@ -170,7 +170,7 @@ onMount(() => {
                         >
                       </p>
                     {:else}
-                      <p class="info">
+                      <p class="info red">
                         Nota: <span
                         >{row.nota}
                           {row.performance}</span

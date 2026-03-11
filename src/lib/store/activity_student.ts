@@ -36,6 +36,7 @@ type Item = {
 }
 
 export const activityLocalstore = {
+
   get: () => {
     if (browser) {
       const item = localStorage.getItem(act);
@@ -43,6 +44,7 @@ export const activityLocalstore = {
     }
     return null;
   },
+
   set: (data: object, activity: Activity) => {
     if (browser) {
       localStorage.setItem(act, JSON.stringify(data));
@@ -53,6 +55,7 @@ export const activityLocalstore = {
       }
     }
   },
+
   getActivity: () => {
     if (browser) {
       const item = localStorage.getItem(act);
@@ -73,6 +76,7 @@ export const activityLocalstore = {
     if (activities) {
       const exercises = JSON.parse(activities);
       const _data = JSON.parse(data);
+
       let sumPoints = 0;
       for (let i = 0; i < _data.length; i++) {
         if (_data[i].value) {
@@ -81,6 +85,14 @@ export const activityLocalstore = {
       }
       const totalPoints = _data.length;
       const result = handleResultNota(totalPoints, sumPoints, scales);
+      const wordsErrors = [];
+      for (let i = 0; i < _data.length; i++) {
+        if (_data[i].resp.length !== 0 && _data[i].errors.length !== 0) {
+          wordsErrors.push(..._data[i].errors);
+        }
+      }
+
+      exercises[indexExercise].exercise.wordsErrors = wordsErrors;
       exercises[indexExercise].exercise.placedOptions = JSON.parse(data);
       exercises[indexExercise].value = result.nota;
 
@@ -122,6 +134,8 @@ export const activityLocalstore = {
       const exercises = JSON.parse(activities);
       const _data = JSON.parse(data);
       const wordConnections = exercises[indexExercise].exercise.wordConnections;
+      const leftWords = exercises[indexExercise].exercise.leftWords;
+      const wordsErrors = exercises[indexExercise].exercise.wordsErrors === undefined ? [] : exercises[indexExercise].exercise.wordsErrors;
 
       const count = _data.filter((studentConn: Connection) =>
         wordConnections.some((conn: Connection) =>
@@ -136,8 +150,20 @@ export const activityLocalstore = {
       ).length;
 
       let sumPoints = count - notFoundCount;
-
       const result = handleResultNota(wordConnections.length, sumPoints, scales);
+      
+      for (let i = 0; i < _data.length; i++) {
+        for (let j = 0; j < wordConnections.length; j++) {
+          if (_data[i].left === wordConnections[j].left && _data[i].right !== wordConnections[j].right) {
+            const pos = _data[i].left.split('-')[1]
+            if (!wordsErrors.includes(leftWords[pos].word)) {
+              wordsErrors.push(leftWords[pos].word)
+            }
+          }
+        }
+      }
+
+      exercises[indexExercise].exercise.wordsErrors = wordsErrors;
       exercises[indexExercise].exercise.wordConnectionsStudent = _data;
       exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
       localStorage.setItem(act, JSON.stringify(exercises));
@@ -149,6 +175,7 @@ export const activityLocalstore = {
     if (activities) {
       const exercises = JSON.parse(activities);
       const _data = JSON.parse(data);
+      const wordsErrors = exercises[indexExercise].exercise.wordsErrors === undefined ? [] : exercises[indexExercise].exercise.wordsErrors;
 
       let sumPoints = 0;
       let totalPoints = 0;
@@ -166,6 +193,19 @@ export const activityLocalstore = {
         }
       }
       const result = handleResultNota(totalPoints, sumPoints, scales);
+
+      for (let i = 0; i < _data.length; i++) {
+        if ((_data[i].value === false && _data[i].resp === true) 
+          || (_data[i].value === false && _data[i].resp === false && _data[i].resp_color.length !== 0) 
+          || (_data[i].value === true && _data[i].resp === false && _data[i].resp_color.length !== 0)
+        ) {
+          if (!wordsErrors.includes(_data[i].word)) {
+            wordsErrors.push(_data[i].word)
+          }
+        }
+      }
+
+      exercises[indexExercise].exercise.wordsErrors = wordsErrors;
       exercises[indexExercise].exercise.words = _data;
       exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
       localStorage.setItem(act, JSON.stringify(exercises));

@@ -139,7 +139,7 @@ onMount(() => {
                         <span>Fecha final: {formatDate( row.date_end,)}</span>
                       </p>
                     {:else if row.answer_id}
-                      <div class="info">
+                      <div class="info red">
                         {row.nota}
                         {row.performance}
                       </div>
@@ -228,7 +228,6 @@ onMount(() => {
 .info {
   font-family: var(--font-normal);
   font-size: 1.1em;
-  color: #636363;
 }
 .link {
   font-size: 1em;
@@ -346,7 +345,6 @@ onMount(() => {
   }
 }
 .wr-activities {
-  gap: 1em;
   margin: 1em 0 2em;
   display: flex;
   flex-direction: column;

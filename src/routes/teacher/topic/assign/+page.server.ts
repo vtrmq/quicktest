@@ -17,6 +17,9 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
       throw "DB: servicio no disponible";
     }
 
+    const queryScale = 'SELECT COUNT(scale_id) AS total_scale FROM scales WHERE teacher_id = ?';
+    const resultScale = await queryFirstDB(db, queryScale, teacherId);
+
     const queryActivities = 'SELECT COUNT(activity_id) AS total_activities FROM activities WHERE teacher_id = ? AND topic_id = ?';
     const resultActivities = await queryFirstDB(db, queryActivities, teacherId, topicId);
 
@@ -76,6 +79,7 @@ GROUP BY c.course_id;
       topicId,
       topic: resultTopic,
       activities: resultActivities.total_activities,
+      scale: resultScale.total_scale,
       courses: data,
       message: ''
     };

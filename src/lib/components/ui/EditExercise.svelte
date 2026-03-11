@@ -366,6 +366,7 @@ function splitWordsSelect() {
 
   const act = {
     exercise: {
+      wordsErrors: [],
       words: arrWords,
       question,
       content,
@@ -543,6 +544,7 @@ function splitWordsCharacter() {
 
   const act = {
     exercise: {
+      wordsErrors: [],
       words: arrWords,
       question,
       content,
@@ -631,6 +633,7 @@ function handleDone() {
     const activity = {
       value: 0,
       exercise: {
+        wordsErrors: [],
         question, 
         imagePointOut,
         optionSuboptions,
@@ -666,7 +669,7 @@ function handleDone() {
         rightWords,
         wordConnections: [],
         wordConnectionsStudent: [],
-        wordConnectionsErrors: [],
+        wordsErrors: [],
       },
       type: 'match',
       mode: typeExercise,

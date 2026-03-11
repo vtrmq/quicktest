@@ -6,6 +6,7 @@
   gap: 0.6em;
   border-top: 2px solid var(--bg-header-synt);
   align-items: center;
+  justify-content: center;
 }
 
 .options-point-out button.selected {
@@ -19,10 +20,10 @@
   outline: none;
   border: none;
   cursor: pointer;
-  background: #0aa74f;
+  background: #9b9b9b;
   color: #fff;
   height: 32px;
-  box-shadow: green 0px 4px 0px 0px;
+  box-shadow: #5d5d5d 0px 4px 0px 0px;
 }
 .header-point-out {
   background: #ffffff;

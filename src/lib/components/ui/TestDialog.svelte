@@ -89,10 +89,11 @@ onDestroy(()=>{
         <div class="wr-svg"><span>☹️</span></div>
         {#if points.length === 1}
           <div class="msg">¡Casi lo logras! Inténtalo de nuevo</div>
+          <div class="wr-btn-close"><button class="btn-close" onclick={handleClose}>Continua con el test</button></div>
         {:else}
           <div class="msg">Tienes {countErrors === 1 ? "un punto incorrecto" : `${countErrors} puntos incorrectos`}</div>
+          <div class="wr-btn-close"><button class="btn-close" onclick={handleClose}>Sigue intentándolo</button></div>
         {/if}
-        <div class="wr-btn-close"><button class="btn-close" onclick={handleClose}>Continua con el test</button></div>
       {/if}
     </div>
   </div>

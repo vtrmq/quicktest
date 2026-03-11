@@ -35,6 +35,8 @@ const search = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subje
 let scales = data.info?.scales;
 let type_activity = data.info?.activity.type_general;
 
+//console.log(data)
+
 type Item = {
   exercise: {};
   points: [];

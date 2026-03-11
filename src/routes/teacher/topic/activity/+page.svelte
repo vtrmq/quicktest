@@ -130,7 +130,7 @@ async function handleSend(index: number) {
                       <button class="send unlerline" onclick={()=>handleSend(i)}>Asignaturas</button>
                     {/if}
                   {:else}
-                    <div class="red">La actividad no tiene ejercicios</div>
+                    <div class="red mt">La actividad no tiene ejercicios</div>
                   {/if}
 
                 </div>
@@ -159,6 +159,9 @@ async function handleSend(index: number) {
 {/if}
 
 <style>
+.mt {
+  margin-top: 5px;
+}
 .send {
   color: #017368;
   width: max-content;

@@ -4,7 +4,7 @@ import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
-type Option = { id: string; option: string };
+type Option = { id: string; option: string; origin: string };
 type Line = {
   x1: number;
   y1: number;
@@ -18,10 +18,13 @@ type PlacedOption = {
   y: number;
   resp: string;
   value: boolean;
+  origin: string;
+  errors: string[];
 };
 type Opt = {
   id: string;
   option: string;
+  origin: string;
 };
 
 let container!: HTMLDivElement;
@@ -90,7 +93,7 @@ function externalPoint(a: { x: number; y: number }, b: { x: number; y: number })
   return distanceToBorder(a.x, a.y) <= distanceToBorder(b.x, b.y) ? a : b;
 }
 
-function handlePlaceWord(index: number, id: string) {
+function handlePlaceWord(index: number, origin: string) {
   if (isActionStudent === false) return;
 
   if (type_activity === 'V') {
@@ -101,10 +104,11 @@ function handlePlaceWord(index: number, id: string) {
   }
   if (viewResult === 1) return;
   placedOptions[index].resp = selectedOption?.option as string;
-  if (id === selectedOption?.id) {
+  if (origin === selectedOption?.id) {
     placedOptions[index].value = true;
   } else {
     placedOptions[index].value = false;
+    placedOptions[index].errors.push(placedOptions[index].resp);
   }
   activityLocalstore.pointOut(indexExercise, JSON.stringify(placedOptions), scales);
 }
@@ -146,10 +150,10 @@ function handleSelectOption(opt: Opt) {
       <img src={imagenPointOut} draggable="false" alt="" />
       <canvas bind:this={canvas}></canvas>
 
-      {#each placedOptions as item, index (item.id)}
+      {#each placedOptions as item, index}
         <button
           class="placed-point-out"
-          style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.id)} 
+          style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.origin)} 
           class:item-bad-point-out={item.value === false && viewResult === 1}>
           <span>{item.resp}</span>
         </button>

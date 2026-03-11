@@ -62,7 +62,7 @@ onMount(()=>{
 
 <div class="container-teachers-registrations">
 
-  <div class="wr-title">
+  <div class="wr-info-page">
     <LinkBack href={root}>Temas/Asignaturas</LinkBack>
     <Title>Resultados</Title>
     <p class="course">{course.course}</p>
@@ -276,15 +276,8 @@ onMount(()=>{
 .wr-none-data {
   padding: 3em 0;
 }
-.wr-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6em;
-  margin-top: 1em;
-  margin-bottom: 1.5em;
-}
 .wrapper {
-  margin: 1.5em 0;
+  margin: 2em 0;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
@@ -306,7 +299,6 @@ onMount(()=>{
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3em;
-    margin-top: 0.5em;
   }
   .info-p {
     gap: 1em;
@@ -315,13 +307,6 @@ onMount(()=>{
   }
   .subject {
     font-size: 1.1em;
-  }
-  .wr-title {
-    position: sticky;
-    top: 90px;
-    height: fit-content;
-    margin-top: 10px;
-    margin-bottom: 0;
   }
 }
 </style>

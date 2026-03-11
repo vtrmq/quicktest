@@ -256,7 +256,7 @@ function handleActionShowWin(index: number, item: number) {
           <div class="container-activity">
             <div class="wrapper-container-activity">
               <div class="name-activity">{activity.activity}</div>
-              <div>Tipo: {typeActivity(activity.type_general)}</div>
+              <div>{typeActivity(activity.type_general)}</div>
               {#if activity.time !== null}
                 <div>Tiempo: {activity.time} min</div>
               {/if}
