@@ -89,8 +89,7 @@ onMount(() => {
             <div
               class="box-point"
               class:border-top-left={i === 0}
-              class:border-bottom-left={i + 1 === result.length}
-            >
+              class:border-bottom-left={i + 1 === result.length}>
               <div class="point">
                 <div class="circle-green">&nbsp;</div>
               </div>
@@ -101,23 +100,16 @@ onMount(() => {
               <div class="box-a">
                 <div
                   class="box-bb"
-                  class:border-left={i !== 0 &&
-                    i + 1 <= result.length}
-                >
-                  &nbsp;
-                </div>
+                  class:border-left={i !== 0 && i + 1 <= result.length}>&nbsp;</div>
                 <div
                   class="box-b"
-                  class:border-left={i + 1 < result.length}
-                >
-                  &nbsp;
-                </div>
+                  class:border-left={i + 1 < result.length}>&nbsp;</div>
               </div>
             </div>
             <div class="box-course">
               <div class="info-subject">
                 <div>
-                  <div class="subject">{row.activity}</div>
+                  <div class="subject" class:resaltar={!row.answer_id && isDateEnd(row.date_end)}>{row.activity}</div>
                   <div class="wr-content-activity">
                     <p class="name-subject">
                       {row.subject}
@@ -128,18 +120,10 @@ onMount(() => {
 
                     {#if !row.answer_id}
                       {#if row.time}
-                        <p class="info">
-                          Tiempo: <span
-                          >{row.time} min</span
-                          >
-                        </p>
+                        <p class="info">Tiempo: <span>{row.time} min</span></p>
                       {/if}
                       <p class="info">
-                        <span
-                        >Fecha final: {formatDate(
-                          row.date_end,
-                        )}</span
-                        >
+                        <span>Fecha final: {formatDate(row.date_end)}</span>
                       </p>
                     {:else if row.answer_id}
                       <div class="info red">
@@ -153,8 +137,7 @@ onMount(() => {
                       <a
                         class="link unlerline"
                         href="/student/subject/topic/activity/info?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox"
-                      >Ver detalles</a
-                      >
+                      >Ver detalles</a>
                     {:else if !row.answer_id && !isDateEnd(row.date_end)}
                       <p class="none-activity">
                         Actividad cerrada
@@ -163,8 +146,7 @@ onMount(() => {
                       <a
                         class="link unlerline"
                         href="/student/subject/topic/activity/result?teacherId={row.teacher_id}&courseId={row.course_id}&subjectId={row.subject_id}&topicId={row.topic_id}&activityId={row.activity_id}&origin=inbox"
-                      >Ver resultado</a
-                      >
+                      >Ver resultado</a>
                     {/if}
                   </div>
                 </div>
@@ -234,6 +216,13 @@ onMount(() => {
 .subject {
   font-weight: 700;
   font-size: 1.2em;
+  text-transform: uppercase;
+}
+.resaltar {
+  color: aliceblue;
+  background: #2196f3;
+  display: inline;
+  padding: 3px;
 }
 :global {
   .svg-subject > svg {

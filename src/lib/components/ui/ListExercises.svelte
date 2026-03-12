@@ -15,8 +15,9 @@ type NotaFinal = {
 let viewBox = $state(false); // false
 let itemResaltado = $state(-1);
 let scales = info.scales;
-let viewResult = $state(0);
+let viewResult = $state(1);
 let notaFinal: NotaFinal = $state({nota: '', percentage: 0, scale: ''}) as NotaFinal;
+let viewResultNota = $state(false);
 
 type Activity = {
   exercise: {points: [{position: any}]};
@@ -34,15 +35,18 @@ function handleViewBoxExercise() {
 }
 
 function handleSelectActivity(index: number) {
-  viewResult = 0;
+  //viewResult = 0;
   itemResaltado = index;
   viewBox = !viewBox;
   const _items = activityLocalstore.get();
+  const viewResult = viewResultNota ? 1 : 2;
   handleActivity(index, _items, viewResult);
 }
 
-function handleViewResultX(option: string) {
-  viewResult = option === 'result' ? 1 : 0;
+function handleViewResultX() {
+
+  //viewResult = option === 'result' ? 1 : 2;
+  viewResultNota = !viewResultNota;
   items = activityLocalstore.get();
   let values = 0;
   let max = items.length;
@@ -57,7 +61,8 @@ function handleViewResultX(option: string) {
     notaFinal.nota = _minNota.min_value;
     notaFinal.scale = _minNota.scale;
   }
-
+  
+  const viewResult = viewResultNota ? 1 : 2;
   handleViewResult(viewResult);
 }
 
@@ -68,6 +73,12 @@ function handleViewResultTest() {
 function sortById<T extends { position: number }>(array: T[]): T[] {
   // Usamos [...array] para no mutar el array original
   return [...array].sort((a, b) => a.position - b.position);
+}
+
+function handleSendTestPrev() {
+  viewResult = 3;
+  viewResultNota = false;
+  handleViewResult(2);
 }
 
 function handleSendTest() {
@@ -129,27 +140,36 @@ function handleSendTest() {
   <div class="header-box-exercise">
     <div class="in-header-exerc">
       {#if info.activity.type_general === 'R'}
-        {#if viewResult === 0}
+
+        {#if viewResult === 2}
+
           <div class="wr-btns-resul-save-exerc">
-            <button class="btn-result-exerc" onclick={()=>handleViewResultX('result')}>Resultados</button>
-            <!--button class="btn-save" onclick={()=>handleViewResultX('result')}>Guardar</button-->
+            <button class="btn-result-exerc" onclick={()=>handleViewResultX()}>Resultados</button>
           </div>
-        {:else}
+
+        {:else if viewResult === 1}
+
           <div class="wr-btns-resul-save-exerc">
-            <button class="btn-result-exerc" onclick={()=>handleViewResultX('activities')}>Continuar</button>
-            <button class="btn-save-test-exerc" onclick={handleSendTest} disabled={isSend}>
-              {#if !isSend}
-                Enviar
+            <button class="btn-result-exerc" onclick={()=>handleViewResultX()}>
+              {#if viewResultNota}
+                Continuar
               {:else}
-                <svg class="svg-load-exerc" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                Resultados
               {/if}
             </button>
-            <div class="info-nota-exerc">
-              {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
-            </div>
+            <button class="btn-save-test-exerc" onclick={handleSendTestPrev} disabled={isSend}>
+              Enviar
+            </button>
+            {#if viewResultNota}
+              <div class="info-nota-exerc">
+                {formatearNota(parseFloat(notaFinal.nota))} {notaFinal.scale}
+              </div>
+            {/if}
           </div>
         {/if}
+
       {:else if info.activity.type_general === 'V'}
+
         <button class="btn-save-exerc" onclick={handleViewResultTest}>
           {#if viewResult === 0}
             Enviar
@@ -157,6 +177,7 @@ function handleSendTest() {
             Cancelar
           {/if}
         </button>
+
       {/if}
     </div>
     <button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html circleX}</button>
@@ -169,7 +190,7 @@ function handleSendTest() {
       <h2 class="activity-exerc">{info.activity.activity}</h2>
     </div>
     <div class="row-items-exerc">
-      {#if viewResult === 0 || viewResult === 1}
+      {#if viewResult === 1}
         {#each items as item, index}
           <div class="row-link-activity-exerc" class:resaltar-exerc={itemResaltado === index}>
             <button class="link-activity-exerc" onclick={()=>handleSelectActivity(index)}>
@@ -177,7 +198,7 @@ function handleSendTest() {
               <div class="container-info-exerc">
                 <div class="wr-info-result-exerc">
                   <span class="label-activity-exercise" class:resaltar-exerc={itemResaltado === index}>{typeExerc(item.type)}</span>
-                  {#if viewResult === 1}
+                  {#if viewResultNota}
                     <span class="item-value-exerc">{formatearNota(item.value)} {scaleNota(scales, parseFloat(formatearNota(item.value))).scale}</span>
                   {/if}
                 </div>
@@ -190,9 +211,30 @@ function handleSendTest() {
             </button>
           </div>
         {/each}
-      {:else if viewResult === 2}
-        <p class="txt-info-exerc">¿Quieres enviar el test?</p>
-        <button class="btn-save-test-exerc" onclick={handleSendTest}>Enviar test</button>
+      {:else if viewResult === 3}
+        <p class="txt-info-exerc center">¿Quieres enviar la actividad?</p>
+        <div class="wr-btns-send-cancel">
+          <button class="btn-save-test-exerc w150" onclick={handleSendTest}>
+            {#if !isSend}
+              Enviar actividad
+            {:else}
+              <svg class="svg-load-exerc" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            {/if}
+          </button>
+          <button class="btn-cancel-send" onclick={()=>viewResult = 1}>Cancelar</button>
+        </div>
+      {:else if viewResult === 4}
+        <p class="txt-info-exerc center">¿Quieres enviar el test?</p>
+        <div class="wr-btns-send-cancel">
+          <button class="btn-save-test-exerc w150" onclick={handleSendTest}>
+            {#if !isSend}
+              Enviar test
+            {:else}
+              <svg class="svg-load-exerc" stroke-width="2" viewBox="0 0 24 24" fill="none"><path d="M21.1679 8C19.6247 4.46819 16.1006 2 11.9999 2C6.81459 2 2.55104 5.94668 2.04932 11" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 8H21.4C21.7314 8 22 7.73137 22 7.4V3" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.88146 16C4.42458 19.5318 7.94874 22 12.0494 22C17.2347 22 21.4983 18.0533 22 13" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7.04932 16H2.64932C2.31795 16 2.04932 16.2686 2.04932 16.6V21" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            {/if}
+          </button>
+          <button class="btn-cancel-send" onclick={()=>viewResult = 0}>Cancelar</button>
+        </div>
       {/if}
     </div>
 
@@ -207,6 +249,12 @@ function handleSendTest() {
     stroke-width: 3px;
   }
 }
+.wr-btns-send-cancel {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1em;
+}
 .btn-view-close-exerc {
   width: 36px;
   height: 35px;
@@ -219,53 +267,7 @@ function handleSendTest() {
   border-radius: 60px;
   background: #d98507;
 }
-</style>
-<!--
-<style>
-:global {
-  .btn-view-close > svg {
-    width: 18px;
-    color: #fff;
-    stroke-width: 3px;
-  }
-}
-.svg-load {
-  width: 22px;
-  animation: girar 1.5s linear infinite;
-}
-@keyframes girar {
-from {
-  transform: rotate(0deg);
-}
-to {
-  transform: rotate(360deg);
-}
-}
-.txt-info {
-  font-family: var(--font-normal);
-  font-size: 1em;
-}
-.info-nota {
-  font-family: var(--font-normal);
-  font-size: 1em;
-  font-weight: 800;
-  color: #fff;
-}
-.btn-save {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-family: var(--font-normal);
-  font-size: 1em;
-  background: #03ad03;
-  color: #fff;
-  height: 100%;
-}
-.btn-save-test {
+.btn-cancel-send {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -275,178 +277,13 @@ to {
   outline: none;
   font-family: var(--font-normal);
   font-size: 1em;
-  background: var(--bg-blue);
+  background: #FF5722;
   color: #fff;
   height: 100%;
   transition: var(--transition);
-  box-shadow: rgb(6 125 179) 0px 4px 0px 0px;
-  width: 78px;
+  box-shadow: rgb(157 39 1) 0px 4px 0px 0px;
 }
-.btn-save-test:hover {
-  background: var(--bg-blue-hover);
-}
-.wr-btns-resul-save {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-.item-value {
-  font-weight: 800;
-  color: #9c27b0;
-  text-shadow: 1px 1px 0px #e5f3f3;
-}
-.wr-info-result {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-}
-.in-header {
-  display: flex;
-  justify-content: space-between;
-  width: 90%;
-  height: 35px;
-  gap: 1em;
-}
-.btn-result {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-family: var(--font-normal);
-  font-size: 1em;
-  background: var(--purple);
-  color: #fff;
-  height: 100%;
-  box-shadow: var(--purple-border) 0px 4px 0px 0px;
-  transition: var(--transition);
-}
-.btn-result:hover {
-  background: var(--purple-hover);
-}
-.container-info-exerc {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.text-left {
-  text-align: left;
-  font-size: 1.05em;
-  margin-top: 0.4em;
-  line-height: 20px;
-}
-.label-activity-exercise {
-  font-family: var(--font-normal);
-  font-size: 1.3em;
-  font-weight: 700;
-}
-.label-activity-exercise.resaltar {
-  font-weight: 900;
-  font-style: italic;
-  font-size: 1.5em;
-}
-.box-item-link {
-  height: 90px;
-  width: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #94ebe8;
-  font-family: var(--font-normal);
-  font-weight: 900;
-  font-size: 2em;
-}
-.link-activity {
-  display: grid;
-  grid-template-columns: 50px 1fr;
-  font-family: var(--font-normal);
-  cursor: pointer;
-  border-radius: 6px;
-  align-items: center;
-  gap: 1em;
-  overflow: hidden;
-  width: 100%;
-  background: transparent;
-}
-.row-link-activity {
-  display: flex;
-  width: 100%;
-  background: #e1f1f9;
-  align-items: center;
-  padding-right: 0.3em;
-  /*box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;*/
-  border-radius: 6px;
-  transition: var(--transition);
-}
-.row-link-activity:hover {
-  background: #cee8f5;
-}
-.row-link-activity.resaltar {
-  background: #56d3ce;
-}
-.row-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7em;
-}
-.container-info {
-  padding: 0 0 1em;
-}
-.topic {
-  font-size: 1.4em;
-  font-family: var(--font-bold);
-  margin-bottom: 0.3em;
-}
-.activity {
-  font-family: var(--font-normal);
-  font-size: 1em;
-  font-weight: 500;
-}
-.body-box-exercise {
-  background: #fff;
-  height: calc(100% - var(--height-header));
-  overflow-y: auto;
-  padding: 1em 1em 2em;
-  display: flex;
-  flex-direction: column;
-}
-.header-box-exercise {
-  height: var(--height-header);
-  width: 100%;
-  background: #ff9800;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0.5em 0 1em;
-}
-.btn-view-close {
-  width: 36px;
-  height: 35px;
-  cursor: pointer;
-  outline: none;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 60px;
-  background: #d98507;
-}
-.container-edit-exercise {
-  width: 100%;
-  max-width: 500px;
-  height: 100%;
-  background: azure;
-  position: fixed;
-  top: 0;
-  right: -530px;
-  transition: 0.4s;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.container-edit-exercise.view-box {
-  right: 0;
+.btn-cancel-send:hover {
+  background: #d93907;
 }
 </style>
--->

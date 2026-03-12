@@ -64,6 +64,7 @@ let infoTotal = $state<InfoTotal>();
 
 let notaTotal = $state(0);
 onMount(() => {
+  let countNotas = 0;
   if (result.activities.length !== 0) {
     const activity_store = activityLocalstore.getActivity();
     const activity: Activity = activity_store?.activity as Activity;
@@ -89,10 +90,11 @@ onMount(() => {
       const nota = result.activities[i].nota;
       if (nota !== null) {
         notaTotal = notaTotal + nota;
+        countNotas++;
       }
     }
-    //console.log(notaTotal);
     if (notaTotal !== 0) {
+      notaTotal = notaTotal / countNotas;
       infoTotal = scaleNota(result.scales, notaTotal);
       drawChartCircle(infoTotal.percentage, chart, valueDisplay);
     }

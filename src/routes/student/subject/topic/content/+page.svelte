@@ -33,14 +33,17 @@ let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
 let infoTotal = $state<InfoTotal>();
 
 onMount(() => {
+  let countNotas = 0;
   if (activities.length !== 0) {
     for (let i = 0; i < activities.length; i++) {
       const nota = activities[i].nota;
       if (nota !== null) {
         notaTotal = notaTotal + nota;
+        countNotas++;
       }
     }
     if (notaTotal !== 0) {
+      notaTotal = notaTotal / countNotas;
       infoTotal = scaleNota(data.scales, notaTotal);
       drawChartCircle(infoTotal.percentage, chart, valueDisplay);
     }

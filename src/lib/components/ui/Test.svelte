@@ -15,9 +15,11 @@ let points: Point[] = $state([]);
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
+/*
 (()=>{
   console.log($state.snapshot(infoData))
 })();
+*/
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;

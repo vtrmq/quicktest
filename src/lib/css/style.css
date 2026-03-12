@@ -124,6 +124,9 @@ ol {
 .red {
   color: red;
 }
+.blue {
+  color: #005ea9;
+}
 
 .container-circle {
   display: none;
@@ -165,6 +168,9 @@ ol {
 .performance-chart {
   font-size: 1.3em;
   font-family: var(--font-bold);
+}
+.center {
+  text-align: center;
 }
 
 @media(min-width: 700px) {

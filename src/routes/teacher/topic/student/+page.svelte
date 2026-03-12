@@ -40,6 +40,8 @@ let url = extractParams(page.url.href, ["courseId", "subjectId", "activityId", "
 
 root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
 
+//console.log(data)
+
 let notaTotal = $state(0);
 let countNotas = 0;
 type InfoTotal = { nota: string; percentage: number; scale: string };
@@ -55,6 +57,8 @@ onMount(()=>{
   if (notaTotal !== 0) {
     notaTotal = notaTotal / countNotas;
     infoTotal = scaleNota(scale, notaTotal);
+    //console.log(notaTotal)
+    //console.log($state.snapshot(infoTotal))
     drawChartCircle(infoTotal.percentage, chart, valueDisplay);
   }
 });

@@ -58,7 +58,7 @@ const activitiesResult = await db.prepare(`
   WHERE cs.student_id = ?
       AND a.visible = 1
       AND (a.items IS NOT NULL OR a.file IS NOT NULL)
-  ORDER BY isub.inbox_student_id ASC
+  ORDER BY isub.inbox_student_id DESC 
   LIMIT ? OFFSET ?
 `).bind(studentId, limit, offset).all();
 

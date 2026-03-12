@@ -71,6 +71,7 @@ onMount(() => {
   if (notaTotal !== 0) {
     notaTotal = notaTotal / countNotas;
     infoTotal = scaleNota(scale, notaTotal);
+    //console.log(infoTotal)
     drawChartCircle(infoTotal.percentage, chart, valueDisplay);
   }
 });
@@ -116,7 +117,7 @@ onMount(() => {
                   <div class="info-course"><p class="activity">{row.activity}</p></div>
                   <div class="info-p">
                     <span>{typeActivity(row.type_general)}</span>
-                    <span>Total:&nbsp;{nota.percentage}%&nbsp;{nota.scale}</span>
+                    <span class="blue">Total:&nbsp;{Number(nota.percentage.toFixed(1))}%&nbsp;{nota.scale}</span>
                   </div>
                 </div>
                 <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{@html sendHorizontal}</a>
@@ -328,9 +329,7 @@ onMount(() => {
     gap: 3em;
   }
   .info-p {
-    gap: 1em;
     font-size: 0.9em;
-    flex-direction: row;
   }
   .subject {
     font-size: 1.1em;

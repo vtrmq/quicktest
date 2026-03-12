@@ -695,6 +695,7 @@ function handleDone() {
     const activity = {
       type:'test', 
       exercise: {
+        wordsErrors: [],
         question,
         content, 
         points: arrayQuestionsTest 
@@ -723,6 +724,7 @@ function handleDone() {
 
     if (stateExercise === 'new') {
       const exercise = {
+        wordsErrors: [],
         content,
         name: fileName,
         file: fileExam, 
@@ -799,6 +801,7 @@ function handleDone() {
   // ==================================================
   } else if (sheet === 'morphosyntax') {
     const exercise = {
+      wordsErrors: [],
       value: 0,
       content, 
       arrWords: [], 
@@ -1270,7 +1273,7 @@ $effect(()=>{
     {:else if sheet === 'new-point'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleBackTest}>Volver</button>
-        <button class="btn-new" onclick={handleAddItem}>Adicionar item</button>
+        <button class="btn-new" onclick={handleAddItem}>Adicionar respuesta</button>
         <button class="btn-new" onclick={handleDonePoint}>Listo</button>
       </div>
     {:else if sheet === 'new-point-fs'}
@@ -1930,6 +1933,7 @@ $effect(()=>{
   box-shadow: rgb(99 99 99 / 51%) 0px 2px 8px 0px;
   border-radius: 6px;
   overflow: hidden;
+  border: 2px solid #333;
 }
 .wr-w-figure {
   position: relative;
@@ -2161,8 +2165,8 @@ to {
 }
 .activity {
   font-family: var(--font-normal);
-  font-size: 1.1em;
-  font-weight: 500;
+  font-size: 1em;
+  font-weight: 400;
 }
 .label-activity-exercise {
   font-family: var(--font-normal);
@@ -2532,7 +2536,7 @@ to {
   .btn-new, .btn-save-exercise, .add-point-test {
     font-size: 0.85em;
   }
-  .btn-new:hover, .add-point-test:hover {
+  .btn-new:hover, .add-point-test:hover, .btn-save-exercise:hover {
     background: #f9d6ad;
   }
 }

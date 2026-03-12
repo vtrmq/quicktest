@@ -15,7 +15,7 @@
 }
 .btn-word-option-point-out {
   font-family: var(--font-normal);
-  padding: 0.4em;
+  padding: 0.4em 0.6em;
   border-radius: 4px;
   outline: none;
   border: none;
@@ -88,11 +88,11 @@
   padding: 4px 6px;
   border-radius: 6px;
   background: white;
-  border: 1px solid #333;
+  border: 2px solid #333;
   white-space: nowrap;
   min-width: 50px;
   height: 30px;
-  box-shadow: #597485 0px 4px 0px 0px;
+  box-shadow: #4f4f4f 0px 4px 0px 0px;
 }
 .placed-point-out.item-bad-point-out {
   background: #c70101;

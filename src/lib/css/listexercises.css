@@ -12,7 +12,9 @@ to {
 }
 .txt-info-exerc {
   font-family: var(--font-normal);
-  font-size: 1em;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: brown;
 }
 .info-nota-exerc {
   font-family: var(--font-normal);
@@ -49,7 +51,9 @@ to {
   height: 100%;
   transition: var(--transition);
   box-shadow: rgb(6 125 179) 0px 4px 0px 0px;
-  width: 78px;
+}
+.w150 {
+  width: 150px;
 }
 .btn-save-test-exerc:hover {
   background: var(--bg-blue-hover);
@@ -61,8 +65,10 @@ to {
 }
 .item-value-exerc {
   font-weight: 800;
-  color: #9c27b0;
-  text-shadow: 1px 1px 0px #e5f3f3;
+  color: #ffffff;
+  background: #2196F3;
+  padding: 3px;
+  border-radius: 5px;
 }
 .wr-info-result-exerc {
   display: flex;
@@ -89,6 +95,7 @@ to {
   color: #fff;
   box-shadow: var(--purple-border) 0px 4px 0px 0px;
   transition: var(--transition);
+  height: 100%;
 }
 .btn-result-exerc:hover {
   background: var(--purple-hover);

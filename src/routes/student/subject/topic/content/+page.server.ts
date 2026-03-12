@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
           AND isub.subject_id = ?
           AND isub.topic_id = ?
           AND a.topic_id = ?
-        ORDER BY a.activity_id DESC
+        ORDER BY a.activity_id ASC
       `).bind(studentId, teacherId, courseId, subjectId, topicId, topicId),
 
       db.prepare('SELECT items FROM activities_extra WHERE teacher_id = ? AND topic_id = ?')

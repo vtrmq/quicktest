@@ -2,6 +2,8 @@
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
+import { Toast } from '$lib/components';
+
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
 type Option = { id: string; option: string; origin: string };
@@ -36,6 +38,7 @@ let imagenPointOut = $state('');
 let optionSuboptions = $state<Option[]>([]);
 let lines = $state<Line[]>([]);
 let selectedOption = $state<Option | null>(null);
+let toast = $state<Toast>();
 
 placedOptions = infoData.exercise.placedOptions;
 imagenPointOut = infoData.exercise.imagePointOut;
@@ -103,6 +106,14 @@ function handlePlaceWord(index: number, origin: string) {
     }
   }
   if (viewResult === 1) return;
+  if (selectedOption === null) {
+    toast?.view({
+      type: '',
+      message: "Selecciona una opción",
+      time: 3000
+    });
+    return;
+  }
   placedOptions[index].resp = selectedOption?.option as string;
   if (origin === selectedOption?.id) {
     placedOptions[index].value = true;
@@ -135,6 +146,8 @@ function handleSelectOption(opt: Opt) {
 }
 
 </script>
+
+<Toast bind:this={toast} />
 
 <div class="designer-point-out">
 

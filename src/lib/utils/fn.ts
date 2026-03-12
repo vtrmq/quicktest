@@ -318,11 +318,12 @@ export function scaleNota(
   //const percentage = (notaFinal * 10).toFixed(0);
 
   const percentage = (notaFinal * 100) / maxNota;
-
   return {
-    nota: formatearNota(notaFinal) || String(minNota),
+    //nota: formatearNota(notaFinal) || String(minNota),
+    nota: notaFinal.toString() || String(minNota),
     scale: nivel?.scale || '',
-    percentage: Math.trunc(percentage),
+    //percentage: Math.trunc(percentage),
+    percentage: percentage,
   };
 }
 /*
@@ -491,7 +492,6 @@ export const drawChartCircle = (value: number, svg: SVGElement, valueDisplay: HT
   // Calcular ángulos
 
   value = Number(value.toFixed(2));
-  //console.log(value)
   const angle: number = (value / 100) * 360;
   const startAngle = -90; // Comenzar desde arriba
   const endAngle = startAngle + angle;

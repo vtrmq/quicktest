@@ -114,7 +114,7 @@ onMount(()=>{
                   </div>
                   <div class="info-p">
                     <p class="activity">{row.activity}</p>
-                    <p>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</p>
+                    <p class="blue">Nota:&nbsp;{row.nota}&nbsp;{row.performance}</p>
                   </div>
                 </div>
               </div>
@@ -249,7 +249,6 @@ onMount(()=>{
 }
 .activity {
   font-size: 1.2em;
-  font-weight: 800;
   font-family: var(--font-normal);
 }
 .info-p {

@@ -10,6 +10,7 @@ type ArrWord = {
   word: string;
 }
 type ArrWordBox = {
+  errors: string[];
   label: {"morphosyntax": string, "description": string};
   response: {"morphosyntax": string, "value": boolean};
   width: string; 
@@ -104,8 +105,26 @@ function handleCancel() {
 }
 
 function storeWordsBox() {
-  let copyArrWordsBox = JSON.parse(JSON.stringify(arrWordsBox));
-  activityLocalstore.morphosyntax(indexExercise, JSON.stringify(copyArrWordsBox), scales);
+  //let copyArrWordsBox = JSON.parse(JSON.stringify(arrWordsBox));
+  let wordsErrors: string[] = [];
+
+  for (let i = 0; i < arrWordsBox.length; i++) {
+    for (let j = 0; j < arrWordsBox[i].length; j++) {
+      if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === false && arrWordsBox[i][j].errors.length === 0) {
+        wordsErrors.push(arrWordsBox[i][j].response.morphosyntax);
+        arrWordsBox[i][j].errors.push(arrWordsBox[i][j].response.morphosyntax);
+      } else if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === false && arrWordsBox[i][j].errors.length !== 0) {
+        arrWordsBox[i][j].errors.push(arrWordsBox[i][j].response.morphosyntax);
+        wordsErrors.push(...arrWordsBox[i][j].errors);
+      } else if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === true && arrWordsBox[i][j].errors.length !== 0) {
+        wordsErrors.push(...arrWordsBox[i][j].errors);
+      }
+    }
+  }
+  console.log($state.snapshot(arrWordsBox))
+  console.log(wordsErrors)
+
+  activityLocalstore.morphosyntax(indexExercise, JSON.stringify(arrWordsBox), JSON.stringify(wordsErrors), scales);
 }
 
 function handleAcceptBox() {
