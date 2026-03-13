@@ -1,23 +1,29 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
-import { ALFABETO } from '$lib/utils';
+import { ALFABETO, ordenarPorClave, ordenarNumeros } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 
 type Point = {
-  answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string }]; 
+  answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string, success: boolean }]; 
   images: []; 
   question: '';
   value: number;
+  errors: number;
 }
+type WordError = {
+  point: number;
+  errors: number[];
+};
 
+let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
-
 /*
 (()=>{
   console.log($state.snapshot(infoData))
+  console.log(viewResult)
 })();
 */
 
@@ -30,6 +36,7 @@ let time = $state(-1);
 let mode = $state('');
 
 points = infoData.exercise.points;
+wordsErrors = infoData.exercise.wordsErrors;
 visible = infoData.visible;
 time = infoData.time;
 mode = infoData.mode;
@@ -71,6 +78,7 @@ function startProgress() {
   requestAnimationFrame(update);
 }
 
+
 function handleSelectItem(point: number, index: number) {
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
@@ -79,9 +87,35 @@ function handleSelectItem(point: number, index: number) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    return;
+  }
   points[point].answers[index].rss = !points[point].answers[index].rss;
-  activityLocalstore.test(indexExercise, JSON.stringify(points), scales);
+  if (points[point].answers[index].rss && points[point].answers[index].success === false) {
+    points[point].answers[index].success = true;
+  } else if (points[point].answers[index].rss === false && points[point].answers[index].rst === true && points[point].answers[index].success) {
+    points[point].answers[index].success = false;
+  }
+
+  let sw = false;
+
+  if ((points[point].answers[index].rss === true && points[point].answers[index].rst === false && points[point].answers[index].success) 
+    || (points[point].answers[index].rss === false && points[point].answers[index].rst === true && points[point].answers[index].success)) { // Malo
+    for (let x = 0; x < wordsErrors.length; x++) {
+      if (wordsErrors[x].point === point) {
+        sw = true;
+        if (!wordsErrors[x].errors.includes(index)) {
+          wordsErrors[x].errors.push(index);
+          wordsErrors[x].errors = ordenarNumeros(wordsErrors[x].errors)
+        }
+      }
+    }
+    if (sw === false) {
+      wordsErrors.push({point: point, errors: [index]});
+    }
+  }
+  const _wordsErrors = ordenarPorClave(wordsErrors, "point");
+  activityLocalstore.test(indexExercise, JSON.stringify(points), JSON.stringify(_wordsErrors), scales);
 }
 
 </script>
@@ -119,14 +153,14 @@ function handleSelectItem(point: number, index: number) {
               {#each qs.answers as answer, index}
                 <div 
                   class="container-answer-test" 
-                  class:rst-point-test={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                  class:rst-point-test={(answer.rss && viewResult === 2) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
                   class:item-bad-test={((answer.rss === true && answer.rst === false)) && viewResult === 1} 
                   class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                   onclick={()=>handleSelectItem(point, index)} 
                   onkeyup={()=>{}} role="button" tabindex="0">
                   <div class="wr-label-point-test">
                     <div class="label-resp-test" 
-                      class:rst-point-test={(answer.rss && viewResult === 0) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                      class:rst-point-test={(answer.rss && viewResult === 2) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
                       class:item-bad-test={(answer.rss === true && answer.rst === false) && viewResult === 1} 
                       class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                     >Respuesta {index + 1}</div>

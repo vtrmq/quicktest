@@ -176,7 +176,7 @@
                 {:else if type === "test"}
                     <Test
                         {type_activity}
-                        {viewResult}
+                        viewResult = {2}
                         {scales}
                         {indexExercise}
                         {infoData}

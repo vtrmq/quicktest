@@ -122,7 +122,6 @@ export const activityLocalstore = {
         }
       }
 
-      //console.log(wordsErrors)
       const result = handleResultNota(totalPoints, sumPoints, scales);
       exercises[indexExercise].exercise.wordsErrors = JSON.parse(wordsErrors);
       exercises[indexExercise].exercise.syntax.arrWordsBox = _data;
@@ -240,7 +239,7 @@ export const activityLocalstore = {
     }
   },
 
-  test: (indexExercise: number, data: any, scales: { scale: string; min_value: number; max_value: number }[]) => {
+  test: (indexExercise: number, data: any, wordsErrors: any, scales: { scale: string; min_value: number; max_value: number }[]) => {
     const activities = localStorage.getItem(act);
     if (activities) {
       const exercises = JSON.parse(activities);
@@ -264,6 +263,7 @@ export const activityLocalstore = {
         }
       }
       const result = handleResultNota(totalPoints, sumPoints, scales);
+      exercises[indexExercise].exercise.wordsErrors = JSON.parse(wordsErrors);
       exercises[indexExercise].exercise.points = _data;
       exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
       localStorage.setItem(act, JSON.stringify(exercises));

@@ -3,6 +3,19 @@ type Words = {
   word: string;
 };
 
+export function ordenarNumeros(lista: number[]): number[] {
+  // Usamos la resta (a - b) para definir el orden numérico
+  return [...lista].sort((a, b) => a - b);
+}
+
+export function ordenarPorClave<T>(array: T[], clave: keyof T): T[] {
+  return [...array].sort((a, b) => {
+    if (a[clave] < b[clave]) return -1;
+    if (a[clave] > b[clave]) return 1;
+    return 0;
+  });
+}
+
 export function quitarExtension(nombreArchivo: string): string {
   // Busca el último punto y corta la cadena hasta esa posición
   const ultimoPunto = nombreArchivo.lastIndexOf('.');

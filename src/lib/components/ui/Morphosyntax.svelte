@@ -104,25 +104,15 @@ function handleCancel() {
   showWinInput = false;
 }
 
+let wordsErrors: string[] = [];
 function storeWordsBox() {
-  //let copyArrWordsBox = JSON.parse(JSON.stringify(arrWordsBox));
-  let wordsErrors: string[] = [];
 
-  for (let i = 0; i < arrWordsBox.length; i++) {
-    for (let j = 0; j < arrWordsBox[i].length; j++) {
-      if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === false && arrWordsBox[i][j].errors.length === 0) {
-        wordsErrors.push(arrWordsBox[i][j].response.morphosyntax);
-        arrWordsBox[i][j].errors.push(arrWordsBox[i][j].response.morphosyntax);
-      } else if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === false && arrWordsBox[i][j].errors.length !== 0) {
-        arrWordsBox[i][j].errors.push(arrWordsBox[i][j].response.morphosyntax);
-        wordsErrors.push(...arrWordsBox[i][j].errors);
-      } else if (arrWordsBox[i][j].response.morphosyntax.length !== 0 && arrWordsBox[i][j].response.value === true && arrWordsBox[i][j].errors.length !== 0) {
-        wordsErrors.push(...arrWordsBox[i][j].errors);
-      }
+  if (arrWordsBox[numRow][numColumn].response.morphosyntax.length !== 0 && arrWordsBox[numRow][numColumn].response.value === false) {
+    if (!arrWordsBox[numRow][numColumn].errors.includes(arrWordsBox[numRow][numColumn].response.morphosyntax)) {
+      arrWordsBox[numRow][numColumn].errors.push(arrWordsBox[numRow][numColumn].response.morphosyntax);
+      wordsErrors.push(arrWordsBox[numRow][numColumn].response.morphosyntax);
     }
   }
-  console.log($state.snapshot(arrWordsBox))
-  console.log(wordsErrors)
 
   activityLocalstore.morphosyntax(indexExercise, JSON.stringify(arrWordsBox), JSON.stringify(wordsErrors), scales);
 }

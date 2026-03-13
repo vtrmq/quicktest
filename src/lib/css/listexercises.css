@@ -14,7 +14,8 @@ to {
   font-family: var(--font-normal);
   font-size: 1.3em;
   font-weight: 600;
-  color: brown;
+  color: #2f5a6f;
+  margin-bottom: 1.5em;
 }
 .info-nota-exerc {
   font-family: var(--font-normal);
@@ -65,10 +66,8 @@ to {
 }
 .item-value-exerc {
   font-weight: 800;
-  color: #ffffff;
-  background: #2196F3;
-  padding: 3px;
-  border-radius: 5px;
+  color: #000;
+  font-size: 1.1em;
 }
 .wr-info-result-exerc {
   display: flex;
@@ -154,6 +153,7 @@ to {
   /*box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;*/
   border-radius: 6px;
   transition: var(--transition);
+  box-shadow: rgb(77 156 193) 0px 7px 0px 0px;
 }
 .row-link-activity-exerc:hover {
   background: #cee8f5;
@@ -164,7 +164,7 @@ to {
 .row-items-exerc {
   display: flex;
   flex-direction: column;
-  gap: 0.7em;
+  gap: 1em;
   margin-top: 1.5em;
 }
 .container-info-exerc {
