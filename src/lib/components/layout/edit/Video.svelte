@@ -194,7 +194,7 @@ $effect(() => {
 });
 
 function viewTextArea() {
-  destroyYouTubePlayer();
+  //destroyYouTubePlayer();
   onEvent(id);
 }
 

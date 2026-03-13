@@ -185,7 +185,7 @@ onDestroy(()=>{
   width: 100%;
   height: 100%;
   background: #00000057;
-  z-index: 10000;
+  z-index: 13000 !important;
   display: flex;
   justify-content: center;
   align-items: center;

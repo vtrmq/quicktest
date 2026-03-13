@@ -130,6 +130,7 @@ to {
   width: 100%;
   left: 0;
   height: 0;
+  z-index: 10000 !important;
 }
 .toolbar {
   background: #fff;

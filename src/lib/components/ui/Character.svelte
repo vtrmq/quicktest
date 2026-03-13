@@ -31,9 +31,11 @@ let durationInSeconds = 0;
 let visible = $state(false);
 let time = $state(-1);
 let mode = $state('');
+let wordsErrors: string[] = [];
 
 question = infoData.exercise.question;
 words = infoData.exercise.words;
+wordsErrors = infoData.exercise.wordsErrors;
 options = infoData.exercise.optionSuboptions;
 visible = infoData.visible;
 time = infoData.time;
@@ -86,12 +88,16 @@ function handleSelectWord(index: number) {
         words[index].selection_word = options[indexOptWord].option;
       }
     }
+    if (words[index].resp === false) {
+      wordsErrors.push(words[index].selection_word);
+    }
+
   } else {
     words[index].resp = false;
     words[index].selection_word = '';
   }
   
-  activityLocalstore.character(indexExercise, JSON.stringify(words), scales);
+  activityLocalstore.character(indexExercise, JSON.stringify(words), JSON.stringify(wordsErrors), scales);
 
 }
 

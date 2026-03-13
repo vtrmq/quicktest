@@ -243,7 +243,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
 
 {#if courses.length === 0}
   <div class="wr-none-data">
-    <NoneData>No hay datos para mostrar</NoneData>
+    <NoneData>El tema aún no ha sido asignado</NoneData>
   </div>
 {/if}
 

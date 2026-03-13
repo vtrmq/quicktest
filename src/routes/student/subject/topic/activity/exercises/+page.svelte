@@ -68,9 +68,11 @@ onMount(()=>{
   visible = true;
 });
 
-function handleActivity(index: number, _items: Item[], _viewResult: number) {
+function handleActivity(index: number, _items: Item[], _viewResult: number, _viewBtnSheet: boolean) {
 
   viewResult = _viewResult;
+  viewBtnSheet = _viewBtnSheet;
+
   if (index !== -1) {
     visible = false;
     type = _items[index].type;
@@ -128,6 +130,11 @@ async function handleSendActivity(activity: object, url: string) {
 
 }
 
+let viewBtnSheet = $state(true);
+function handlePropag(sw: boolean) {
+  viewBtnSheet = sw;
+}
+
 </script>
 
 <Toast bind:this={toast} />
@@ -140,7 +147,7 @@ async function handleSendActivity(activity: object, url: string) {
     {:else if type_activity === 'R'}
       <LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack>
     {/if}
-    <ListExercises {info} items={items} {handleActivity} {handleViewResult} {handleSendActivity} {isSend} />
+    <ListExercises {info} items={items} {handleActivity} {handleViewResult} {handleSendActivity} {isSend} {handlePropag} />
   </HeaderExercise>
 
   <div class="container-body" bind:this={containerBody} transition:fade>
@@ -181,7 +188,7 @@ async function handleSendActivity(activity: object, url: string) {
 
         {:else if type === 'test-pdf'}
 
-          <TestPDF {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <TestPDF {type_activity} {viewResult} {scales} {indexExercise} {infoData} {viewBtnSheet} />
 
         {:else if type === 'test-fs'}
 

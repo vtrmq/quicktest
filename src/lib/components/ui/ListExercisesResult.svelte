@@ -4,7 +4,6 @@ let { info, items, handleActivity, handleViewResult } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
-
 type NotaFinal = {
   nota: string;
   percentage: number;

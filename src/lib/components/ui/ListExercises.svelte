@@ -2,7 +2,7 @@
 import { page } from '$app/state';
 import { typeExerc, scaleNota, formatearNota, filtrarParametros } from "$lib/utils"
 import { activityLocalstore } from '$lib/store/activity_student';
-let { info, items, handleActivity, handleViewResult, handleSendActivity = ()=>{}, isSend = false } = $props();
+let { info, items, handleActivity, handleViewResult, handleSendActivity = ()=>{}, isSend = false, handlePropag = ()=>{} } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
@@ -32,6 +32,7 @@ type Activity = {
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
+  handlePropag(viewBox)
 }
 
 function handleSelectActivity(index: number) {
@@ -40,7 +41,7 @@ function handleSelectActivity(index: number) {
   viewBox = !viewBox;
   const _items = activityLocalstore.get();
   const viewResult = viewResultNota ? 1 : 2;
-  handleActivity(index, _items, viewResult);
+  handleActivity(index, _items, viewResult, viewBox);
 }
 
 function handleViewResultX() {
@@ -289,7 +290,7 @@ function handleSendTest() {
   font-size: 1em;
   background: #FF5722;
   color: #fff;
-  height: 100%;
+  height: 40px;
   transition: var(--transition);
   box-shadow: rgb(157 39 1) 0px 4px 0px 0px;
 }

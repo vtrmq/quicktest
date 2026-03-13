@@ -251,9 +251,9 @@ function handleUpdateQuestion() {
                 {/each}
 
                 <div class="wr-btns-te-wt">
-                  <button class="btn-te-wt ins-p-wt" onclick={()=>handleAddPoint()}>Colocar punto</button>
+                  <button class="btn-te-wt ins-p-wt" onclick={()=>handleAddPoint()}>Colocar respuesta</button>
                   {#if stateTest === "new"}
-                    <button class="btn-te-wt add-p-wt" onclick={()=>handleAddQuestion()}>Adicionar</button>
+                    <button class="btn-te-wt add-p-wt" onclick={()=>handleAddQuestion()}>Listo</button>
                   {:else if stateTest === "update"}
                     <button class="btn-te-wt add-p-wt" onclick={()=>handleUpdateQuestion()}>Actualizar</button>
                   {/if}

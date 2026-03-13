@@ -446,7 +446,7 @@ function handleStartVideo() {
 }
 
 :global(.container-win-test-wt) {
-  z-index: 9999 !important;
+  z-index: 12000 !important;
 }
 
 .wr-iframe {

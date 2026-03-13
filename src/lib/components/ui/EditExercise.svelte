@@ -85,7 +85,7 @@ let timeLecture = $state(60);
 
 type pointTestPDF = {
   errors: number;
-  points: { char: string, rst: boolean, rss: boolean }[];
+  points: { char: string, rst: boolean, rss: boolean, success: boolean }[];
   value: number;
   success: boolean;
 };
@@ -1122,7 +1122,7 @@ async function handleSaveActivities() {
 function handleAddPointTestPDF() { 
   let points = [];
   for (let i = 0; i < chars.length; i++) {
-    points.push({ char: chars[i], rst: false, rss: false });
+    points.push({ char: chars[i], rst: false, rss: false, success: false });
   }
   arrayQuestionsTestPDF.push({
     errors: 0,
@@ -1153,7 +1153,7 @@ function handleChangeCountPoint(e: Event, index: number) {
   const value = parseInt((e.target as HTMLSelectElement).value);
   let points = [];
   for (let i = 0; i < value; i++) {
-    points.push({ char: chars[i], rst: false, rss: false });
+    points.push({ char: chars[i], rst: false, rss: false, success: false });
   }
   arrayQuestionsTestPDF[index].points = points;
 }
@@ -1880,9 +1880,9 @@ $effect(()=>{
 .wr-file-name {
   font-family: var(--font-normal);
   margin-bottom: 1em;
-  border-top: 1px solid var(--color-line);
-  border-bottom: 1px solid var(--color-line);
-  padding: 10px 0;
+  padding: 1em;
+  background: blanchedalmond;
+  border-radius: 5px;
 }
 .wr-container-btn-file-pdf {
   display: flex;

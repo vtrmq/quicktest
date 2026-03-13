@@ -12,9 +12,15 @@
   color: #fff;
   transition: var(--transition);
   box-shadow: #0662ab 0px 4px 0px 0px;
+  font-size: 1em;
 }
 .btn-close-sheet:hover {
   background: var(--bg-blue-hover);
+}
+@media(min-width: 700px) {
+  .btn-close-sheet {
+    font-size: 0.9em;
+  }
 }
 .header-sheet-response {
   display: flex;
@@ -90,9 +96,10 @@
 .sheet-response {
   position: fixed;
   height: 100%;
-  width: 320px;
+  max-width: 390px;
+  width: 100%;
   top: 0;
-  right: -330px;
+  right: -390px;
   background: #fff;
   z-index: 1000;
   border-left: 1px solid;
@@ -102,9 +109,11 @@
   right: 0;
 }
 .btn-sheet {
-  position: absolute;
-  top: 20px;
-  right: 30px;
+  z-index: 12;
+  height: 40px;
+  position: fixed;
+  top: 9px;
+  right: 59px;
   padding: 0.7em 1em;
   border-radius: 5px;
   cursor: pointer;
@@ -114,6 +123,7 @@
   color: #fff;
   transition: var(--transition);
   box-shadow: #0662ab 0px 4px 0px 0px;
+  font-size: 1em;
 }
 .btn-sheet:hover {
   background: var(--bg-blue-hover);
