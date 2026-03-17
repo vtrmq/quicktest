@@ -77,8 +77,9 @@ let activity: Exercise | undefined = $state();
 let testPDF = $state();
 let infoData = $state();
 
-function handleActivity(index: number, _items: Item[]) {
+function handleActivity(index: number, _items: Item[], _viewBtnSheet: boolean) {
   if (index !== -1) {
+    viewBtnSheet = _viewBtnSheet;
     visible = false;
     intro = false;
     type = _items[index].type;
@@ -126,6 +127,11 @@ function handleActivity(index: number, _items: Item[]) {
 onDestroy(()=>{
   activityLocalstore.clear();
 });
+
+let viewBtnSheet = $state(true);
+function handlePropag(sw: boolean) {
+  viewBtnSheet = sw;
+}
 </script>
 
 <HeaderExercise>
@@ -134,7 +140,12 @@ onDestroy(()=>{
   {:else if root.origin === "activity"}
     <LinkBack href="/teacher/topic/activity?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack>
   {/if}
-  <EditExercise params={{activityId: data.activityId, topicId: data.topicId}} topic={data.topic} activity={data.activity} items={items} {handleActivity} />
+  <EditExercise 
+    params={{activityId: data.activityId, topicId: data.topicId}} 
+    topic={data.topic} 
+    activity={data.activity} 
+    items={items} 
+    {handleActivity} {handlePropag} />
 </HeaderExercise>
 
 <!--Toast bind:this={toast} /-->
@@ -167,7 +178,7 @@ onDestroy(()=>{
 
           {:else if type === 'test-pdf'}
 
-            <TestPDFEdit {testPDF} />
+            <TestPDFEdit {testPDF}  {viewBtnSheet} />
 
           {:else if type === 'match'}
 

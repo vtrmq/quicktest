@@ -1,4 +1,5 @@
 <script lang="ts">
+import { FOLDER_IMAGES, R2_DOMAIN } from '$lib/utils';
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 
@@ -29,6 +30,7 @@ type Line = {
    PROPS + STATE
 ======================= */
 let { activity, intro = true, indexExercise = -1 } = $props();
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
 let visibleWord = $state(true);
 let imagenPointOut = $state('');
@@ -405,7 +407,7 @@ function handleDraw() {
     onpointermove={onPointerMove}
   >
     <div class="stage-point-out">
-      <img src={imagenPointOut} draggable="false" alt="" />
+      <img src="{root_image}/{imagenPointOut}" draggable="false" alt="" />
       <canvas bind:this={canvas}></canvas>
 
       {#each placedOptions as item (item.id)}

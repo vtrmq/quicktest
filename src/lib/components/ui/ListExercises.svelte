@@ -32,7 +32,7 @@ type Activity = {
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
-  handlePropag(viewBox)
+  handlePropag(viewBox);
 }
 
 function handleSelectActivity(index: number) {

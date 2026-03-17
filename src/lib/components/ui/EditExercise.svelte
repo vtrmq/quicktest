@@ -1,5 +1,5 @@
 <script lang="ts">
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, FOLDER_FILES } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, FOLDER_FILES, quitarExtension } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
 import colocarPalabra from '$lib/assets/images/colocar-palabra.png';
 import colocarPartes from '$lib/assets/images/colocar-partes.png';
@@ -51,8 +51,9 @@ type Option = {
   option: string;
 };
 
-let { params, items, handleActivity, topic, activity } = $props();
+let { params, items, handleActivity, topic, activity, handlePropag = ()=>{} } = $props();
 const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
@@ -129,6 +130,7 @@ function handleViewBoxExercise() {
   viewBox = !viewBox;
   sheet = 'ejercises';
   reset();
+  handlePropag(viewBox)
 }
 
 function handleNewExercise() {
@@ -753,7 +755,7 @@ function handleDone() {
     if (stateExercise === 'new') {
       items.push({
         type:'test-fs', 
-        exercise: {content, points: arrayQuestionsTestFS}, 
+        exercise: {content, points: arrayQuestionsTestFS, wordsErrors: []}, 
         value: 0, 
         mode: typeExercise, 
         typeExercise, 
@@ -762,6 +764,7 @@ function handleDone() {
       });
     } else if (stateExercise === 'update') {// Se agregó un nuevo punto al examen
       items[indexExercise].exercise.content = content;
+      items[indexExercise].exercise.wordsErrors = [];
       items[indexExercise].exercise.points = arrayQuestionsTestFS;
     }
 
@@ -847,6 +850,7 @@ function handleUpload() {
   album?.handleShowAlbum();
 }
 
+// ======================================================
 async function handleImageSelect(image: string) {
   let localText: string = `${root}/${image}`;
   if (posImage === 'image-question') {
@@ -854,11 +858,13 @@ async function handleImageSelect(image: string) {
   } else if (posImage === 'image-item') {
     questionTest.answers[posItem].image = localText;
   } else if (posImage === 'image-question-fs') {
-    questionTestFS.image = localText;
+    questionTestFS.image = image;
   } else if (posImage === 'image-point-out') {
-    imagePointOut = localText;
+    //imagePointOut = localText;
+    imagePointOut = image;
   }
 }
+// ======================================================
 
 async function handleFileSelect(file_name: string, file_pdf: string) {
   fileName = file_name;
@@ -905,7 +911,7 @@ function handleSelectActivity(index: number) {
   itemResaltado = index;
   viewBox = !viewBox;
   const _items = activityLocalstore.get();
-  handleActivity(index, _items);
+  handleActivity(index, _items, viewBox);
 }
 
 function handleActionShowWin(index: number) {
@@ -1081,9 +1087,17 @@ function handleActionShowWinItemFS(index: number) {
   });
 }
 
-async function handleAudioSelect(_audio: string) {
-  let localAudio: string = `${root_audio}/${_audio}`;
-  questionTestFS.audio = localAudio;
+type Audio = {
+  shadow_audio: string;
+  name: string;
+}
+async function handleAudioSelect(_audio: Audio) {
+  console.log(_audio.name)
+  console.log(_audio.shadow_audio)
+  //let localAudio: string = `${root_audio}/${_audio}`;
+  //let localAudio: string = `${root_audio}/${_audio}`;
+  questionTestFS.audio = _audio.shadow_audio;
+  questionTestFS.text = quitarExtension(_audio.name);
 }
 
 function handleUploadAudio() {
@@ -1092,6 +1106,7 @@ function handleUploadAudio() {
 
 function handleRemoveAudioQuestionFS() {
   questionTestFS.audio = '';
+  questionTestFS.text = '';
 }
 
 function handleUploadPointOut() {
@@ -1188,6 +1203,7 @@ $effect(()=>{
 <Dialog bind:this={dialog} action={handleActionDelete} />
 
 <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
+
 <div class="container-edit-exercise" class:view-box={viewBox}>
   <div class="header-box-exercise">
     {#if sheet === 'ejercises'}
@@ -1432,7 +1448,7 @@ $effect(()=>{
         {#if imagePointOut.length !== 0}
           <div>
             <div class="wr-image-question">
-              <img class="image-question" src={imagePointOut} alt="" />
+              <img class="image-question" src="{root_image}/{imagePointOut}" alt="" />
               <button class="btn-remove-image-test" onclick={handleUploadPointOut}>{@html image}</button>
             </div>
           </div>
@@ -1742,7 +1758,7 @@ $effect(()=>{
     {:else if sheet === 'test-fs'}
 
       <div class="wr-container-btn-file-pdf">
-        <p class="label-type-test-pdf">Test FS</p>
+        <p class="label-type-test-pdf">Test audio</p>
         <TextArea name="def" label="Descripción" bind:value={content} --height-text-area="60px" isError={false} />
       </div>
 
@@ -1763,14 +1779,14 @@ $effect(()=>{
             {#if qs.image.length !== 0}
               <div>
                 <div class="wr-image-question">
-                  <img class="image-question" src={qs.image} alt="" />
+                  <img class="image-question" src="{root_image}/{qs.image}" alt="" />
                 </div>
               </div>
             {/if}
 
             {#if qs.audio.length !== 0}
               <div class="wr-audio-edit">
-                <audio class="audio" src={qs.audio} controls></audio>
+                <audio class="audio" src="{root_audio}/{qs.audio}" controls></audio>
               </div>
             {/if}
 
@@ -1799,7 +1815,7 @@ $effect(()=>{
         <div class="container-images-question">
           <div>
             <div class="wr-image-question">
-              <img class="image-question" src={questionTestFS.image} alt="" />
+              <img class="image-question" src="{root_image}/{questionTestFS.image}" alt="" />
               <button class="btn-remove-image-test" onclick={handleRemoveImageQuestionFS}>{@html trash}</button>
             </div>
           </div>
@@ -1809,7 +1825,7 @@ $effect(()=>{
       <!--- ================================================ -->
       {#if questionTestFS.audio.length !== 0}
         <div class="wr-audio-edit">
-          <audio class="audio" src={questionTestFS.audio} controls></audio>
+          <audio class="audio" src="{root_audio}/{questionTestFS.audio}" controls></audio>
           <button class="btn-remove-audio-fs" onclick={handleRemoveAudioQuestionFS}>{@html trash}</button>
         </div>
       {/if}
@@ -2079,7 +2095,7 @@ to {
 .row-items {
   display: flex;
   flex-direction: column;
-  gap: 0.7em;
+  gap: 1em;
 }
 .wr-select-value {
   display: flex;
@@ -2188,9 +2204,9 @@ to {
   background: #e1f1f9;
   align-items: center;
   padding-right: 0.3em;
-  /*box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;*/
   border-radius: 6px;
   transition: var(--transition);
+  box-shadow: rgb(106 172 203) 0px 7px 0px 0px;
 }
 .row-link-activity:hover {
   background: #cee8f5;

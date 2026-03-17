@@ -1,100 +1,105 @@
 <script lang="ts">
-    import { page } from "$app/state";
-    import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
-    import { filtrarParametros, extractParams } from "$lib/utils";
-    import { Toast } from "$lib/components";
+import { page } from "$app/state";
+import { onMount } from "svelte";
+import { fade } from "svelte/transition";
+import { filtrarParametros, extractParams } from "$lib/utils";
+import { Toast } from "$lib/components";
 
-    import {
-        HeaderExercise,
-        ListExercisesResult,
-        Match,
-        Morphosyntax,
-        PointOut,
-        SelectWord,
-        Character,
-        Test,
-        TestPDF,
-        TestFS,
-        LinkBack,
-    } from "$lib/components";
+import {
+  HeaderExercise,
+  ListExercisesResult,
+  Match,
+  Morphosyntax,
+  PointOut,
+  SelectWord,
+  Character,
+  Test,
+  TestPDF,
+  TestFS,
+  LinkBack,
+} from "$lib/components";
 
-    let { data } = $props();
-    let visible = $state(false);
-    let toast = $state<Toast | null>(null);
-    const search = filtrarParametros(page.url.href, [
-        "teacherId",
-        "courseId",
-        "subjectId",
-        "topicId",
-        "activityId",
-        "origin",
-    ]);
+let { data } = $props();
+let visible = $state(false);
+let toast = $state<Toast | null>(null);
+const search = filtrarParametros(page.url.href, [
+  "teacherId",
+  "courseId",
+  "subjectId",
+  "topicId",
+  "activityId",
+  "origin",
+]);
 
-    const back = extractParams(page.url.href, ["origin"]);
-    let scales = data.info?.scales;
-    let type_activity = data.info?.activity.type_general;
+const back = extractParams(page.url.href, ["origin"]);
+let scales = data.info?.scales;
+let type_activity = data.info?.activity.type_general;
 
-    type Item = {
-        exercise: {};
-        points: [];
-        type: string;
-    };
+type Item = {
+  exercise: {};
+  points: [];
+  type: string;
+};
 
-    type Info = {
-        activity: { activity: string };
-        activityId: number;
-        courseId: number;
-        origin: string;
-        scales: object;
-        subjectId: number;
-        teacherId: number;
-        topic: string;
-        topicId: number;
-    };
+type Info = {
+  activity: { activity: string };
+  activityId: number;
+  courseId: number;
+  origin: string;
+  scales: object;
+  subjectId: number;
+  teacherId: number;
+  topic: string;
+  topicId: number;
+};
 
-    let items = data.items;
-    let type = $state("info");
-    let containerBody = $state() as HTMLDivElement;
-    let info: Info = data.info as Info;
-    let indexExercise = $state(-1);
+let items = data.items;
+let type = $state("info");
+let containerBody = $state() as HTMLDivElement;
+let info: Info = data.info as Info;
+let indexExercise = $state(-1);
 
-    let infoData = $state();
-    let viewResult = $state(0);
+let infoData = $state();
+let viewResult = $state(0);
 
-    onMount(() => {
-        visible = true;
-    });
+onMount(() => {
+  visible = true;
+});
 
-    function handleActivity(
-        index: number,
-        _items: Item[],
-        _viewResult: number,
-    ) {
-        viewResult = _viewResult;
-        if (index !== -1) {
-            visible = false;
-            type = _items[index].type;
-            indexExercise = index;
-            infoData = _items[index];
-            setTimeout(() => {
-                visible = true;
-            }, 200);
-        }
+function handleActivity(
+  index: number,
+  _items: Item[],
+  _viewResult: number, _viewBtnSheet: boolean
+) {
+  viewResult = _viewResult;
+  viewBtnSheet = _viewBtnSheet;
+  if (index !== -1) {
+    visible = false;
+    type = _items[index].type;
+    indexExercise = index;
+    infoData = _items[index];
+    setTimeout(() => {
+      visible = true;
+    }, 200);
+  }
 
-        setTimeout(() => {
-            if (containerBody) {
-                containerBody.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                });
-            }
-        }, 200);
+  setTimeout(() => {
+    if (containerBody) {
+      containerBody.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
+  }, 200);
+}
 
-    function handleViewResult(_viewResult: number) {
-        viewResult = _viewResult;
-    }
+function handleViewResult(_viewResult: number) {
+  viewResult = _viewResult;
+}
+let viewBtnSheet = $state(true);
+function handlePropag(sw: boolean) {
+  viewBtnSheet = sw;
+}
 
 </script>
 
@@ -115,12 +120,13 @@
         href="/student/subject/topic/content?{search}"
         --color-link="#fff">Volver</LinkBack>
     {/if}
-        <ListExercisesResult
-            {info}
-            {items}
-            {handleActivity}
-            {handleViewResult}
-        />
+    <ListExercisesResult
+      {info}
+      {items}
+      {handleActivity}
+      {handleViewResult}
+      {handlePropag}
+    />
     </HeaderExercise>
 
     <div class="container-body" bind:this={containerBody} transition:fade>
@@ -188,11 +194,12 @@
                 {:else if type === "test-pdf"}
                     <TestPDF
                         {type_activity}
-                        {viewResult}
+                        viewResult = {2}
                         {scales}
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        {viewBtnSheet}
                     />
                 {:else if type === "test-fs"}
                     <TestFS

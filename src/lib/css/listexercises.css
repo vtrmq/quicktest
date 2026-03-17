@@ -158,7 +158,7 @@ to {
   /*box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;*/
   border-radius: 6px;
   transition: var(--transition);
-  box-shadow: rgb(77 156 193) 0px 7px 0px 0px;
+  box-shadow: rgb(106 172 203) 0px 7px 0px 0px;
 }
 .row-link-activity-exerc:hover {
   background: #cee8f5;

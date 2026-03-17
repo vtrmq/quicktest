@@ -1,8 +1,10 @@
 <script lang="ts">
+import { FOLDER_IMAGES, R2_DOMAIN } from '$lib/utils';
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
 import { Toast } from '$lib/components';
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
 
@@ -160,7 +162,7 @@ function handleSelectOption(opt: Opt) {
 
   <div class="image-container-point-out" bind:this={container}>
     <div class="stage-point-out">
-      <img src={imagenPointOut} draggable="false" alt="" />
+      <img src="{root_image}/{imagenPointOut}" draggable="false" alt="" />
       <canvas bind:this={canvas}></canvas>
 
       {#each placedOptions as item, index}

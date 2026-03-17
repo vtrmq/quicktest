@@ -216,7 +216,6 @@ onMount(() => {
 .subject {
   font-weight: 700;
   font-size: 1.2em;
-  text-transform: uppercase;
 }
 .resaltar {
   color: aliceblue;

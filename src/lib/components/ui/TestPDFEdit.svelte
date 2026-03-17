@@ -1,5 +1,6 @@
 <script lang="ts">
-let { testPDF } = $props();
+import { fade } from 'svelte/transition';
+let { testPDF, viewBtnSheet } = $props();
 let modeSheet = $state(false);
 function handleModeSheet() {
   modeSheet = !modeSheet;
@@ -8,7 +9,9 @@ function handleModeSheet() {
 
 <iframe title="" class="iframe-test" src={testPDF.file} frameborder="0"></iframe>
 
-<button class="btn-sheet" onclick={handleModeSheet}>Hoja de respuesta</button>
+{#if !viewBtnSheet}
+  <button class="btn-sheet" onclick={handleModeSheet} transition:fade={{ duration: 180 }}>Hoja de respuesta</button>
+{/if}
 
 <div class="sheet-response" class:view-sheet={modeSheet}>
   <div class="header-sheet-response">

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { ordenarPorClave, ordenarNumeros } from '$lib/utils';
 
@@ -76,7 +77,7 @@ function handleValidated() {
 <iframe title="" class="iframe-test" src={infoData.exercise.file} frameborder="0"></iframe>
 
 {#if !viewBtnSheet}
-  <button class="btn-sheet" onclick={handleModeSheet}>Hoja de respuesta</button>
+  <button class="btn-sheet" onclick={handleModeSheet} transition:fade={{ duration: 180 }}>Hoja de respuesta</button>
 {/if}
 
 <div class="sheet-response" class:view-sheet={modeSheet}>
@@ -85,10 +86,18 @@ function handleValidated() {
     <div class="wr-btns-r">
       {#if type_activity === "R"}
         <button class="btn-result-exerc" onclick={()=>handleValidated()}>
-          {#if viewResult === 2}
-            Resultados
-          {:else}
-            Continuar
+          {#if isActionStudent}
+            {#if viewResult === 2}
+              Resultados
+            {:else}
+              Continuar
+            {/if}
+          {:else if isActionStudent === false}
+            {#if viewResult === 2}
+              Validar
+            {:else}
+              Resultados
+            {/if}
           {/if}
         </button>
       {/if}

@@ -1,5 +1,8 @@
 <script lang="ts">
-import { corregirIEnFrase } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase } from '$lib/utils';
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
+
 type Words = {
   id: number;
   word: string;
@@ -36,14 +39,14 @@ function handleSelectWordFSRemove(point: number, index: number) {
         {#if qs.image.length !== 0}
           <div class="box-image-question-fs">
             <div class="wr-image-question-fs">
-              <img class="image-question-fs" src={qs.image} alt="" />
+              <img class="image-question-fs" src="{root_image}/{qs.image}" alt="" />
             </div>
           </div>
         {/if}
 
         {#if qs.audio.length !== 0}
           <div class="wr-audio-fs">
-            <audio class="audio-fs" src={qs.audio} controls></audio>
+            <audio class="audio-fs" src="{root_audio}/{qs.audio}" controls></audio>
           </div>
         {/if}
 

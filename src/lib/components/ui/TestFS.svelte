@@ -1,6 +1,8 @@
 <script lang="ts">
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
-import { corregirIEnFrase } from '$lib/utils';
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 
 type Words = {
   id: number;
@@ -28,7 +30,8 @@ function handleSelectWordFS(point: number, index: number) {
   }
   if (viewResult === 1) return;
   points[point].answersFS.push(points[point].words[index]);
-  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
+  console.log($state.snapshot(points[point]))
+  //activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 function handleSelectWordFSRemove(point: number, index: number) {
   if (isActionStudent === false) return;
@@ -40,7 +43,8 @@ function handleSelectWordFSRemove(point: number, index: number) {
   }
   if (viewResult === 1) return;
   points[point].answersFS.splice(index, 1);
-  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
+  console.log($state.snapshot(points[point]))
+  //activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 </script>
 
@@ -56,14 +60,14 @@ function handleSelectWordFSRemove(point: number, index: number) {
         {#if qs.image.length !== 0}
           <div>
             <div class="wr-image-question-fs">
-              <img class="image-question-fs" src={qs.image} alt="" />
+              <img class="image-question-fs" src="{root_image}/{qs.image}" alt="" />
             </div>
           </div>
         {/if}
 
         {#if qs.audio.length !== 0}
           <div class="wr-audio-fs">
-            <audio class="audio-fs" src={qs.audio} controls></audio>
+            <audio class="audio-fs" src="{root_audio}/{qs.audio}" controls></audio>
           </div>
         {/if}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { typeExerc, scaleNota, formatearNota } from "$lib/utils"
-let { info, items, handleActivity, handleViewResult } = $props();
+let { info, items, handleActivity, handleViewResult, handlePropag = ()=>{} } = $props();
 import menu from '$lib/assets/svg/menu.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 
@@ -19,13 +19,14 @@ let student = info.student;
 
 function handleViewBoxExercise() {
   viewBox = !viewBox;
+  handlePropag(viewBox);
 }
 
 function handleSelectActivity(index: number) {
   viewResult = 0;
   itemResaltado = index;
   viewBox = !viewBox;
-  handleActivity(index, items, viewResult);
+  handleActivity(index, items, viewResult, viewBox);
 }
 
 function handleViewResultX(option: string) {
