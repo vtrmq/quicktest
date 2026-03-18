@@ -1,5 +1,5 @@
 <script lang="ts">
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase, ordenarPorClave } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
@@ -15,10 +15,22 @@ type Point = {
   audio: string;
 }
 
+type WordError = {
+  point: number;
+  errors: string[];
+};
+
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
 
 points = infoData.exercise.points;
+wordsErrors = infoData.exercise.wordsErrors;
+
+$effect(()=>{
+  console.log($state.snapshot(infoData))
+  console.log($state.snapshot(points))
+});
 
 function handleSelectWordFS(point: number, index: number) {
   if (isActionStudent === false) return;
@@ -29,10 +41,34 @@ function handleSelectWordFS(point: number, index: number) {
     }
   }
   if (viewResult === 1) return;
+
   points[point].answersFS.push(points[point].words[index]);
-  console.log($state.snapshot(points[point]))
-  //activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
+  const answers = points[point].answersFS;
+  const words = ordenarPorClave(points[point].words, "id");
+
+  if (answers.length <= words.length) {
+    for (let i = 0; i < answers.length; i++) {
+      let sw = false;
+      if (answers[i].word !== words[i].word) {
+        for (let x = 0; x < wordsErrors.length; x++) {
+          if (wordsErrors[x].point === point) {
+            sw = true;
+            if (!wordsErrors[x].errors.includes(answers[i].word)) {
+              wordsErrors[x].errors.push(answers[i].word);
+            }
+          }
+        }
+        if (sw === false) {
+          wordsErrors.push({point: point, errors: [answers[i].word]});
+        }
+      }
+    }
+  }
+
+  const _wordsErrors = ordenarPorClave(wordsErrors, "point");
+  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales, JSON.stringify(_wordsErrors));
 }
+
 function handleSelectWordFSRemove(point: number, index: number) {
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
@@ -43,8 +79,9 @@ function handleSelectWordFSRemove(point: number, index: number) {
   }
   if (viewResult === 1) return;
   points[point].answersFS.splice(index, 1);
-  console.log($state.snapshot(points[point]))
-  //activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
+  //console.log($state.snapshot(points))
+  //console.log($state.snapshot(points[point]))
+  activityLocalstore.testFS(indexExercise, JSON.stringify(points), scales);
 }
 </script>
 

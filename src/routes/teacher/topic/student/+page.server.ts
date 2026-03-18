@@ -34,6 +34,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
         SELECT 
     a.student_id,
     a.nota,
+    a.answer,
     a.performance,
     u.name,
     u.surnames
@@ -50,13 +51,19 @@ WHERE
 
     ]);
 
+    
+    const _students = students.results || null;
+    for (let i = 0; i < _students.length; i++) {
+      _students[i].answer = _students[i].answer !== null ? JSON.parse(_students[i].answer) : [];
+    }
+
     const result = {
       course: course.results[0] || null,
       subject: subject.results[0] || null,
       topic: topic.results[0] || null,
       teacher: teacher.results[0] || null,
       activity: activity.results[0] || null,
-      students: students.results || null,
+      students: _students,
       scale: scale.results || [],
     };
 

@@ -141,7 +141,7 @@ function handleSelectOption(opt: Opt) {
       return;
     }
   }
-  if (viewResult === 0) {
+  if (viewResult === 0 || viewResult === 2) {
     selectedOption = opt
   }
   //{viewResult === 0 ? selectedOption = opt : ()=>{}}

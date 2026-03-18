@@ -303,7 +303,7 @@ export const activityLocalstore = {
     }
   },
 
-  testFS: (indexExercise: number, data: any, scales: { scale: string; min_value: number; max_value: number }[]) => {
+  testFS: (indexExercise: number, data: any, scales: { scale: string; min_value: number; max_value: number }[], wordsErrors: null | string = null) => {
     const activities = localStorage.getItem(act);
     if (activities) {
       const exercises = JSON.parse(activities);
@@ -322,6 +322,9 @@ export const activityLocalstore = {
         }
       }
       const result = handleResultNota(totalPoints, sumPoints, scales);
+      if (wordsErrors) {
+        exercises[indexExercise].exercise.wordsErrors = JSON.parse(wordsErrors);
+      }
       exercises[indexExercise].exercise.points = _data;
       exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
       localStorage.setItem(act, JSON.stringify(exercises));

@@ -10,6 +10,7 @@ import {
   scaleNota,
   extractParams,
   drawChartCircle,
+  countsErrorsPoints,
 } from '$lib/utils';
 import { onMount } from 'svelte';
 
@@ -23,6 +24,8 @@ type Student = {
   performance: string;
   name: string;
   surnames: string;
+  answer: [];
+  pointsErrors: [];
 }
 
 let { data } = $props();
@@ -37,6 +40,12 @@ let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
 
 let root = $state('');
 let url = extractParams(page.url.href, ["courseId", "subjectId", "activityId", "origin", "topicId"]);
+
+for (let i = 0; i < students.length; i++) {
+  const resp: any = countsErrorsPoints(students[i].answer)
+  students[i].pointsErrors = resp;
+}
+//console.log($state.snapshot(students))
 
 root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
 
@@ -113,10 +122,18 @@ onMount(()=>{
                 </div>
               </div>
               <div class="box-course">
-                <div>
+                <div class="info">
                   <div class="info-course"><p class="activity">{row.name} {row.surnames}</p></div>
                   <div class="info-p">
                     <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
+                  </div>
+                  <div class="wrapper-btns-errors">
+                    {#each row.pointsErrors as points, index }
+                     <button class="btn-errors">
+                        <span class="span-index">{index + 1}</span>
+                        <span class="span-points">{points}</span>
+                      </button> 
+                    {/each}
                   </div>
                 </div>
                 <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html fileSpreadsheet}</a>
@@ -139,6 +156,34 @@ onMount(()=>{
 {/if}
 
 <style>
+.info {
+  width: 100%;
+}
+.wrapper-btns-errors {
+  display: flex;
+  gap: 1em;
+  margin-top: 0.5em;
+}
+.btn-errors {
+  width: 25px;
+  font-family: var(--font-normal);
+  display: grid;
+  grid-template-rows: 15px 20px;
+  cursor: pointer;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.span-index {
+  background: #f8b869;
+}
+.span-points {
+  background: #0093d5f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: 600;
+}
 .teacher {
   font-size: 1.1em;
   font-family: var(--font-normal);

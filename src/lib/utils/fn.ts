@@ -3,6 +3,30 @@ type Words = {
   word: string;
 };
 
+export function countsErrorsPoints(answers: any = []) {
+  //console.log(answers)
+  const counts = [];
+  for (let i = 0; i < answers.length; i++) {
+    if (answers[i].type === "test" || answers[i].type === "test-fs" || answers[i].type === "test-pdf") {
+      const wordsErrors = answers[i].exercise.wordsErrors;
+      let countErrors = 0;
+      for (let j = 0; j < wordsErrors.length; j++) {
+        countErrors = countErrors + wordsErrors[j].errors.length;
+      }
+      counts.push(countErrors);
+    } else if (answers[i].type === "select" || 
+      answers[i].type === "match" || 
+      answers[i].type === "point-out" || 
+      answers[i].type === "character" || 
+      answers[i].type === "morphosyntax"
+    ) {
+      const wordsErrors = answers[i].exercise.wordsErrors.length;
+      counts.push(wordsErrors);
+    }
+  }
+  return counts;
+}
+
 export function ordenarNumeros(lista: number[]): number[] {
   // Usamos la resta (a - b) para definir el orden numérico
   return [...lista].sort((a, b) => a - b);
