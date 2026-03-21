@@ -45,19 +45,27 @@ function handleChangeCheck(e: boolean) {
     <div class="win-dialog" onclick={(e)=>e.stopPropagation()} onkeyup={()=>{}} role="button" tabindex="0">
       <BtnX onclick={()=>isDisplay = false} />
       <div>
-        <div class="container-info">
-          <div class="container-icon">
-            {#if data.type === 'delete'}
-              {@html trash}
-            {:else if data.type === 'info'}
-              {@html info}
-            {/if}
+        {#if data.type !== ''}
+          <div class="container-info">
+            <div class="container-icon">
+              {#if data.type === 'delete'}
+                {@html trash}
+              {:else if data.type === 'info'}
+                {@html info}
+              {/if}
+            </div>
+            <p class="message">{@html data.message}</p>
           </div>
-          <p class="message">{@html data.message}</p>
-        </div>
-        <div class="wr-checkbox">
-          Confirmar operación <CheckBox name="checkbox" checked={isChecked} onchange={handleChangeCheck}/>
-        </div>
+        {:else}
+          <div>{@html data.message}</div>
+        {/if}
+
+        {#if data.type === 'delete'}
+          <div class="wr-checkbox">
+            Confirmar operación <CheckBox name="checkbox" checked={isChecked} onchange={handleChangeCheck}/>
+          </div>
+        {/if}
+
         <div class="container-btns">
           <Button bg="none" onclick={()=>handleAction('cancel')}>{data.type === 'delete' ? 'Cancelar' : 'Cerrar'}</Button>
           {#if data.type === 'delete'}
@@ -70,6 +78,28 @@ function handleChangeCheck(e: boolean) {
 {/if}
 
 <style>
+:global {
+  .title-err {
+    color: #fff;
+    font-family: var(--font-normal);
+    font-size: 1.2em;
+    margin-bottom: 1em;
+    line-height: 27px;
+  }
+  .body-data-err {
+    color: #fff;
+    font-family: var(--font-normal);
+    display: flex;
+    gap: 1em;
+    margin-bottom: 2em;
+  }
+  .ul-err {
+    margin-left: 1.2em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+}
 :global(.container-icon > svg) {
   width: 60px;
   color: #fff;

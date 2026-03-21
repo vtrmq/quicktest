@@ -1,7 +1,7 @@
 <script lang="ts">
 import { activityLocalstore } from "$lib/store/activity_student";
 import { colorSynt, bgColorSynt, wordObjects, shuffleArray } from '$lib/utils';
-import { Select } from "$lib/components";
+import { Select, Dialog } from "$lib/components";
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 
 type ArrWord = {
@@ -31,6 +31,7 @@ type SelectMorphosyntax = {
   description: string;
 }
 
+let dialog = $state<Dialog | null>(null);
 let arrWords: ArrWord[] = $state([]);
 let arrWordsBox: ArrWordBox[][] = $state([]);
 let numRow = -1;
@@ -42,10 +43,26 @@ let arrSelectMorphosyntax: SelectMorphosyntax[] = $state([]);
 arrWords = infoData.exercise.arrWords;
 arrWordsBox = infoData.exercise.syntax.arrWordsBox;
 
-console.log($state.snapshot(infoData))
+//console.log($state.snapshot(infoData))
 
 function selectSynt(e: any, row: number, column: number) {
   e.stopPropagation();
+  if (isWordsErrors) {
+    const errors = arrWordsBox[row][column].errors;
+    if (errors.length === 0) return;
+    //console.log($state.snapshot(arrWordsBox[row][column]))
+    const err = errors.map(palabra => `<li>${palabra}</li>`).join('');
+    const title = errors.length === 1 ? "Palabra erronea seleccionada" : "Palabras erroneas seleccionadas";
+    dialog?.show({
+      type: '',
+      message: `
+        <h1 class="title-err">${title}</h1>
+        <div class="body-data-err">
+          <ul class="ul-err">${err}</ul>
+        </div>`,
+    });
+    return;
+  }
 
   if (isActionStudent === false) return;
 
@@ -162,6 +179,8 @@ loadSintax();
 
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
+
 {#if showWinInput}
   <div class="bg-morphosyntax">
     <div class="win-syn">
@@ -224,6 +243,9 @@ loadSintax();
                     font-size: {rs.size}px;" 
                   onclick={(e)=>selectSynt(e, index, bx)} role="button" tabindex="0" onkeyup={()=>{}}>
                   {rs.response.morphosyntax}
+                  {#if isWordsErrors && rs.errors.length !== 0}
+                    <span class="bool-errors-morphosyntax">👆</span>
+                  {/if}
                 </div>
               </div>
             {/each}

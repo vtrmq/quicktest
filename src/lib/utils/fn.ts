@@ -156,8 +156,6 @@ export function addCountTest(questions: Question[], wordsErrors: WordError[]): Q
   // Hacemos una copia profunda si no quieres mutar el array original (opcional)
   // const updatedQuestions = JSON.parse(JSON.stringify(questions)); 
   
-  console.log(questions)
-
   // 1. Inicializamos TODOS los puntos con error: false
   // Esto garantiza que la propiedad exista en todos los objetos.
   questions.forEach(question => {

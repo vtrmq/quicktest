@@ -1,3 +1,9 @@
+.bool-errors-morphosyntax {
+  position: absolute;
+  right: -3px;
+  bottom: -1px;
+  font-size: 1.1em;
+}
 .text-syn-morpho {
   font-family: var(--font-normal);
   font-size: 1.1em;

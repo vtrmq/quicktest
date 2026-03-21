@@ -2,6 +2,7 @@
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
 import { ALFABETO, ordenarPorClave, ordenarNumeros, addCountTestSimple } from '$lib/utils';
+import { Dialog } from "$lib/components";
 import { activityLocalstore } from "$lib/store/activity_student";
 
 type Point = {
@@ -17,6 +18,7 @@ type WordError = {
   errors: number[];
 };
 
+let dialog = $state<Dialog | null>(null);
 let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
 
@@ -80,6 +82,23 @@ function startProgress() {
 
 
 function handleSelectItem(point: number, index: number) {
+
+  if (isWordsErrors) {
+    //console.log(point, index)
+    //console.log($state.snapshot(points))
+    const error = points[point].answers[index].error;
+    //console.log($state.snapshot(error))
+    if (error) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">Respuesta seleccionada erroneamente</h1>
+        `,
+      });
+    }
+    return;
+  }
+
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -120,6 +139,7 @@ function handleSelectItem(point: number, index: number) {
 
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
 
 <div class="rf-test">
   {#if mode === 'normal'}

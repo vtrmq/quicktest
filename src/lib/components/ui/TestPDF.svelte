@@ -2,6 +2,7 @@
 import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { ordenarPorClave, ordenarNumeros, addCountTest } from '$lib/utils';
+import { Dialog } from "$lib/components";
 
 /*
 type Point = {
@@ -33,6 +34,7 @@ type WordError = {
   errors: number[];
 }
 
+let dialog = $state<Dialog | null>(null);
 let modeSheet = $state(false);
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, viewBtnSheet, isWordsErrors = false } = $props();
@@ -56,6 +58,18 @@ function handleModeSheet() {
 }
 
 function handleSelectPoint(point: number, item: number) {
+  if (isWordsErrors) {
+    const error = points[point].points[item].error;
+    if (error) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">Respuesta seleccionada erroneamente</h1>
+        `,
+      });
+    }
+    return;
+  }
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -100,6 +114,7 @@ function handleValidated() {
 }
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
 <iframe title="" class="iframe-test" src={infoData.exercise.file} frameborder="0"></iframe>
 
 {#if !viewBtnSheet}

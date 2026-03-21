@@ -171,7 +171,7 @@ async function handleActionDelete(e: string) {
               <div class="info-pay">
                 <div>
                   <div>
-                    <button onclick={()=>handleViewSubject(i)} class="btn-view-subjects">
+                    <button class="btn-view-subjects"> <!-- onclick={()=>handleViewSubject(i)}  -->
                       <span class="svg-subject">
                         {#if `subj-${i}` === subjId}
                           {@html minus}
@@ -181,7 +181,7 @@ async function handleActionDelete(e: string) {
                       </span> 
                       Asignaturas: {row.total_subjects}</button>
                   </div>
-                  <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
+                  <div class="box-subjects"> <!--  class:view-subjects={`subj-${i}` === subjId} -->
                     {#each row.subjects as subject, id}
                       <div>{id + 1}. {subject.subject}</div>
                     {/each}
@@ -253,7 +253,8 @@ async function handleActionDelete(e: string) {
   color: #6b6b6b;
 }
 .box-subjects {
-  display: none;
+  /*display: none;*/
+  display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em 1em 0.5em 0.3em;
@@ -261,9 +262,11 @@ async function handleActionDelete(e: string) {
   font-weight: 600;
   font-size: 0.95em;
 }
+/*
 .box-subjects.view-subjects {
   display: flex;
 }
+*/
 .box-course {
   padding: 1em 0;
   position: relative;

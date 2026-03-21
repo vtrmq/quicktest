@@ -1,6 +1,6 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
-import { Toast } from '$lib/components';
+import { Toast, Dialog } from '$lib/components';
 import reading from '$lib/assets/images/reading.png';
 import { colors, normalizeToDigit, addCountCharacter } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
@@ -21,6 +21,7 @@ type Word = {
 };
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -107,6 +108,21 @@ function handleSelectWord(index: number) {
 }
 
 function handleSelectOptWord(index: number) {
+
+  if (isWordsErrors) {
+    const err = wordsErrors.includes(options[index].option)
+    const total = options[index].total;
+    const message = total === 1 ? "La palabra fue colocada una vez incorrectamente" : `La palabra fue colocada ${total} veces incorrectamente`;
+    if (err) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">${message}</h1>
+        `,
+      });
+    }
+  }
+
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -159,6 +175,7 @@ function startProgress() {
 
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
 <Toast bind:this={toast} />
 
 <div class="rf-character">

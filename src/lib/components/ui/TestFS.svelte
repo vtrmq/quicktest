@@ -3,6 +3,8 @@ import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase, ordenarPorCl
 import { activityLocalstore } from "$lib/store/activity_student";
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
+import { Dialog } from '$lib/components';
+
 /*
 type Words = {
   id: number;
@@ -43,6 +45,7 @@ type WordErrorAudio = {
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 let wordsErrors: WordErrorAudio[] = [];
 let points: QuestionAudio[] = $state([]);
+let dialog = $state<Dialog | null>(null);
 
 points = infoData.exercise.points;
 wordsErrors = infoData.exercise.wordsErrors;
@@ -56,7 +59,18 @@ $effect(()=>{
   console.log($state.snapshot(points))
 });
 */
-function handleSelectWordFS(point: number, index: number) {
+function handleSelectWordFS(point: number, index: number, word: WordItem) {
+  if (isWordsErrors) {
+    if (word.error) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">Palabra colocada incorrectamente</h1>
+        `,
+      });
+    }
+    return;
+  }
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -109,6 +123,8 @@ function handleSelectWordFSRemove(point: number, index: number) {
 }
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
+
 <div class="container-activity-fs">
 
   <h1 class="title-fs">{infoData.exercise.content}</h1>
@@ -144,7 +160,7 @@ function handleSelectWordFSRemove(point: number, index: number) {
         {#if qs.words.length !== 0}
           <div class="container-answer-fs">
             {#each qs.words as word, index}
-              <button class="answer-fs" onclick={()=>handleSelectWordFS(point, index)} class:bad-selected={isWordsErrors && word.error}>
+              <button class="answer-fs" onclick={()=>handleSelectWordFS(point, index, word)} class:bad-selected={isWordsErrors && word.error}>
                 {corregirIEnFrase(word.word)}
               </button>
             {/each}

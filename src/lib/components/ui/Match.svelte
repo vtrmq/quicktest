@@ -4,7 +4,9 @@ import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
 import { onMount } from 'svelte';
+import { Dialog } from "$lib/components";
 
+let dialog = $state<Dialog | null>(null);
 type Side = 'left' | 'right';
 type Words = { word: string; };
 type Connection = {
@@ -101,6 +103,18 @@ function connect(leftWord: HTMLButtonElement, rightWord: HTMLButtonElement) {
 }
 
 function selectWordMatch(wordElement: Event, side: Side, index: number) {
+
+  if (isWordsErrors) {
+    if (wordsErrors.includes(leftWords[index].word)) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">Opción seleccionada incorrectamente</h1>
+        `,
+      });
+    }
+    return;
+  }
 
   if (isActionStudent === false) return;
 
@@ -295,6 +309,8 @@ function startProgress() {
 }
 
 </script>
+
+<Dialog bind:this={dialog} action={()=>{}} />
 
 <div class="rf-match">
   {#if infoData.mode === 'normal'}

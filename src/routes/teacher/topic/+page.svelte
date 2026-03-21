@@ -45,6 +45,7 @@ $effect(() => {
   pagination = data.pagination;
 });
 
+/*
 function handleViewSubject(i: number, cant: number) {
   if (cant === 0) return;
   if (subjId === '' || subjId !== `subj-${i}`) {
@@ -53,6 +54,7 @@ function handleViewSubject(i: number, cant: number) {
     subjId = '';
   }
 }
+*/
 
 function handleActionShowWin(index: number) {
   const topic = topics[index].topic;
@@ -130,7 +132,7 @@ async function handleActionDelete(e: string) {
                   <div>
                     <div>
                       {#if row.subjects.length !== 0}
-                        <button onclick={()=>handleViewSubject(i, row.subjects.length)} class="btn-view-subjects">
+                        <button class="btn-view-subjects"> <!--  onclick={()=>handleViewSubject(i, row.subjects.length)} -->
                           <span class="svg-subject">
                             {#if `subj-${i}` === subjId}
                               {@html minus}
@@ -144,7 +146,7 @@ async function handleActionDelete(e: string) {
                         <span class="red">Tema no asignado</span>
                       {/if}
                     </div>
-                    <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
+                    <div class="box-subjects"> <!--  class:view-subjects={`subj-${i}` === subjId} -->
                       {#each row.subjects as subject}
                         <div class="in-course-subject">
                           <a href="/teacher/topic/activities?topicId={row.topic_id}&courseId={subject.course_id}&subjectId={subject.subject_id}&origin=topic" class="link-result"><span>{subject.course}</span> <span>{subject.subject}</span></a>
@@ -246,7 +248,8 @@ async function handleActionDelete(e: string) {
   color: #6b6b6b;
 }
 .box-subjects {
-  display: none;
+  /*display: none;*/
+  display: flex;
   flex-direction: column;
   gap: 1em;
   padding: 1em 1em 0.5em 0.3em;
@@ -254,9 +257,11 @@ async function handleActionDelete(e: string) {
   font-weight: 600;
   font-size: 0.95em;
 }
+/*
 .box-subjects.view-subjects {
   display: flex;
 }
+*/
 .box-course {
   padding: 1em 0;
   position: relative;

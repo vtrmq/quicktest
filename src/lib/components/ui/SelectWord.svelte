@@ -2,6 +2,7 @@
 import { Toast } from '$lib/components';
 import { colors } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
+import { Dialog } from "$lib/components";
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 
@@ -21,6 +22,7 @@ type Word = {
   word: string;
 };
 
+let dialog = $state<Dialog | null>(null);
 let question = $state('');
 let options: Option[] = $state([]);
 let indexOptWord = $state(-1);
@@ -37,6 +39,26 @@ options = infoData.exercise.optionSuboptions;
 indexOptWord = -1;
 
 function handleSelectWord(index: number) {
+  if (isWordsErrors) {
+    const err = wordsErrors.includes(words[index].word)
+    if (err) {
+      if (words[index].resp === true && words[index].value === false && words[index].resp_color.length !== 0) {
+        dialog?.show({
+          type: '',
+          message: `
+            <h1 class="title-err center">Palabra seleccionada incorrectamente</h1>
+          `,
+        });
+      } else {
+        dialog?.show({
+          type: '',
+          message: `
+            <h1 class="title-err center">La palabra fue seleccionada incorrectamente</h1>
+          `,
+        });
+      }
+    }
+  }
 
   if (isActionStudent === false) return;
 
@@ -107,6 +129,7 @@ function handleSelectOptWord(index: number) {
 
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
 <Toast bind:this={toast} />
 
 <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
@@ -212,12 +235,3 @@ function handleSelectOptWord(index: number) {
   {/if}
 
 </div>
-
-<!--
-<style>
-.word-select.item-bad, .last-word-select.item-bad, .last-word-l-select.item-bad, .normal-word-select.item-bad {
-  background: rgb(191, 0, 0);
-  color: #fff;
-}
-</style>
--->

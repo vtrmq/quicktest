@@ -3,7 +3,7 @@ import { FOLDER_IMAGES, R2_DOMAIN, markOptionErrors } from '$lib/utils';
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
-import { Toast } from '$lib/components';
+import { Toast, Dialog } from '$lib/components';
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
@@ -36,8 +36,10 @@ type PlacedOption = {
 type Opt = {
   id: string;
   option: string;
+  error?: boolean;
 };
 
+let dialog = $state<Dialog | null>(null);
 let container!: HTMLDivElement;
 let canvas!: HTMLCanvasElement;
 let ctx!: CanvasRenderingContext2D;
@@ -55,7 +57,7 @@ imagenPointOut = infoData.exercise.imagePointOut;
 optionSuboptions = infoData.exercise.optionSuboptions;
 lines = infoData.exercise.lines;
 
-//console.log($state.snapshot(wordsErrors))
+console.log($state.snapshot(wordsErrors))
 
 if (isWordsErrors) {
   optionSuboptions = markOptionErrors(infoData.exercise.optionSuboptions, wordsErrors);
@@ -148,6 +150,17 @@ function paint() {
 };
 
 function handleSelectOption(opt: Opt) {
+  if (isWordsErrors) {
+    if (opt.error) {
+      dialog?.show({
+        type: '',
+        message: `
+          <h1 class="title-err center">Opción colocada incorrectamente</h1>
+        `,
+      });
+    }
+    return;
+  }
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
@@ -163,6 +176,7 @@ function handleSelectOption(opt: Opt) {
 
 </script>
 
+<Dialog bind:this={dialog} action={()=>{}} />
 <Toast bind:this={toast} />
 
 <div class="designer-point-out">
