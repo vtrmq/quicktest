@@ -27,6 +27,7 @@
   text-align: left;
   transition: var(--transition);
   box-shadow: #c3c3c3 0px 4px 0px 0px;
+  position: relative;
 }
 .word-mt:hover {
   background: #d0f1a9;

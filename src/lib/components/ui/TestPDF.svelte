@@ -1,29 +1,55 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
-import { ordenarPorClave, ordenarNumeros } from '$lib/utils';
+import { ordenarPorClave, ordenarNumeros, addCountTest } from '$lib/utils';
 
+/*
 type Point = {
-  points: [{char: string; rss: boolean; rst: boolean, success: boolean}];
+  points: [{char: string; rss: boolean; rst: boolean, success: boolean, error: boolean}];
 }
 type WordError = {
   point: number;
   errors: number[];
 };
+*/
+
+type Point = {
+  char: string;
+  rst: boolean;
+  rss: boolean;
+  success: boolean;
+  error?: boolean; // El signo ? indica que es opcional, ya que no existe inicialmente
+}
+
+type Question = {
+  errors: number;
+  points: Point[];
+  value: number;
+  success: boolean;
+}
+
+type WordError = {
+  point: number;
+  errors: number[];
+}
 
 let modeSheet = $state(false);
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, viewBtnSheet } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, viewBtnSheet, isWordsErrors = false } = $props();
 /*
 (()=>{
   console.log($state.snapshot(infoData))
-  console.log($state.snapshot(type_activity))
 })();
 */
-let points: Point[] = $state([]);
+
+let points: Question[] = $state([]);
 let wordsErrors: WordError[] = [];
 points = infoData.exercise.points;
 wordsErrors = infoData.exercise.wordsErrors;
+
+if (isWordsErrors) {
+  points = addCountTest(infoData.exercise.points, infoData.exercise.wordsErrors);
+}
 
 function handleModeSheet() {
   modeSheet = !modeSheet;
@@ -118,6 +144,9 @@ function handleValidated() {
               class:rst-bad={(points.rss === true && points.rst === false) && viewResult === 1}
               class:rst-std={((points.rss === false && points.rst === true && isActionStudent === false) && viewResult === 1)}>
               {points.char}
+              {#if isWordsErrors && points.error}
+                <span class="bool-errors">👆</span>
+              {/if}
             </button>
           {/each}
         </div>

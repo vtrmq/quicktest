@@ -1,15 +1,16 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
-import { ALFABETO, ordenarPorClave, ordenarNumeros } from '$lib/utils';
+import { ALFABETO, ordenarPorClave, ordenarNumeros, addCountTestSimple } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 
 type Point = {
-  answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string, success: boolean }]; 
+  answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string, success: boolean, error: boolean }]; 
   images: []; 
   question: '';
   value: number;
   errors: number;
+  error?: boolean; // El signo ? indica que es opcional, ya que no existe inicialmente
 }
 type WordError = {
   point: number;
@@ -19,13 +20,12 @@ type WordError = {
 let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
-/*
-(()=>{
-  console.log($state.snapshot(infoData))
-  console.log(viewResult)
-})();
-*/
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+
+wordsErrors = infoData.exercise.wordsErrors;
+if (isWordsErrors) {
+  points = addCountTestSimple(infoData.exercise.points, infoData.exercise.wordsErrors);
+}
 
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
@@ -171,7 +171,12 @@ function handleSelectItem(point: number, index: number) {
                     </div>
                   {/if}
                   <div class="wr-input-item-test">
-                    <div class="answer-item-test">{answer.resp}</div>
+                    <div class="answer-item-test">
+                      {answer.resp}
+                      {#if isWordsErrors && answer.error}
+                        <span class="bool-errors">👆</span>
+                      {/if}
+                    </div>
                   </div>
                 </div>
               {/each}

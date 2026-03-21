@@ -2,7 +2,7 @@
 import { activityLocalstore } from "$lib/store/activity_student";
 import { colorSynt, bgColorSynt, wordObjects, shuffleArray } from '$lib/utils';
 import { Select } from "$lib/components";
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 
 type ArrWord = {
   type: string;
@@ -41,6 +41,8 @@ let arrSelectMorphosyntax: SelectMorphosyntax[] = $state([]);
 
 arrWords = infoData.exercise.arrWords;
 arrWordsBox = infoData.exercise.syntax.arrWordsBox;
+
+console.log($state.snapshot(infoData))
 
 function selectSynt(e: any, row: number, column: number) {
   e.stopPropagation();

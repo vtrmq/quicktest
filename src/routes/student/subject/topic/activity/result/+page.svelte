@@ -145,6 +145,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "morphosyntax"}
                     <Morphosyntax
@@ -154,6 +155,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "point-out"}
                     <PointOut
@@ -163,6 +165,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "select"}
                     <SelectWord
@@ -172,6 +175,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "character"}
                     <Character
@@ -181,6 +185,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "test"}
                     <Test
@@ -190,6 +195,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "test-pdf"}
                     <TestPDF
@@ -200,6 +206,7 @@ function handlePropag(sw: boolean) {
                         {infoData}
                         isActionStudent = {false}
                         {viewBtnSheet}
+                        isWordsErrors = {true}
                     />
                 {:else if type === "test-fs"}
                     <TestFS
@@ -209,6 +216,7 @@ function handlePropag(sw: boolean) {
                         {indexExercise}
                         {infoData}
                         isActionStudent = {false}
+                        isWordsErrors = {true}
                     />
                 {/if}
             {/key}

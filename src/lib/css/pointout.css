@@ -25,6 +25,10 @@
   height: 32px;
   box-shadow: #5d5d5d 0px 4px 0px 0px;
 }
+.btn-word-option-point-out.bad-selected {
+  background: red;
+  box-shadow: #830000 0px 4px 0px 0px;
+}
 .header-point-out {
   background: #ffffff;
   display: flex;

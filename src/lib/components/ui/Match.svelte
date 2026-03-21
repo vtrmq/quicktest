@@ -16,7 +16,7 @@ type SelectedWord = {
   side: Side;
 }
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
 let leftColumn = $state() as HTMLDivElement;
@@ -42,6 +42,7 @@ leftWords = infoData.exercise.leftWords;
 rightWords = infoData.exercise.rightWords;
 wordConnections = infoData.exercise.wordConnectionsStudent;
 wordConnectionsTeacher = infoData.exercise.wordConnections;
+let wordsErrors = infoData.exercise.wordsErrors;
 
 mode = infoData.mode;
 time = infoData.time;
@@ -310,7 +311,12 @@ function startProgress() {
                     id="L-{index}" 
                     class="word-mt" 
                     class:selected-box={`L-${index}` === box_match}
-                    onclick={(e)=>selectWordMatch(e, 'left', index)}>{w.word}</button>
+                    onclick={(e)=>selectWordMatch(e, 'left', index)}>
+                    {w.word}
+                    {#if isWordsErrors && wordsErrors.includes(w.word.trim())}
+                      <span class="bool-errors-selected">👆</span>
+                    {/if}
+                  </button>
                 {/each}
               </div>
               <div class="column" bind:this={rightColumn}>

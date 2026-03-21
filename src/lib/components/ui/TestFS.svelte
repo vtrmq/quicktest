@@ -1,9 +1,9 @@
 <script lang="ts">
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase, ordenarPorClave } from '$lib/utils';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase, ordenarPorClave, mapWordErrorsToQuestions } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
-
+/*
 type Words = {
   id: number;
   word: string;
@@ -14,24 +14,48 @@ type Point = {
   answersFS: [{id: number, word: string;}];
   audio: string;
 }
-
 type WordError = {
   point: number;
   errors: string[];
 };
+*/
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
-let wordsErrors: WordError[] = [];
-let points: Point[] = $state([]);
+type WordItem = {
+  id: number;
+  word: string;
+  error?: boolean; // Propiedad que agregaremos
+}
+
+type QuestionAudio = {
+  text: string;
+  image: string;
+  audio: string;
+  answersFS: WordItem[];
+  words: WordItem[];
+  value: number;
+}
+
+type WordErrorAudio = {
+  point: number;
+  errors: string[];
+}
+
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let wordsErrors: WordErrorAudio[] = [];
+let points: QuestionAudio[] = $state([]);
 
 points = infoData.exercise.points;
 wordsErrors = infoData.exercise.wordsErrors;
 
+if (isWordsErrors) {
+  points = mapWordErrorsToQuestions(infoData.exercise.points, infoData.exercise.wordsErrors);
+}
+/*
 $effect(()=>{
   console.log($state.snapshot(infoData))
   console.log($state.snapshot(points))
 });
-
+*/
 function handleSelectWordFS(point: number, index: number) {
   if (isActionStudent === false) return;
   if (type_activity === 'V') {
@@ -120,7 +144,9 @@ function handleSelectWordFSRemove(point: number, index: number) {
         {#if qs.words.length !== 0}
           <div class="container-answer-fs">
             {#each qs.words as word, index}
-              <button class="answer-fs" onclick={()=>handleSelectWordFS(point, index)}>{corregirIEnFrase(word.word)}</button>
+              <button class="answer-fs" onclick={()=>handleSelectWordFS(point, index)} class:bad-selected={isWordsErrors && word.error}>
+                {corregirIEnFrase(word.word)}
+              </button>
             {/each}
           </div>
         {/if}

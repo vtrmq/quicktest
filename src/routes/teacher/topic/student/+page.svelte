@@ -49,8 +49,6 @@ for (let i = 0; i < students.length; i++) {
 
 root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
 
-//console.log(data)
-
 let notaTotal = $state(0);
 let countNotas = 0;
 type InfoTotal = { nota: string; percentage: number; scale: string };
@@ -83,6 +81,7 @@ onMount(()=>{
       <p class="subject">{subject.subject}</p>
       <p class="teacher">{teacher.name} {teacher.surnames}</p>
       <p class="topic">{topic.topic}</p>
+      <p class="name-activity">{data.result?.activity.activity}</p>
     </div>
     <br />
     <div
@@ -156,6 +155,11 @@ onMount(()=>{
 {/if}
 
 <style>
+.name-activity {
+  font-family: var(--font-normal);
+  line-height: 23px;
+  margin-top: 0.2em;
+}
 .info {
   width: 100%;
 }

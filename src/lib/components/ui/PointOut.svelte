@@ -1,14 +1,22 @@
 <script lang="ts">
-import { FOLDER_IMAGES, R2_DOMAIN } from '$lib/utils';
+import { FOLDER_IMAGES, R2_DOMAIN, markOptionErrors } from '$lib/utils';
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
 import { Toast } from '$lib/components';
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 
-type Option = { id: string; option: string; origin: string };
+//type Option = { id: string; option: string; origin: string };
+
+
+type OptionSuboption = {
+  id: string;
+  option: string;
+  error?: boolean;
+}
+
 type Line = {
   x1: number;
   y1: number;
@@ -28,7 +36,6 @@ type PlacedOption = {
 type Opt = {
   id: string;
   option: string;
-  origin: string;
 };
 
 let container!: HTMLDivElement;
@@ -37,15 +44,22 @@ let ctx!: CanvasRenderingContext2D;
 
 let placedOptions = $state<PlacedOption[]>([]);
 let imagenPointOut = $state('');
-let optionSuboptions = $state<Option[]>([]);
+let optionSuboptions = $state<OptionSuboption[]>([]);
 let lines = $state<Line[]>([]);
-let selectedOption = $state<Option | null>(null);
+let selectedOption = $state<OptionSuboption | null>(null);
 let toast = $state<Toast>();
+let wordsErrors = infoData.exercise.wordsErrors;
 
 placedOptions = infoData.exercise.placedOptions;
 imagenPointOut = infoData.exercise.imagePointOut;
 optionSuboptions = infoData.exercise.optionSuboptions;
 lines = infoData.exercise.lines;
+
+//console.log($state.snapshot(wordsErrors))
+
+if (isWordsErrors) {
+  optionSuboptions = markOptionErrors(infoData.exercise.optionSuboptions, wordsErrors);
+}
 
 onMount(()=>{
   paint();
@@ -182,7 +196,9 @@ function handleSelectOption(opt: Opt) {
       <button
         class="btn-word-option-point-out"
         onclick={() => handleSelectOption(opt)}
-        class:selected={selectedOption?.option === opt.option}>{@html reemplazarEspacios(opt.option)}</button>
+        class:selected={selectedOption?.option === opt.option} class:bad-selected={isWordsErrors && opt.error}>
+          {@html reemplazarEspacios(opt.option)}
+      </button>
     {/each}
   </div>
 

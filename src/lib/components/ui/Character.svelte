@@ -2,11 +2,12 @@
 import { fade } from 'svelte/transition';
 import { Toast } from '$lib/components';
 import reading from '$lib/assets/images/reading.png';
-import { colors, normalizeToDigit } from '$lib/utils';
+import { colors, normalizeToDigit, addCountCharacter } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 
 type Option = {
   option: string;
+  total: number;
 };
 
 type Word = {
@@ -19,7 +20,7 @@ type Word = {
   word: string;
 };
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true } = $props();
+let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 let toast = $state<Toast>();
 let question = $state('');
 let options: Option[] = $state([]);
@@ -42,6 +43,10 @@ time = infoData.time;
 mode = infoData.mode;
 
 indexOptWord = -1;
+
+if (isWordsErrors) {
+  options = addCountCharacter(infoData.exercise.optionSuboptions, infoData.exercise.wordsErrors);
+}
 
 // =============================================
 
@@ -221,7 +226,12 @@ function startProgress() {
               {#each options as opt, index}
                 {@const num = normalizeToDigit(index)}
                 <button class="w-opt-select {colors[num]}" class:resaltar={index === indexOptWord}
-                  onclick={()=>handleSelectOptWord(index)}>{opt.option}</button>
+                  onclick={()=>handleSelectOptWord(index)}>
+                  {opt.option}
+                  {#if isWordsErrors && opt.total !== 0}
+                    <span class="total-errors">{opt.total}</span>
+                  {/if}
+                </button>
               {/each}
             </div>
           </div>
@@ -253,134 +263,3 @@ function startProgress() {
 
   {/if}
 </div>
-
-<!--
-<style>
-.item-bad {
-  background: #e35353;
-  color: #fff;
-  border-bottom: 2px solid #fdadad;
-}
-progress {
-  appearance: none;       /* Quita el estilo nativo */
-  -webkit-appearance: none;
-  width: 100%;
-  height: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-/* Fondo de la barra (el contenedor) */
-progress::-webkit-progress-bar {
-  background-color: #ffffff; /* Blanco */
-}
-
-/* Color de la barra de carga (Relleno) */
-progress::-webkit-progress-value {
-  background-color: #007bff; /* Azul */
-  transition: width 0.1s ease; /* Suaviza el movimiento */
-}
-
-/* Compatibilidad para Firefox */
-progress::-moz-progress-bar {
-  background-color: #007bff; /* Azul */
-}
-
-.progresbar {
-  position: absolute;
-  top: -3px;
-  background: aqua;
-  width: 100%;
-  left: 0;
-  height: 9px;
-}
-.btn-break {
-  font-family: var(--font-normal);
-  padding: 0.6em 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  background: var(--bg-blue);
-  color: #fff;
-  transition: var(--transition);
-  margin-top: 1em;
-}
-.btn-break:hover {
-  background: var(--bg-blue-hover);
-}
-.rf {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-.center-exercise {
-  max-height: calc(100% - 0px);
-  /*height: 100%;*/
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  position: absolute;
-}
-.title-lecture {
-  font-family: var(--font-normal);
-  font-size: 1.2em;
-  padding-bottom: 1em;
-  line-height: 28px;
-}
-.wrapper-lecture {
-  width: 100%;
-  max-width: 500px;
-  border: 2px solid var(--bg-header-synt);
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-  border-radius: var(--border-radius);
-  overflow-y: auto;
-  height: calc(100% - calc(var(--height-header) + -60px));
-  top: 0;
-  position: absolute;
-}
-.p-lecture {
-  font-family: var(--font-normal);
-  line-height: 34px;
-  font-size: 1em;
-}
-.box-info-lecture {
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1em;
-  padding-bottom: 2em;
-}
-.label-h2 {
-  font-family: var(--font-normal);
-  font-weight: 800;
-}
-.wr-img-lecture {
-  width: 200px;
-  height: 200px;
-}
-.wr-img-lecture > img {
-  width: 100%;
-  height: 100%;
-}
-.btn-start-lecture {
-  font-family: var(--font-normal);
-  padding: 0.6em 1em;
-  border-radius: 5px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  background: var(--bg-blue);
-  color: #fff;
-  transition: var(--transition);
-}
-.btn-start-lecture:hover {
-  background: var(--bg-blue-hover);
-}
-</style>
--->

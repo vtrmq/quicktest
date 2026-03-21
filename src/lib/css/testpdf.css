@@ -63,6 +63,7 @@
   font-weight: 900;
   font-size: 1.1em;
   transition: var(--transition);
+  position: relative;
 }
 .btn-point-testpdf.rst-point {
   background: #11d511;
@@ -75,6 +76,17 @@
 .btn-point-testpdf.rst-good {
   background: #11d511;
   color: #fff;
+}
+.bool-errors {
+  position: absolute;
+  font-size: 1.2em;
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: -5px;
 }
 .row-points-testpdf {
   display: flex;

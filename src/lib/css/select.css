@@ -1,3 +1,15 @@
+.bool-errors-selected {
+  position: absolute;
+  font-size: 1.1em;
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: -5px;
+  top: 13px;
+}
 .word-select.item-bad, .last-word-select.item-bad, .last-word-l-select.item-bad, .normal-word-select.item-bad {
   background: rgb(191, 0, 0);
   color: #fff;
@@ -429,7 +441,7 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5em;
+  gap: 0.8em;
 }
 .a {
   background: var(--bg-a);
@@ -697,6 +709,7 @@
   background: #fff0;
 }
 .w-opt-select {
+  position: relative;
   padding: 0.4em 1em;
   cursor: pointer;
   font-weight: 600;
@@ -709,6 +722,19 @@
 .w-opt-select.resaltar {
   border: 2px solid var(--border-word-select);
   box-shadow: #000000 0px 0px 0px 4px;
+}
+.total-errors {
+  position: absolute;
+  top: -14px;
+  background: red;
+  font-size: 0.9em;
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0;
 }
 .w-opt-select-sub-select {
   padding: 0.3em 1em;

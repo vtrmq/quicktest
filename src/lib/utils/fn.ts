@@ -1,7 +1,220 @@
+type PointTest = {
+  answers: [{resp: string, image: string, rst: boolean, rss: boolean, word: string, success: boolean, error: boolean }]; 
+  images: []; 
+  question: '';
+  value: number;
+  errors: number;
+  error?: boolean; // El signo ? indica que es opcional, ya que no existe inicialmente
+}
+
+type WordErrorTest = {
+  point: number;
+  errors: number[];
+}
+
+/**
+ * Procesa los errores detectados y los marca en el array de preguntas.
+ */
+export function addCountTestSimple(questions: PointTest[], wordsErrors: WordErrorTest[]): PointTest[] {
+  questions.forEach(question => {
+    if (question.answers) {
+      question.answers.forEach(point => {
+        point.error = false;
+      });
+    }
+  });
+
+  wordsErrors.forEach((wordErr) => {
+    const questionIndex = wordErr.point;
+    const question = questions[questionIndex];
+
+    // Verificamos que la pregunta exista en ese índice
+    if (question && question.answers) {
+      wordErr.errors.forEach((errorIndex) => {
+        // Verificamos que el punto específico exista
+        if (question.answers[errorIndex]) {
+          // Creamos la propiedad 'error' y la asignamos como true
+          question.answers[errorIndex].error = true;
+        }
+      });
+
+      // Actualizamos el contador general de errores de la pregunta
+      // Contamos cuántos elementos tienen la propiedad error en true
+      question.errors = question.answers.filter(p => p.error === true).length;
+    }
+  });
+
+  return questions;
+}
+
+
+
+
+type OptionSuboption = {
+  id: string;
+  option: string;
+  error?: boolean; // Propiedad que crearemos
+}
+
+/**
+ * Marca como error: true los objetos cuya 'option' coincida con wordsErrors,
+ * y como error: false los que no coincidan.
+ */
+export function markOptionErrors(optionSuboptions: OptionSuboption[], wordsErrors: string[]): OptionSuboption[] {
+  return optionSuboptions.map(item => {
+    // Verificamos si la palabra existe en el array de errores
+    const hasError = wordsErrors.includes(item.option);
+
+    return {
+      ...item,
+      error: hasError // true si está en wordsErrors, false si no
+    };
+  });
+}
+
+// Ejemplo de uso:
+// const result = markOptionErrors(optionSuboptions, wordsErrors);
+
+
+
+interface WordItem {
+  id: number;
+  word: string;
+  error?: boolean; // Propiedad que agregaremos
+}
+
+interface QuestionAudio {
+  text: string;
+  image: string;
+  audio: string;
+  answersFS: WordItem[];
+  words: WordItem[];
+  value: number;
+}
+
+interface WordErrorAudio {
+  point: number;
+  errors: string[];
+}
+
+export function mapWordErrorsToQuestions(questions: QuestionAudio[], wordsErrors: WordErrorAudio[]): QuestionAudio[] {
+  // 1. Primero, inicializamos todas las palabras de todas las preguntas con error: false
+  questions.forEach(question => {
+    if (question.words) {
+      question.words.forEach(wordObj => {
+        wordObj.error = false;
+      });
+    }
+  });
+
+  // 2. Aplicamos error: true donde coincidan los puntos y las palabras
+  wordsErrors.forEach((errorGroup) => {
+    const question = questions[errorGroup.point];
+
+    // Verificamos que la pregunta exista y tenga el array "words"
+    if (question && question.words) {
+      errorGroup.errors.forEach((errorWord) => {
+        // Buscamos el objeto dentro de "words" cuyo campo "word" coincida
+        const targetWord = question.words.find(w => w.word === errorWord);
+        
+        if (targetWord) {
+          targetWord.error = true;
+        }
+      });
+    }
+  });
+
+  return questions;
+}
+
+
+
+type Point = {
+  char: string;
+  rst: boolean;
+  rss: boolean;
+  success: boolean;
+  error?: boolean; // El signo ? indica que es opcional, ya que no existe inicialmente
+}
+
+type Question = {
+  errors: number;
+  points: Point[];
+  value: number;
+  success: boolean;
+}
+
+type WordError = {
+  point: number;
+  errors: number[];
+}
+
+/**
+ * Procesa los errores detectados y los marca en el array de preguntas.
+ */
+export function addCountTest(questions: Question[], wordsErrors: WordError[]): Question[] {
+  // Hacemos una copia profunda si no quieres mutar el array original (opcional)
+  // const updatedQuestions = JSON.parse(JSON.stringify(questions)); 
+  
+  console.log(questions)
+
+  // 1. Inicializamos TODOS los puntos con error: false
+  // Esto garantiza que la propiedad exista en todos los objetos.
+  questions.forEach(question => {
+    if (question.points) {
+      question.points.forEach(point => {
+        point.error = false;
+      });
+    }
+  });
+
+  wordsErrors.forEach((wordErr) => {
+    const questionIndex = wordErr.point;
+    const question = questions[questionIndex];
+
+    // Verificamos que la pregunta exista en ese índice
+    if (question && question.points) {
+      wordErr.errors.forEach((errorIndex) => {
+        // Verificamos que el punto específico exista
+        if (question.points[errorIndex]) {
+          // Creamos la propiedad 'error' y la asignamos como true
+          question.points[errorIndex].error = true;
+        }
+      });
+
+      // Actualizamos el contador general de errores de la pregunta
+      // Contamos cuántos elementos tienen la propiedad error en true
+      question.errors = question.points.filter(p => p.error === true).length;
+    }
+  });
+
+  return questions;
+}
+
+// Ejemplo de uso:
+// const result = mapErrorsToQuestions(questions, wordsErrors);
+
+
+
 type Words = {
   id: number;
   word: string;
 };
+
+export function addCountCharacter(
+  optionSuboptions: { option: string }[],
+  wordsErrors: string[]
+): { option: string; total: number }[] {
+  const counts = wordsErrors.reduce((acc, word) => {
+    acc[word] = (acc[word] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return optionSuboptions.map(item => ({
+    ...item,
+    total: counts[item.option] || 0
+  }));
+}
 
 export function countsErrorsPoints(answers: any = []) {
   //console.log(answers)
