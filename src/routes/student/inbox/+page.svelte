@@ -1,5 +1,6 @@
 <script lang="ts">
 import { NoneData, Pagination } from "$lib/components";
+import { formatearNota } from "$lib/utils";
 import {
   typeActivity,
   formatDate,
@@ -127,7 +128,7 @@ onMount(() => {
                       </p>
                     {:else if row.answer_id}
                       <div class="info red">
-                        {row.nota}
+                        {formatearNota(row.nota)}
                         {row.performance}
                       </div>
                     {/if}
@@ -216,6 +217,7 @@ onMount(() => {
 .subject {
   font-weight: 700;
   font-size: 1.2em;
+  font-style: italic;
 }
 .resaltar {
   color: aliceblue;

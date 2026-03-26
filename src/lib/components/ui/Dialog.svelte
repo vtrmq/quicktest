@@ -79,6 +79,17 @@ function handleChangeCheck(e: boolean) {
 
 <style>
 :global {
+  .wr-info-w {
+    margin-bottom: 3em;
+    display: flex;
+    flex-direction: column;
+  }
+  .info-total {
+    color: #fff;
+    font-family: var(--font-normal);
+    padding: 16px 0;
+    border-bottom: 1px solid #9281fb;
+  }
   .title-err {
     color: #fff;
     font-family: var(--font-normal);

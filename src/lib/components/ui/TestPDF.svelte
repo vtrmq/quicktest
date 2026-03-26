@@ -1,7 +1,7 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
-import { ordenarPorClave, ordenarNumeros, addCountTest } from '$lib/utils';
+import { ordenarPorClave, ordenarNumeros, addCountTest, R2_DOMAIN, FOLDER_FILES } from '$lib/utils';
 import { Dialog } from "$lib/components";
 
 /*
@@ -36,6 +36,7 @@ type WordError = {
 
 let dialog = $state<Dialog | null>(null);
 let modeSheet = $state(false);
+const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, viewBtnSheet, isWordsErrors = false } = $props();
 /*
@@ -115,7 +116,8 @@ function handleValidated() {
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
-<iframe title="" class="iframe-test" src={infoData.exercise.file} frameborder="0"></iframe>
+
+<iframe title="" class="iframe-test" src="{root_file}/{infoData.exercise.file}" frameborder="0"></iframe>
 
 {#if !viewBtnSheet}
   <button class="btn-sheet" onclick={handleModeSheet} transition:fade={{ duration: 180 }}>Hoja de respuesta</button>

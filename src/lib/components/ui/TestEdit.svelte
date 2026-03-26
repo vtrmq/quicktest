@@ -1,7 +1,7 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
-import { ALFABETO } from '$lib/utils';
+import { ALFABETO, R2_DOMAIN, FOLDER_IMAGES } from '$lib/utils';
 
 type Point = {
   errors: 0;
@@ -22,6 +22,7 @@ let _infoData: InfoData = $state({mode: '', visible: false, time: 0});
 let progressElement: HTMLProgressElement = $state() as HTMLProgressElement;
 let requestID: number = 0;
 let durationInSeconds = 0;
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
 $effect(() => {
   _infoData = infoData;
@@ -88,7 +89,7 @@ function startProgress() {
                 {#each qs.images as img, i}
                   <div class="box-image-question-test">
                     <div class="wr-image-question-test">
-                      <img class="image-question-test" src={img} alt="" />
+                      <img class="image-question-test" src="{root_image}/{img}" alt="" />
                     </div>
                     {#if qs.images.length > 1}
                       <div class="label-image-test">Imagen {ALFABETO(i + 1)}</div>
@@ -104,7 +105,7 @@ function startProgress() {
                   <div class="wr-label-point-test"><div class="label-resp-test" class:rst-point-test={answer.rst}>Respuesta {index + 1}</div></div>
                   {#if answer.image.length !== 0}
                     <div class="wr-image-answer-test">
-                      <img class="image-question-test" src={answer.image} alt="" />
+                      <img class="image-question-test" src="{root_image}/{answer.image}" alt="" />
                     </div>
                   {/if}
                   <div class="wr-input-item-test">

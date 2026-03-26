@@ -15,6 +15,8 @@ let date_start = $state(data.dateStart);
 let date_end = $state(data.dateEnd);
 let subject = $state(data.subjectId);
 
+//console.log($state.snapshot(students))
+
 async function handleActionEnabled(index: number) {
   const studentId = students[index].id;
   const formData = new FormData();
@@ -129,6 +131,10 @@ function handleViewStatistic(index: number) {
             </div>
             <div class="box-course">
               <div class="info-course"><p class="name-student" class:red={row.blocked === 'S'}>{row.name} {row.surnames}</p></div>
+              <div class="info-student">
+                <p>{row.email}</p>
+                <p>Cel: {row.phone}</p>
+              </div>
               <button class="btn-statistics" onclick={()=>handleViewStatistic(i)}>Estadísticas</button>
               <div class="box-select">
                 <OptionSelect>
@@ -210,9 +216,18 @@ function handleViewStatistic(index: number) {
 }
 .info-course {
   display: flex;
+  flex-direction: column;
+  font-family: var(--font-normal);
   align-items: baseline;
   gap: 0.5em;
-  margin-bottom: 0.3em;
+}
+.info-student {
+  font-family: var(--font-normal);
+  margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  font-size: 1em;
 }
 .circle-green {
   background: #a5fbcf;
@@ -309,6 +324,9 @@ function handleViewStatistic(index: number) {
   box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
 @media(min-width: 800px) {
+  .info-student {
+    font-size: 0.9em;
+  }
   .btn-statistics {
     font-size: 0.8em;
     transition: var(--transition);

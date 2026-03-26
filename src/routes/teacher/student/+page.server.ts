@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     }
 
     const [students, subjects, course] = await db.batch([
-      db.prepare(`SELECT u.id, u.name, u.surnames, u.blocked FROM users u JOIN courses_students cs ON u.id = cs.student_id WHERE cs.course_id = ?`).bind(courseId),
+      db.prepare(`SELECT u.id, u.name, u.surnames, u.email, u.phone, u.blocked FROM users u JOIN courses_students cs ON u.id = cs.student_id WHERE cs.course_id = ?`).bind(courseId),
       db.prepare(`SELECT subject_id, subject FROM subjects WHERE course_id = ? AND teacher_id = ?`).bind(courseId, teacherId),
       db.prepare(`SELECT course_id, course FROM courses WHERE course_id = ? AND teacher_id = ?`).bind(courseId, teacherId)
     ]);

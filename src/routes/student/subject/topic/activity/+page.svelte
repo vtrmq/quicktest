@@ -1,7 +1,9 @@
 <script lang="ts">
+import { NoneData, LinkBack } from "$lib/components";
+import { formatearNota } from "$lib/utils";
 import { page } from "$app/state";
 let { data } = $props();
-import { NoneData, LinkBack } from "$lib/components";
+
 import {
   filtrarParametros,
   typeActivity,
@@ -174,7 +176,7 @@ onMount(() => {
                     {:else}
                       <p class="info red">
                         Nota: <span
-                        >{row.nota}
+                        >{formatearNota(row.nota)}
                           {row.performance}</span
                         >
                       </p>

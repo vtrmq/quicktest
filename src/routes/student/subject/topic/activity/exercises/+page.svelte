@@ -71,6 +71,7 @@ onMount(()=>{
 function handleActivity(index: number, _items: Item[], _viewResult: number, _viewBtnSheet: boolean) {
 
   viewResult = _viewResult;
+  //console.log(viewResult)
   viewBtnSheet = _viewBtnSheet;
 
   if (index !== -1) {
@@ -97,6 +98,7 @@ function handleActivity(index: number, _items: Item[], _viewResult: number, _vie
 
 function handleViewResult(_viewResult: number) {
   viewResult = _viewResult;
+  //console.log(viewResult)
 }
 
 async function handleSendActivity(activity: object, url: string) {

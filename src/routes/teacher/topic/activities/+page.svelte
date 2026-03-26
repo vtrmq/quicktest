@@ -114,10 +114,12 @@ onMount(() => {
               </div>
               <div class="box-course">
                 <div>
-                  <div class="info-course"><p class="activity">{row.activity}</p></div>
+                  <div class="info-course">
+                    <a class="activity" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{row.activity}</a>
+                  </div>
                   <div class="info-p">
                     <span>{typeActivity(row.type_general)}</span>
-                    <span class="blue">Total:&nbsp;{Number(nota.percentage.toFixed(1))}%&nbsp;{nota.scale}</span>
+                    <span class="purple">Total:&nbsp;{Number(nota.percentage.toFixed(1))}%&nbsp;{nota.scale}</span>
                   </div>
                 </div>
                 <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{@html sendHorizontal}</a>
@@ -178,7 +180,7 @@ onMount(() => {
   .box-link-subject > svg {
     width: 20px;
     color: orange;
-    stroke-width: 3px;
+    stroke-width: 2px;
   }
 }
 .topic {
@@ -196,7 +198,7 @@ onMount(() => {
   .svg-subject > svg {
     width: 14px;
     color: #fff;
-    stroke-width: 3px;
+    stroke-width: 2px;
   }
 }
 .box-course {
@@ -287,6 +289,12 @@ onMount(() => {
   font-size: 1.2em;
   font-weight: 800;
   font-family: var(--font-normal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  color: #005aa1;
+  padding-bottom: 5px;
+  line-height: 26px;
 }
 .info-p {
   font-size: 1.1em;

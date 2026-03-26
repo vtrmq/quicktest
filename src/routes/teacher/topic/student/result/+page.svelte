@@ -187,7 +187,7 @@ function handlePropag(sw: boolean) {
                 {:else if type === "test"}
                     <Test
                         {type_activity}
-                        viewResult = {2}
+                        {viewResult}
                         {scales}
                         {indexExercise}
                         {infoData}

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { formatearNota } from "$lib/utils";
 import { NoneData, Pagination } from "$lib/components";
 import { typeActivity } from "$lib/utils";
 
@@ -73,7 +74,7 @@ $effect(() => {
                     </p>
                     <p class="info">{typeActivity(row.type_general)}</p>
                     <p class="info">{row.name} {row.surnames}</p>
-                    <p class="info">Nota: {row.nota} {row.performance}</p>
+                    <p class="info">Nota: {formatearNota(row.nota)} {row.performance}</p>
                   </div>
                   <div class="wr-links">
                     <a
@@ -140,8 +141,9 @@ $effect(() => {
         box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
     }
     .subject {
-        font-weight: 700;
-        font-size: 1.2em;
+      font-weight: 700;
+      font-size: 1.2em;
+      font-style: italic;
     }
     :global {
         .svg-subject > svg {
@@ -152,7 +154,7 @@ $effect(() => {
         .box-link-subject > svg {
             width: 20px;
             color: orange;
-            stroke-width: 3px;
+            stroke-width: 2px;
         }
     }
     .box-course {

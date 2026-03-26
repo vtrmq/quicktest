@@ -188,6 +188,7 @@ async function handleSend(index: number) {
   font-family: var(--font-normal);
   line-height: 23px;
   font-weight: 700;
+  font-style: italic;
 }
 .topic {
   font-size: 1.1em;

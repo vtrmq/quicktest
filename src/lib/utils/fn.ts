@@ -303,7 +303,7 @@ export function typeExerc(type: string) {
     case 'character': type = 'Completar espacios'; break;
     case 'test': type = 'Test'; break;
     case 'test-pdf': type = 'Test PDF'; break;
-    case 'test-fs': type = 'Audio'; break;
+    case 'test-fs': type = 'Test con audio'; break;
   }
   return type;
 }

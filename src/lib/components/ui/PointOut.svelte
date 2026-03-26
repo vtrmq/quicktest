@@ -57,7 +57,7 @@ imagenPointOut = infoData.exercise.imagePointOut;
 optionSuboptions = infoData.exercise.optionSuboptions;
 lines = infoData.exercise.lines;
 
-console.log($state.snapshot(wordsErrors))
+//console.log($state.snapshot(wordsErrors))
 
 if (isWordsErrors) {
   optionSuboptions = markOptionErrors(infoData.exercise.optionSuboptions, wordsErrors);

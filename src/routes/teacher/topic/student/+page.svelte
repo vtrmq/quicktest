@@ -1,18 +1,23 @@
 <script lang="ts">
+import { onMount } from 'svelte';
 import { page } from '$app/state';
 import fileSpreadsheet from '$lib/assets/svg/file-spreadsheet.svg?raw';
+
 import { 
   Title, 
   NoneData, 
   LinkBack,
+  Dialog
 } from '$lib/components';
+
 import { 
+  formatearNota, 
+  typeExerc,
   scaleNota,
   extractParams,
   drawChartCircle,
   countsErrorsPoints,
 } from '$lib/utils';
-import { onMount } from 'svelte';
 
 type Teacher = { name: string, surnames: string };
 type Course = { course_id: number; course: string };
@@ -37,6 +42,9 @@ let students: Student[] = data.result?.students;
 let scale = data.result?.scale
 let chart = $state<SVGElement>() as SVGElement;
 let valueDisplay = $state<HTMLDivElement>() as HTMLDivElement;
+let dialog = $state<Dialog | null>(null);
+
+//console.log(data)
 
 let root = $state('');
 let url = extractParams(page.url.href, ["courseId", "subjectId", "activityId", "origin", "topicId"]);
@@ -45,6 +53,7 @@ for (let i = 0; i < students.length; i++) {
   const resp: any = countsErrorsPoints(students[i].answer)
   students[i].pointsErrors = resp;
 }
+//console.log($state.snapshot(data))
 //console.log($state.snapshot(students))
 
 root = `/teacher/topic/activities?topicId=${url.topicId}&courseId=${url.courseId}&subjectId=${url.subjectId}&origin=${url.origin}`;
@@ -69,7 +78,90 @@ onMount(()=>{
     drawChartCircle(infoTotal.percentage, chart, valueDisplay);
   }
 });
+
+function handleViewInfo(pos: number, index: number) {
+  const name_student = `${students[pos].name} ${students[pos].surnames}`
+  const answer: any = students[pos].answer[index];
+  const type = typeExerc(answer.type);
+  const total_selected = students[pos].pointsErrors[index];
+  const nota = answer.value;
+  //console.log($state.snapshot(students[pos]))
+  //console.log($state.snapshot(answer))
+  //console.log($state.snapshot(nota))
+
+  let info = '';
+  switch (answer.type) {
+    case "test": {
+      info = `Selecciones erroneas: ${total_selected} de ${answer.exercise.points.length} puntos`;
+    } break;
+    case "test-pdf": {
+      info = `Selecciones erroneas: ${total_selected} de ${answer.exercise.points.length} puntos`;
+    } break;
+    case "match": {
+      info = `Selecciones erroneas: ${total_selected} de ${answer.exercise.leftWords.length} puntos`;
+    } break;
+    case "point-out": {
+      info = `Colocaciones erroneas: ${total_selected} de ${answer.exercise.placedOptions.length} opciones`;
+    } break;
+    case "test-fs": {
+      const points = answer.exercise.points;
+      let sum_words = 0;
+      for (let i = 0; i < points.length; i++) {
+        sum_words = sum_words + points[i].words.length;
+      }
+      info = `Palabras erroneas: ${total_selected} de ${sum_words} palabras`;
+    } break;
+    case "morphosyntax": {
+      const arrWordsBox = answer.exercise.syntax.arrWordsBox;
+      let sum_words = 0;
+      for (let i = 0; i < arrWordsBox.length; i++) {
+        for (let j = 0; j < arrWordsBox[i].length; j++) {
+          if (arrWordsBox[i][j].max !== -1 && arrWordsBox[i][j].min !== -1) {
+            sum_words = sum_words + 1;
+          }
+        }
+      }
+      info = `Selecciones erroneas: ${total_selected} de ${sum_words} palabras o sintagmas`;
+    } break;
+    case "select": {
+      let sum_words = 0;
+      const words = answer.exercise.words;
+      for (let i = 0; i < words.length; i++) {
+        if (words[i].value) {
+          sum_words = sum_words + 1;
+        }
+      }
+      info = `Selecciones erroneas: ${total_selected} de ${sum_words} palabras`;
+    } break;
+    case "character": {
+      let sum_words = 0;
+      const words = answer.exercise.words;
+      for (let i = 0; i < words.length; i++) {
+        if (words[i].value) {
+          sum_words = sum_words + 1;
+        }
+      }
+      info = `Colocaciones erroneas: ${total_selected} de ${sum_words} palabras`;
+    } break;
+  }
+
+  dialog?.show({
+    type: '',
+    message: `
+      <h1 class="title-err">${name_student}</h1>
+      <div class="wr-info-w">
+        <p class="info-total">Tipo: ${type}</p>
+        <p class="info-total">${info}</p>
+        <p class="info-total">Nota: ${formatearNota(nota)} ${scaleNota(data.result?.scale, nota).scale}</p>
+      </div>
+    `,
+  });
+
+}
+
 </script>
+
+<Dialog bind:this={dialog} action={()=>{}} />
 
 <div class="container-teachers-registrations">
 
@@ -121,21 +213,26 @@ onMount(()=>{
                 </div>
               </div>
               <div class="box-course">
-                <div class="info">
-                  <div class="info-course"><p class="activity">{row.name} {row.surnames}</p></div>
-                  <div class="info-p">
-                    <span>Nota:&nbsp;{row.nota}&nbsp;{row.performance}</span>
+                <div class="info-student">
+                  <div class="info">
+                    <div class="info-course"><p class="activity">{row.name} {row.surnames}</p></div>
+                    <div class="info-p">
+                      <span>Nota:&nbsp;{formatearNota(row.nota)}&nbsp;{row.performance}</span>
+                    </div>
                   </div>
+                  <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html fileSpreadsheet}</a>
+                </div>
+                <div class="wp-info-errors">
+                  <div class="label-t">Errores por actividades</div>
                   <div class="wrapper-btns-errors">
                     {#each row.pointsErrors as points, index }
-                     <button class="btn-errors">
+                      <button class="btn-errors" onclick={()=>handleViewInfo(i, index)}>
                         <span class="span-index">{index + 1}</span>
                         <span class="span-points">{points}</span>
                       </button> 
                     {/each}
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student/result?topicId={url.topicId}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={url.activityId}&studentId={row.student_id}&origin={url.origin}">{@html fileSpreadsheet}</a>
               </div>
             </div>
           </div>
@@ -155,6 +252,29 @@ onMount(()=>{
 {/if}
 
 <style>
+.label-t {
+  position: absolute;
+  top: -18px;
+  background: #cdebee;
+  padding: 2px 6px;
+  border: 1px solid #cdebee;
+  border-radius: 6px;
+  font-family: var(--font-normal);
+  font-size: 0.85em;
+}
+.wp-info-errors {
+  position: relative;
+  padding: 7px;
+  border: 1px solid #cdebee;
+  border-radius: 8px;
+  background: #fff;
+  margin-top: 1.8em;
+}
+.info-student {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
 .name-activity {
   font-family: var(--font-normal);
   line-height: 23px;
@@ -166,7 +286,6 @@ onMount(()=>{
 .wrapper-btns-errors {
   display: flex;
   gap: 1em;
-  margin-top: 0.5em;
 }
 .btn-errors {
   width: 25px;
@@ -229,7 +348,7 @@ onMount(()=>{
   position: relative;
   display: flex;
   justify-content: space-between;
-  gap: 1em;
+  flex-direction: column;
 }
 .info-course {
   display: flex;
@@ -314,7 +433,6 @@ onMount(()=>{
   font-family: var(--font-normal);
 }
 .info-p {
-  font-size: 1.1em;
   font-family: var(--font-normal);
   color: #777777;
   display: flex;

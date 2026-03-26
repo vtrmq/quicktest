@@ -125,14 +125,24 @@ function handleCancel() {
 
 let wordsErrors: string[] = [];
 function storeWordsBox() {
-
+  // console.log(numRow, numColumn)
   if (arrWordsBox[numRow][numColumn].response.morphosyntax.length !== 0 && arrWordsBox[numRow][numColumn].response.value === false) {
     if (!arrWordsBox[numRow][numColumn].errors.includes(arrWordsBox[numRow][numColumn].response.morphosyntax)) {
       arrWordsBox[numRow][numColumn].errors.push(arrWordsBox[numRow][numColumn].response.morphosyntax);
-      wordsErrors.push(arrWordsBox[numRow][numColumn].response.morphosyntax);
+      //wordsErrors.push(arrWordsBox[numRow][numColumn].response.morphosyntax);
     }
   }
-
+  //console.log($state.snapshot(arrWordsBox))
+  wordsErrors = [];
+  for (let i = 0; i < arrWordsBox.length; i++) {
+    const numWords = arrWordsBox[i].length;
+    for (let j = 0; j < numWords; j++) {
+      if (arrWordsBox[i][j].errors.length !== 0) {
+        wordsErrors.push(...arrWordsBox[i][j].errors);
+      }
+    }
+  }
+  //console.log(wordsErrors)
   activityLocalstore.morphosyntax(indexExercise, JSON.stringify(arrWordsBox), JSON.stringify(wordsErrors), scales);
 }
 

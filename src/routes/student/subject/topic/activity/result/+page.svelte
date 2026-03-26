@@ -95,6 +95,7 @@ function handleActivity(
 
 function handleViewResult(_viewResult: number) {
   viewResult = _viewResult;
+  //console.log(viewResult)
 }
 let viewBtnSheet = $state(true);
 function handlePropag(sw: boolean) {
@@ -190,7 +191,7 @@ function handlePropag(sw: boolean) {
                 {:else if type === "test"}
                     <Test
                         {type_activity}
-                        viewResult = {2}
+                        {viewResult}
                         {scales}
                         {indexExercise}
                         {infoData}

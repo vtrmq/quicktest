@@ -36,13 +36,18 @@ to {
   background: #03ad03;
   color: #fff;
   height: 100%;
+  box-shadow: rgb(0 121 0) 0px 7px 0px 0px;
+  transition: var(--transition);
+}
+.btn-save-exerc:hover {
+  background: #13b913;
 }
 .btn-save-test-exerc {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0.7em 1em;
-  border-radius: 5px;
+  border-radius: 25px;
   cursor: pointer;
   outline: none;
   font-family: var(--font-normal);
@@ -52,6 +57,25 @@ to {
   height: 40px;
   transition: var(--transition);
   box-shadow: rgb(6 125 179) 0px 4px 0px 0px;
+}
+.btn-cancel-send {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.7em 1em;
+  border-radius: 25px;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  background: #FF5722;
+  color: #fff;
+  height: 40px;
+  transition: var(--transition);
+  box-shadow: rgb(157 39 1) 0px 4px 0px 0px;
+}
+.btn-cancel-send:hover {
+  background: #d93907;
 }
 @media(min-width: 700px) {
   .btn-result-exerc {

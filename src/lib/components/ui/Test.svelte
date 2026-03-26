@@ -1,7 +1,7 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
-import { ALFABETO, ordenarPorClave, ordenarNumeros, addCountTestSimple } from '$lib/utils';
+import { ALFABETO, ordenarPorClave, ordenarNumeros, addCountTestSimple, R2_DOMAIN, FOLDER_IMAGES } from '$lib/utils';
 import { Dialog } from "$lib/components";
 import { activityLocalstore } from "$lib/store/activity_student";
 
@@ -12,6 +12,7 @@ type Point = {
   value: number;
   errors: number;
   error?: boolean; // El signo ? indica que es opcional, ya que no existe inicialmente
+  position?: number;
 }
 type WordError = {
   point: number;
@@ -21,6 +22,7 @@ type WordError = {
 let dialog = $state<Dialog | null>(null);
 let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
+const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
 let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
 
@@ -42,7 +44,13 @@ wordsErrors = infoData.exercise.wordsErrors;
 visible = infoData.visible;
 time = infoData.time;
 mode = infoData.mode;
-
+/*
+$effect(()=>{
+console.log($state.snapshot(infoData))
+console.log($state.snapshot(points))
+console.log(viewResult)
+});
+*/
 function handleStartLecture() {
   visible = false;
   durationInSeconds = time;
@@ -100,15 +108,18 @@ function handleSelectItem(point: number, index: number) {
   }
 
   if (isActionStudent === false) return;
+
   if (type_activity === 'V') {
     const time = activityLocalstore.getTime();
     if (time !== null && time.min === 0 && time.seg === 0) {
       return;
     }
   }
+  //console.log(viewResult)
   if (viewResult === 1) {
     return;
   }
+
   points[point].answers[index].rss = !points[point].answers[index].rss;
   if (points[point].answers[index].rss && points[point].answers[index].success === false) {
     points[point].answers[index].success = true;
@@ -117,11 +128,12 @@ function handleSelectItem(point: number, index: number) {
   }
 
   let sw = false;
-
+  let position = points[point].position;
+  if (typeof position !== 'number') return;
   if ((points[point].answers[index].rss === true && points[point].answers[index].rst === false && points[point].answers[index].success) 
     || (points[point].answers[index].rss === false && points[point].answers[index].rst === true && points[point].answers[index].success)) { // Malo
     for (let x = 0; x < wordsErrors.length; x++) {
-      if (wordsErrors[x].point === point) {
+      if (wordsErrors[x].point === position) {
         sw = true;
         if (!wordsErrors[x].errors.includes(index)) {
           wordsErrors[x].errors.push(index);
@@ -130,7 +142,7 @@ function handleSelectItem(point: number, index: number) {
       }
     }
     if (sw === false) {
-      wordsErrors.push({point: point, errors: [index]});
+      wordsErrors.push({point: position, errors: [index]});
     }
   }
   const _wordsErrors = ordenarPorClave(wordsErrors, "point");
@@ -159,7 +171,7 @@ function handleSelectItem(point: number, index: number) {
                 {#each qs.images as img, i}
                   <div class="box-image-question-test">
                     <div class="wr-image-question-test">
-                      <img class="image-question-test" src={img} alt="" />
+                      <img class="image-question-test" src="{root_image}/{img}" alt="" />
                     </div>
                     {#if qs.images.length > 1}
                       <div class="label-image-test">Imagen {ALFABETO(i + 1)}</div>
@@ -173,21 +185,21 @@ function handleSelectItem(point: number, index: number) {
               {#each qs.answers as answer, index}
                 <div 
                   class="container-answer-test" 
-                  class:rst-point-test={(answer.rss && viewResult === 2) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                  class:rst-point-test={(answer.rss && (viewResult === 0 || viewResult === 2)) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                  class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 0)} 
                   class:item-bad-test={((answer.rss === true && answer.rst === false)) && viewResult === 1} 
-                  class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                   onclick={()=>handleSelectItem(point, index)} 
                   onkeyup={()=>{}} role="button" tabindex="0">
                   <div class="wr-label-point-test">
                     <div class="label-resp-test" 
-                      class:rst-point-test={(answer.rss && viewResult === 2) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                      class:rst-point-test={(answer.rss && (viewResult === 0 || viewResult === 2)) || (answer.rss === true && answer.rst === true && viewResult === 1)} 
+                      class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 0)} 
                       class:item-bad-test={(answer.rss === true && answer.rst === false) && viewResult === 1} 
-                      class:item-rst-test={((answer.rss === false && answer.rst === true && isActionStudent === false) && viewResult === 1)} 
                     >Respuesta {index + 1}</div>
                   </div>
                   {#if answer.image.length !== 0}
                     <div class="wr-image-answer-test">
-                      <img class="image-question-test" src={answer.image} alt="" />
+                      <img class="image-question-test" src="{root_image}/{answer.image}" alt="" />
                     </div>
                   {/if}
                   <div class="wr-input-item-test">

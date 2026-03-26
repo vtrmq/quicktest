@@ -127,7 +127,18 @@ async function handleActionDelete(e: string) {
                 </div>
               </div>
               <div class="box-course">
-                <div class="info-topic"><p class="topic">{row.topic}</p></div>
+                <div class="info-topic">
+                  <p class="topic">{row.topic}</p>
+                  <div class="box-select">
+                    <OptionSelect>
+                      <a href="/teacher/topic/content?topicId={row.topic_id}">{@html fileText} <span>Contenido</span></a>
+                      <a href="/teacher/topic/activity?topicId={row.topic_id}">{@html listTodo} <span>Actividades</span></a>
+                      <a href="/teacher/topic/assign?topicId={row.topic_id}">{@html blocks} <span>Asignar tema</span></a>
+                      <a href="/teacher/topic/edit?topicId={row.topic_id}">{@html pencil} <span>Editar</span></a>
+                      <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
+                    </OptionSelect>
+                  </div>
+                </div>
                 <div class="info-pay">
                   <div>
                     <div>
@@ -155,15 +166,6 @@ async function handleActionDelete(e: string) {
                       {/each}
                     </div>
                   </div>
-                </div>
-                <div class="box-select">
-                  <OptionSelect>
-                    <a href="/teacher/topic/content?topicId={row.topic_id}">{@html fileText} <span>Contenido</span></a>
-                    <a href="/teacher/topic/activity?topicId={row.topic_id}">{@html listTodo} <span>Actividades</span></a>
-                    <a href="/teacher/topic/assign?topicId={row.topic_id}">{@html blocks} <span>Asignar tema</span></a>
-                    <a href="/teacher/topic/edit?topicId={row.topic_id}">{@html pencil} <span>Editar</span></a>
-                    <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
-                  </OptionSelect>
                 </div>
               </div>
             </div>
@@ -196,7 +198,7 @@ async function handleActionDelete(e: string) {
   .box-link-subject > svg {
     width: 20px;
     color: orange;
-    stroke-width: 3px;
+    stroke-width: 2px;
   }
 }
 .link-result {
@@ -218,9 +220,6 @@ async function handleActionDelete(e: string) {
 }
 .box-select {
   display: inline-flex;
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 .svg-subject {
   display: flex;
@@ -271,6 +270,9 @@ async function handleActionDelete(e: string) {
   align-items: baseline;
   gap: 0.5em;
   margin-bottom: 0.3em;
+  width: 100%;
+  justify-content: space-between;
+  padding-right: 0.6em;
 }
 .circle-green {
   background: #a5fbcf;

@@ -52,7 +52,7 @@ type Option = {
 };
 
 let { params, items, handleActivity, topic, activity, handlePropag = ()=>{} } = $props();
-const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+//const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
@@ -852,11 +852,13 @@ function handleUpload() {
 
 // ======================================================
 async function handleImageSelect(image: string) {
-  let localText: string = `${root}/${image}`;
+  //let localText: string = `${root}/${image}`;
   if (posImage === 'image-question') {
-    questionTest.images.push(localText);
+    //questionTest.images.push(localText);
+    questionTest.images.push(image);
   } else if (posImage === 'image-item') {
-    questionTest.answers[posItem].image = localText;
+    //questionTest.answers[posItem].image = localText;
+    questionTest.answers[posItem].image = image;
   } else if (posImage === 'image-question-fs') {
     questionTestFS.image = image;
   } else if (posImage === 'image-point-out') {
@@ -867,8 +869,13 @@ async function handleImageSelect(image: string) {
 // ======================================================
 
 async function handleFileSelect(file_name: string, file_pdf: string) {
+  console.log(file_name)
+  console.log(file_pdf)
+  console.log(root_file)
   fileName = file_name;
-  fileExam = `${root_file}/${file_pdf}`;
+  fileExam = file_pdf;
+  //fileExam = `${root_file}/${file_pdf}`;
+
   //console.log(fileName)
   //console.log(fileExam)
   //questionTest.images.push(localText);
@@ -1092,8 +1099,8 @@ type Audio = {
   name: string;
 }
 async function handleAudioSelect(_audio: Audio) {
-  console.log(_audio.name)
-  console.log(_audio.shadow_audio)
+  //console.log(_audio.name)
+  //console.log(_audio.shadow_audio)
   //let localAudio: string = `${root_audio}/${_audio}`;
   //let localAudio: string = `${root_audio}/${_audio}`;
   questionTestFS.audio = _audio.shadow_audio;
@@ -1257,7 +1264,7 @@ $effect(()=>{
       </div>
     {:else if sheet === 'test'}
       <div class="wr-btns-actions">
-        <button class="btn-new" onclick={handleAddPoint}>Nuevo punto</button>
+        <button class="btn-new" onclick={handleAddPoint}>Punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
@@ -1278,7 +1285,7 @@ $effect(()=>{
       </div>
     {:else if sheet === 'test-fs'}
       <div class="wr-btns-actions">
-        <button class="btn-new" onclick={handleAddPointFS}>Nuevo punto</button>
+        <button class="btn-new" onclick={handleAddPointFS}>Punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
@@ -1553,7 +1560,9 @@ $effect(()=>{
       <p class="label-type">Test</p>
 
       {#if typeExercise === 'normal'}
+
         <TextArea name="ghi" label='Descripción del test' bind:value={question} --height-text-area="60px" isError={false} />
+
       {:else if typeExercise === 'lecture'}
         <div class="grid-fx">
           <TextArea name="ghix" label='Título de la lectura' bind:value={question} --height-text-area="60px" isError={false} />
@@ -1583,7 +1592,7 @@ $effect(()=>{
               {#each qs.images as img, i}
                 <div>
                   <div class="wr-image-question">
-                    <img class="image-question" src={img} alt="" />
+                    <img class="image-question" src="{root_image}/{img}" alt="" />
                   </div>
                   {#if qs.images.length > 1}
                     <div class="label-image">Imagen {ALFABETO(i + 1)}</div>
@@ -1599,7 +1608,7 @@ $effect(()=>{
                 <div class="wr-label-point"><div class="label-resp" class:rst-point={answer.rst}>Respuesta {index + 1}</div></div>
                 {#if answer.image.length !== 0}
                   <div class="wr-image-question">
-                    <img class="image-question" src={answer.image} alt="" />
+                    <img class="image-question" src="{root_image}/{answer.image}" alt="" />
                   </div>
                 {/if}
                 <div class="wr-input-item">
@@ -1615,7 +1624,7 @@ $effect(()=>{
     {:else if sheet === 'new-point'}
       
       {#if (stateExercise === 'new' || stateExercise === 'update') && posItemPoint === -1}
-        <p class="label-type">Nuevo punto</p>
+        <p class="label-type">Punto</p>
       {:else if stateExercise === 'update' && posItemPoint !== -1}
         <p class="label-type">Actualizar punto</p>
       {/if}
@@ -1652,7 +1661,7 @@ $effect(()=>{
           {#each questionTest.images as image, index}
             <div>
               <div class="wr-image-question">
-                <img class="image-question" src={image} alt="" />
+                <img class="image-question" src="{root_image}/{image}" alt="" />
                 <button class="btn-remove-image-test" onclick={()=>handleRemoveImageQuestion(index)}>{@html trash}</button>
               </div>
               {#if questionTest.images.length > 1}
@@ -1672,7 +1681,7 @@ $effect(()=>{
           <div class="container-answer">
             {#if answer.image.length !== 0}
               <div class="wr-image-question">
-                <img class="image-question" src={answer.image} alt="" />
+                <img class="image-question" src="{root_image}/{answer.image}" alt="" />
                 <button class="btn-remove-image-test" onclick={()=>handleRemoveImageItem(index)}>{@html trash}</button>
               </div>
             {/if}
@@ -1806,7 +1815,7 @@ $effect(()=>{
     {:else if sheet === 'new-point-fs'}
       
       {#if (stateExercise === 'new' || stateExercise === 'update') && posItemPoint === -1}
-        <p class="label-type">Nuevo punto</p>
+        <p class="label-type">Punto</p>
       {:else if stateExercise === 'update' && posItemPoint !== -1}
         <p class="label-type">Actualizar punto</p>
       {/if}

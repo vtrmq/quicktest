@@ -53,7 +53,7 @@ function handleSelectWord(index: number) {
         dialog?.show({
           type: '',
           message: `
-            <h1 class="title-err center">La palabra fue seleccionada incorrectamente</h1>
+            <h1 class="title-err center">La palabra seleccionada incorrectamente</h1>
           `,
         });
       }

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from 'svelte';
 import { page } from '$app/state';
 
 import { 
@@ -6,12 +7,13 @@ import {
   NoneData, 
   LinkBack,
 } from '$lib/components';
+
 import { 
+  formatearNota,
   scaleNota,
   extractParams,
   drawChartCircle,
 } from '$lib/utils';
-import { onMount } from 'svelte';
 
 type Course = { course_id: number; course: string };
 type Subject = { subject_id: number, subject: string };
@@ -110,11 +112,11 @@ onMount(()=>{
               <div class="box-course">
                 <div>
                   <div class="info-course">
-                    <p class="activity">{row.topic}</p>
+                    <p class="topic">{row.topic}</p>
                   </div>
                   <div class="info-p">
-                    <p class="activity">{row.activity}</p>
-                    <p class="blue">Nota:&nbsp;{row.nota}&nbsp;{row.performance}</p>
+                    <p class="activity" >{row.activity}</p>
+                    <p class="blue">Nota:&nbsp;{formatearNota(row.nota)}&nbsp;{row.performance}</p>
                   </div>
                 </div>
               </div>
@@ -247,8 +249,14 @@ onMount(()=>{
   font-family: var(--font-normal);
   color: #407777;
 }
+.topic {
+  font-size: 1.3em;
+  font-family: var(--font-normal);
+  font-weight: 600;
+  font-style: italic;
+}
 .activity {
-  font-size: 1.2em;
+  font-size: 1em;
   font-family: var(--font-normal);
 }
 .info-p {
