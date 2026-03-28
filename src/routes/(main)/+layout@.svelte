@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { LayoutData } from './$types';
   import { DASHBOARDS, NAME_APP } from "$lib/utils";
-  import { Header, Main, Footer, BoxNav, Link } from '$lib/components';
+  import { Header, Main, Footer, BoxNav } from '$lib/components'; // , Link
 	let { data, children }: { data: LayoutData; children: any } = $props();
   let root = $state(data.user?.profile);
 
@@ -26,7 +26,7 @@
 
 <svelte:head>
   <style>
-  body { background-color: #fff; }
+    body { background-color: #fff; }
   </style>
   <title>Inicio - {NAME_APP}</title>
 </svelte:head>
@@ -35,11 +35,12 @@
   &nbsp;
   <BoxNav>
     {#if root === undefined}
-      <Link href="/login">Iniciar</Link>
+      <a class="link" href="/login">Iniciar</a>
     {:else if root !== undefined}
-      <Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link>
+      <!--Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link-->
+      <a class="link" href={DASHBOARDS[root]} onclick={validatedLogin}>Entrar</a>
     {/if}
-    <Link href="/register-student">Regístrate</Link>
+    <a class="link" href="/register-student">Regístrate</a>
   </BoxNav>
 </Header>
 
@@ -48,3 +49,15 @@
 </Main>
 
 <Footer />
+
+<style>
+  .link {
+    /*color: var(--color-link);*/
+    font-family: var(--font-normal);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+  }
+</style>

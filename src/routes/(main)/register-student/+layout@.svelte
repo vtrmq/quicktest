@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DataFrame, LinkBack  } from '$lib/components';
+import { DataFrame, BoxNav } from '$lib/components'; // , LinkBack
 import { NAME_APP } from '$lib/utils';
 let { children } = $props();
 </script>
@@ -9,14 +9,43 @@ let { children } = $props();
 </svelte:head>
 
 <div class="page-container">
-  <DataFrame width="500px">
-    <h1 class="name-app">{NAME_APP}</h1>
-    <LinkBack href="/">Home</LinkBack>
-    {@render children()}
-  </DataFrame>
+  <header>
+    <BoxNav>
+      <a class="link" href="/">Home</a>
+    </BoxNav>
+  </header>
+  <div class="ancho">
+    <DataFrame width="500px">
+      <h1 class="name-app">{NAME_APP}</h1>
+      <!--LinkBack href="/">Home</LinkBack-->
+      {@render children()}
+    </DataFrame>
+  </div>
 </div>
 
 <style>
+.ancho {
+  width: 100%;
+  padding-bottom: 2em;
+  display: flex;
+  justify-content: center;
+}
+header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: var(--height-header);
+  margin-bottom: 1em;
+  width: 100%;
+}
+  .link {
+    font-family: var(--font-normal);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    text-decoration: none;
+    color: #2d2c2c;
+    font-weight: 600;
+  }
 .name-app {
   font-family: var(--font-bold);
   text-align: center;
@@ -31,7 +60,7 @@ let { children } = $props();
   display: flex;
   justify-content: center;
   align-items: start;
-  padding: 4em 1em;
+  flex-direction: column;
 }
 @media(min-width: 700px) {
   .page-container {

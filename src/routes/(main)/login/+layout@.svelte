@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { LayoutData } from './$types';
-  import { Header, Main, BoxNav, Link } from '$lib/components';
+  import { Main, BoxNav } from '$lib/components'; // Header, Link
   import { onMount } from 'svelte';
   let isVisible: boolean = $state(false);
 	let { data, children }: { data: LayoutData; children: any } = $props();
@@ -18,12 +18,11 @@
 
 {#if isVisible}
   <div class="page-container">
-    <Header>
-      &nbsp;
+    <header>
       <BoxNav>
-        <Link href="/">Home</Link>
+        <a class="link" href="/">Home</a>
       </BoxNav>
-    </Header>
+    </header>
     <Main>
       {@render children()}
     </Main>
@@ -31,6 +30,21 @@
 {/if}
 
 <style>
+header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: var(--height-header);
+  margin-bottom: 1em;
+}
+  .link {
+    font-family: var(--font-normal);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    text-decoration: none;
+    color: #2d2c2c;
+    font-weight: 600;
+  }
 .page-container {
   background: #fff;
 }

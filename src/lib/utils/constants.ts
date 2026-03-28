@@ -1,6 +1,6 @@
 import type { UserProfile } from "$lib/types"
 
-export const NAME_APP = "QuickTest";
+export const NAME_APP = "LocalSchool";
 export const DOMAIN = "https://192.168.1.3:5173";
 //export const DOMAIN = "https://quicktest-1uf.pages.dev";
 
@@ -14,7 +14,7 @@ export const R2_DOMAIN = "https://files.localschool.online"
 export const CLIENTAUTHINFO = 'client-auth-info';
 export const PUBLIC_BASE_EMAIL = 'https://mailersend.localschool.online/mailersend';
 
-export const TIMEKVREG = 6000;
+export const TIMEKVREG = 60000;
 
 /*
 const padTo2Digits = (num: number): string => {

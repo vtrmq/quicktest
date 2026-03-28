@@ -26,6 +26,7 @@
   align-items: center;
   height: var(--height-header);
   z-index: 50;
+  background: #ee6c7e
 }
 .header.bg {
   background: var(--bg-header);

@@ -4,7 +4,7 @@
 
 <footer class="footer">
   <div class="wr-footer">
-    <p class="text-footer">© {year} quicktest</p>
+    <p class="text-footer">© {year} LocalSchool</p>
     <p class="text-footer">Colombia - Bogotá</p>
   </div>
 </footer>
