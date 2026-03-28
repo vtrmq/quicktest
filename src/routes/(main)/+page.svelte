@@ -9,11 +9,11 @@
   <div class="row-item">
     <div class="wr-item">
       <svg class="svg-item mediumslateblue" viewBox="0 0 64 64"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2288 0.238359C41.8049 0.255883 52.6686 3.53494 59.0235 12.1175C65.2035 20.4638 64.9368 31.7468 61.9596 41.7413C59.2517 50.8316 52.7674 58.1558 44.1842 61.9321C36.0245 65.5222 26.7942 64.7738 18.8547 60.7064C11.1085 56.738 6.11486 49.4392 3.44076 41.0594C0.34963 31.3727 -2.38222 20.4018 3.31997 12.0252C9.3468 3.17171 20.6281 0.220795 31.2288 0.238359Z" fill="currentcolor"></path></svg>
-      <span class="item">🧑‍🎓​</span>
+      <span class="item">🏅</span>
     </div>
     <div class="text-item bg-a">
       <h1 class="title-box">Ve más allá de las evaluaciones tradicionales</h1>
-      Las actividades interactivas captan la atención de los estudiantes y promueven una participación activa en cada lección. Las herramientas multimodales accesibles permiten a los estudiantes demostrar sus competencias más allá de las evaluaciones tradicionales.
+      <p>Las actividades interactivas captan la atención de los estudiantes y promueven una participación activa en cada lección. Las herramientas multimodales accesibles permiten a los estudiantes demostrar sus competencias más allá de las evaluaciones tradicionales.</p>
     </div>
   </div>
 
@@ -24,18 +24,19 @@
     </div>
     <div class="text-item bg-b">
       <h1 class="title-box">Evaluaciones y calificaciones que ahorran tiempo</h1>
-      Ahorra tiempo en la calificación y reutiliza tus materiales didácticos de manera eficaz. Además, identifica fácilmente las áreas de mejora de cada estudiante. Sigue a los alumnos durante todo su proceso educativo, ayudando a medir el desarrollo a lo largo del año escolar.
+      <p>Ahorra tiempo en la calificación y reutiliza tus materiales didácticos de manera eficaz. Además, identifica fácilmente las áreas de mejora de cada estudiante. Sigue a los alumnos durante todo su proceso educativo, ayudando a medir el desarrollo a lo largo del año escolar.</p>
     </div>
   </div>
 
   <div class="row-item">
     <div class="wr-item">
       <svg class="svg-item chocolate" viewBox="0 0 64 64"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2288 0.238359C41.8049 0.255883 52.6686 3.53494 59.0235 12.1175C65.2035 20.4638 64.9368 31.7468 61.9596 41.7413C59.2517 50.8316 52.7674 58.1558 44.1842 61.9321C36.0245 65.5222 26.7942 64.7738 18.8547 60.7064C11.1085 56.738 6.11486 49.4392 3.44076 41.0594C0.34963 31.3727 -2.38222 20.4018 3.31997 12.0252C9.3468 3.17171 20.6281 0.220795 31.2288 0.238359Z" fill="currentcolor"></path></svg>
-      <span class="item">📋</span>
+      <span class="item">🎉</span>
     </div> 
     <div class="text-item bg-c">
       <h1 class="title-box">Fomenta la autonomía de los estudiantes</h1>
-      Cuenta con preguntas de opción única o múltiple, ejercicios para completar texto, seleccionar palabras, construir oraciones a partir de audios, relacionar conceptos, señalar partes de una imagen, actividades de memorización y audios para practicar idiomas, entre muchas otras opciones.</div>
+      <p>Cuenta con preguntas de opción única o múltiple, ejercicios para completar texto, seleccionar palabras, construir oraciones a partir de audios, relacionar conceptos, señalar partes de una imagen, actividades de memorización y audios para practicar idiomas, entre muchas otras opciones.</p>
+    </div>
   </div>
 
   <div class="row-item">
@@ -45,7 +46,7 @@
     </div>
     <div class="text-item bg-d">
       <h1 class="title-box">Herramientas multimodales intuitivas e interactivas</h1>
-      Crea actividades de repaso para que tus estudiantes practiquen desde casa y obtengan mejores resultados en sus evaluaciones. Con LocalSchool es fácil capturar y mostrar pruebas del aprendizaje, lo que permite a los alumnos apropiarse de su trabajo y celebrar su crecimiento.
+      <p>Crea actividades de repaso para que tus estudiantes practiquen desde casa y obtengan mejores resultados en sus evaluaciones. Con LocalSchool es fácil capturar y mostrar pruebas del aprendizaje, lo que permite a los alumnos apropiarse de su trabajo y celebrar su crecimiento.</p>
     </div>
   </div>
 </section>
@@ -64,32 +65,60 @@
 .title-box {
   font-size: 0.9em;
   text-align: center;
-  margin: 0.5em 0;
+  margin: 0.5em 0 1em;
   text-transform: uppercase;
-  color: maroon;
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 2px;
 }
 .bg-a {
+  /*
   background: #d7d1fa;
   box-shadow: #7d74b3 0px 6px 0px 0px;
   border: 2px solid #9e95d1;
+  background-image: url('https://seesaw.com/wp-content/uploads/2025/02/8610-Social-Cards_Backgrounds-15.png');
+  */
+  color: #fff;
+  background-image: linear-gradient(rgb(255 255 255 / 0%), rgb(255 255 255 / 0%)), url('https://seesaw.com/wp-content/uploads/2025/03/8610-Social-Cards_Backgrounds-52.jpg');
+  background-size: cover;      /* Ajusta la imagen para llenar todo el div sin deformarse */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se duplique */
 }
 .bg-b {
+  /*
   background: #b2dfc6;
   box-shadow: #5b9776 0px 6px 0px 0px;
   border: 2px solid #608972;
+  background-image: url('https://seesaw.com/wp-content/uploads/2025/02/8610-Social-Cards_Backgrounds-27.jpg');
+  */
+  background-image: linear-gradient(rgb(255 255 255 / 3%), rgb(255 255 255 / 0%)), url('https://seesaw.com/wp-content/uploads/2025/02/8610-Social-Cards_Backgrounds-15.png');
+  background-size: cover;      /* Ajusta la imagen para llenar todo el div sin deformarse */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se duplique */
 }
 .bg-c {
+  /*
   background: #eec6a9;
   box-shadow: #bf7d4d 0px 6px 0px 0px;
   border: 2px solid #dd915a;
+*/
+  background-image: linear-gradient(rgb(255 255 255 / 0%), rgb(255 255 255 / 0%)), url('https://seesaw.com/wp-content/uploads/2025/02/8610-Social-Cards_Backgrounds-12.png');
+  background-size: cover;      /* Ajusta la imagen para llenar todo el div sin deformarse */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se duplique */
 }
 .bg-d {
+  /*
   background: #b5daff;
   box-shadow: #6797c7 0px 6px 0px 0px;
   border: 2px solid #7eacd9;
+  */
+
+  background-image: linear-gradient(rgb(255 255 255 / 8%), rgb(255 255 255 / 0%)), url('https://seesaw.com/wp-content/uploads/2025/02/8610-Social-Cards_Backgrounds-27.jpg');
+  background-size: cover;      /* Ajusta la imagen para llenar todo el div sin deformarse */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se duplique */
+  color: #fff;
 }
 :global(:root) {
   --bg-message-main: #F1F0FF;
@@ -168,6 +197,11 @@
   border-radius: 30px;
   position: relative;
   top: -34px;
+  box-shadow: 0px 3px 8px 0px rgb(0 0 0 / 38%);
+  font-weight: 500;
+}
+.text-item > p {
+  font-size: 1.1em;
 }
 .svg-item {
   width: 60px;
@@ -231,7 +265,7 @@
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    gap: 1em;
+    gap: 3em;
     grid-template-columns: 1fr 1fr;
     display: grid;
     align-items: baseline;
@@ -246,7 +280,7 @@
   .text-item {
     text-align: left;
     padding: 2em;
-    font-size: 1.1em;
+    font-size: 1.2em;
   }
   .wr-concept {
     padding: 3em 0;

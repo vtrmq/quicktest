@@ -28,6 +28,14 @@
   }
   .footer {
     background: var(--bg-footer-main);
-    padding: 2em 1em 2em;
+    padding: 3em 1em;
+
+
+    /*
+    background-image: linear-gradient(rgb(255 255 255 / 76%), rgb(255 255 255 / 86%)), url('https://seesaw.com/wp-content/uploads/2024/01/holding-shape-pattern.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    */
   }
 </style>

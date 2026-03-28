@@ -31,11 +31,10 @@
   <title>Inicio - {NAME_APP}</title>
 </svelte:head>
 
-<Header>
-  &nbsp;
+<Header --justify="center">
   <BoxNav>
     {#if root === undefined}
-      <a class="link" href="/login">Iniciar</a>
+      <a class="link" href="/login">Iniciar sesión</a>
     {:else if root !== undefined}
       <!--Link href={DASHBOARDS[root]} fn={validatedLogin}>Entrar</Link-->
       <a class="link" href={DASHBOARDS[root]} onclick={validatedLogin}>Entrar</a>

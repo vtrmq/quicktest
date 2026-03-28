@@ -22,7 +22,7 @@
 }
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: var(--justify, space-between);
   align-items: center;
   height: var(--height-header);
   z-index: 50;
