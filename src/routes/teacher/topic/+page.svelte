@@ -1,17 +1,11 @@
 <script lang="ts">
 import { deserialize } from '$app/forms';
-import listTodo from '$lib/assets/svg/list-todo.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import plus from '$lib/assets/svg/plus.svg?raw';
-import fileText from '$lib/assets/svg/file-text.svg?raw';
-import minus from '$lib/assets/svg/minus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
-import blocks from '$lib/assets/svg/blocks.svg?raw'
-import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog, Pagination } from '$lib/components';
 
 let { data } = $props();
-let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let posTopic: number = 0;
@@ -44,17 +38,6 @@ let topics: Topic[] = $derived(data.topics as Topic[]);
 $effect(() => {
   pagination = data.pagination;
 });
-
-/*
-function handleViewSubject(i: number, cant: number) {
-  if (cant === 0) return;
-  if (subjId === '' || subjId !== `subj-${i}`) {
-    subjId = `subj-${i}`;
-  } else {
-    subjId = '';
-  }
-}
-*/
 
 function handleActionShowWin(index: number) {
   const topic = topics[index].topic;
@@ -128,31 +111,28 @@ async function handleActionDelete(e: string) {
               </div>
               <div class="box-course">
                 <div class="info-topic">
-                  <p class="topic">{row.topic}</p>
-                  <div class="box-select">
-                    <OptionSelect>
-                      <a href="/teacher/topic/content?topicId={row.topic_id}">{@html fileText} <span>Contenido</span></a>
-                      <a href="/teacher/topic/activity?topicId={row.topic_id}">{@html listTodo} <span>Actividades</span></a>
-                      <a href="/teacher/topic/assign?topicId={row.topic_id}">{@html blocks} <span>Asignar tema</span></a>
-                      <a href="/teacher/topic/edit?topicId={row.topic_id}">{@html pencil} <span>Editar</span></a>
-                      <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
-                    </OptionSelect>
+                  <div class="wr-topic">
+                    <div class="container-topic">
+                      <a href="/teacher/topic/content?topicId={row.topic_id}" class="topic">{row.topic}</a>
+                      <div class="box-select">
+                        <OptionSelect> 
+                          <a href="/teacher/topic/edit?topicId={row.topic_id}">{@html pencil} <span>Editar</span></a>
+                          <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
+                        </OptionSelect>
+                      </div>
+                    </div>
+                    <div class="container-links">
+                      <a class="link-topic" href="/teacher/topic/activity?topicId={row.topic_id}">Actividades del tema</a>
+                      <div class="line-space"></div>
+                      <a class="link-topic" href="/teacher/topic/assign?topicId={row.topic_id}">Asignar tema</a>
+                    </div>
                   </div>
                 </div>
                 <div class="info-pay">
                   <div>
-                    <div>
+                    <div class="italic">
                       {#if row.subjects.length !== 0}
-                        <button class="btn-view-subjects"> <!--  onclick={()=>handleViewSubject(i, row.subjects.length)} -->
-                          <span class="svg-subject">
-                            {#if `subj-${i}` === subjId}
-                              {@html minus}
-                            {:else}
-                              {@html plus}
-                            {/if}
-                          </span> 
-                          Cursos y asignaturas
-                        </button>
+                        Ver resultados de la actividad
                       {:else}
                         <span class="red">Tema no asignado</span>
                       {/if}
@@ -161,7 +141,6 @@ async function handleActionDelete(e: string) {
                       {#each row.subjects as subject}
                         <div class="in-course-subject">
                           <a href="/teacher/topic/activities?topicId={row.topic_id}&courseId={subject.course_id}&subjectId={subject.subject_id}&origin=topic" class="link-result"><span>{subject.course}</span> <span>{subject.subject}</span></a>
-                          <a class="box-link-subject" href="/teacher/topic/activities?topicId={row.topic_id}&courseId={subject.course_id}&subjectId={subject.subject_id}&origin=topic">{@html sendHorizontal}</a>
                         </div>
                       {/each}
                     </div>
@@ -189,10 +168,41 @@ async function handleActionDelete(e: string) {
 {/if}
 
 <style>
-.box-link-subject {
+.container-topic {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  gap: 1em;
+}
+.container-links {
+  display: flex;
+  gap: 0.4em;
+  width: 100%;
+  padding: 5px 0;
+  align-items: center;
+}
+.line-space {
+  background: #b5b5b5;
+  width: 1px;
+  height: 20px;
+}
+.wr-topic {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-bottom: 0.4em;
+}
+.link-topic {
+  font-family: var(--font-normal);
+  text-decoration: none;
+  color: #004f8d;
+  font-size: 1em;
+}
+.link-topic:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
 }
 :global {
   .box-link-subject > svg {
@@ -202,6 +212,7 @@ async function handleActionDelete(e: string) {
   }
 }
 .link-result {
+  font-family: var(--font-normal);
   color: brown;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -221,30 +232,12 @@ async function handleActionDelete(e: string) {
 .box-select {
   display: inline-flex;
 }
-.svg-subject {
-  display: flex;
-  padding: 3px 4px;
-  background: #df90f7;
-  border-radius: 3px;
-  box-shadow: #ad54c7 0px 3px 0px 0px;
-}
 :global {
   .svg-subject > svg {
     width: 14px;
     color: #fff;
     stroke-width: 3px;
   }
-}
-.btn-view-subjects {
-  font-size: 1em;
-  cursor: pointer;
-  background: transparent;
-  font-family: var(--font-normal);
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  transition: var(--transition);
-  color: #6b6b6b;
 }
 .box-subjects {
   /*display: none;*/
@@ -314,7 +307,7 @@ async function handleActionDelete(e: string) {
 .box-point {
   display: flex;
   background: #a0e7e7;
-  width: 60px;
+  width: 50px;
   height: 100%;
   justify-content: center;
   align-items: center;
@@ -329,7 +322,7 @@ async function handleActionDelete(e: string) {
 .row-teacher {
   display: grid;
   align-items: center;
-  gap: 1em;
+  gap: 0.4em;
   grid-template-columns: 60px 1fr;
 }
 .desc {
@@ -342,7 +335,11 @@ async function handleActionDelete(e: string) {
   font-weight: 800;
   font-family: var(--font-normal);
   margin: 4px 0;
-  color: #3f3f3f;
+  color: #005aa1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+  line-height: 30px;
 }
 .info-pay {
   font-size: 1.1em;
@@ -366,9 +363,18 @@ async function handleActionDelete(e: string) {
   flex-direction: column;
 }
 @media(min-width: 800px) {
+  .row-teacher {
+    gap: 1em;
+  }
+  .box-point {
+    width: 60px;
+  }
+  .link-topic {
+    font-size: 0.9em;
+  }
   .box-subjects {
     font-size: 1em;
-    padding: 1.5em 1em 0.5em 0.5em;
+    padding: 1em 1em 0.5em 0;
   }
   .container-teachers-registrations {
     display: grid;

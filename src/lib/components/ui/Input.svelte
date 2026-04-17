@@ -11,6 +11,7 @@ let {
   type = 'text',
   onchange = () => {},
   oninput = () => {},
+  keypress = () => {},
   icon = '',
   lowercase = false,
   capitalize = false,
@@ -31,6 +32,9 @@ function keyup(e: KeyboardEvent) {
   if (e.key !== 'Enter') {
     input = '';
   }
+}
+function press() {
+  keypress();
 }
 
 function Type(node: HTMLInputElement) {
@@ -84,6 +88,9 @@ function onInput(e: Event) {
         bind:value 
         {name} 
         onkeydown={keyup} 
+
+        onkeyup={press}
+
         spellcheck="false" 
         onchange={onChange}
         {disabled}

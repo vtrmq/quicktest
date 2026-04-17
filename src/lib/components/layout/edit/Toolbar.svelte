@@ -9,8 +9,24 @@ import tvMinimalPlay from '$lib/assets/svg/tv-minimal-play.svg?raw';
 import refreshCCW from '$lib/assets/svg/refresh-ccw.svg?raw';
 import save from '$lib/assets/svg/save.svg?raw';
 import audio from '$lib/assets/svg/audio-lines.svg?raw';
+import { generate } from '$lib/components';
 
-let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpace = false, handleActionSave, handleShowAudio } = $props();
+let { 
+  isLoad = false, 
+  visible = false, 
+  handleEyeLine, 
+  handleBtnToolbar, 
+  noneSpace = false, 
+  handleActionSave, 
+  handleShowAudio, 
+  apiKeys,
+} = $props();
+
+function handleGenerate() {
+  generate.open();
+}
+
+generate.setApiKeys(apiKeys);
 
 </script>
 
@@ -33,8 +49,9 @@ let { isLoad = false, visible = false, handleEyeLine, handleBtnToolbar, noneSpac
           <span class="span-save-refresh">{@html refreshCCW}</span>
         {/if}
       </button>
-      <button class="btn-view-space" onclick={()=>handleShowAudio()}>{@html audio}</button>
+      <button class="btn-view-audio" onclick={()=>handleShowAudio()}>{@html audio}</button>
       <button class="btn-view-space" onclick={handleEyeLine} class:rs={noneSpace}>{@html scanLine}</button>
+      <button class="btn-view-ia" onclick={handleGenerate}>{@html receiptText}</button>
     </div>
   {/if}
 </div>
@@ -58,13 +75,13 @@ to {
 }
 }
 :global {
-  .btn-view-space > svg {
-    width: 20px;
-    color: #fff;
-  }
   .btn-toolbar > svg {
     width: 20px;
     color: #333;
+  }
+ .btn-view-space > svg, .btn-view-ia > svg, .btn-view-audio > svg {
+    width: 20px;
+    color: #fff;
   }
 }
 .wr-btns {
@@ -89,8 +106,30 @@ to {
   align-items: center;
   justify-content: center;
 }
+.btn-view-audio {
+  height: 32px;
+  width: 40px;
+  padding: 0 0.6em;
+  background: #0797eb;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-view-ia {
+  height: 32px;
+  width: 40px;
+  padding: 0 0.6em;
+  background: #d57f00;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .btn-view-space.rs {
-  background: #7d7d7d;
+  background: #ababab;
 }
 .btn-save-content {
   background: #7461fb;

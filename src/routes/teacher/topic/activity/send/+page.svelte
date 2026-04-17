@@ -3,12 +3,10 @@ import { page } from '$app/state';
 import { deserialize } from '$app/forms';
 import check from '$lib/assets/svg/check.svg?raw';
 import plus from '$lib/assets/svg/plus.svg?raw';
-import minus from '$lib/assets/svg/minus.svg?raw';
-import { Title, NoneData, Toast, Dialog, LinkBack, Input } from '$lib/components';
+import { Title, NoneData, Toast, Dialog, LinkBack, Input, LinkBtn } from '$lib/components';
 import { filtrarParametros } from '$lib/utils';
 
 let { data } = $props();
-let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let topic = data.topic;
@@ -41,14 +39,6 @@ type Courses = {
 
 let courses: Courses[] = $state(data.courses || []);
 
-function handleViewSubject(i: number) {
-  if (subjId === '' || subjId !== `subj-${i}`) {
-    subjId = `subj-${i}`;
-  } else {
-    subjId = '';
-  }
-}
-
 async function handleSelectSubject(_indexCourse: number, _indexSubject: number) {
   indexCourse = _indexCourse;
   indexSubject = _indexSubject;
@@ -58,6 +48,16 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   const inboxStudentId = courses[indexCourse].subjects[indexSubject].inbox_student_id;
   
   if (inboxStudentId === null) {
+
+    if (data.items.length === 0) {
+      toast?.view({
+        type: 'success',
+        message: 'La actividad no tiene ejercicios',
+        time: 4000
+      });
+      return;
+    }
+
     if (dateEnd.length === 0) {
       toast?.view({
         type: 'success',
@@ -170,9 +170,11 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   <div class="wr-info-page">
     <LinkBack href="/teacher/topic/activity?{root}">Actividades</LinkBack>
     <Title>Enviar actividad</Title>
-    <p class="topic">{topic.topic}</p>
+    <!--p class="topic">{topic.topic}</p-->
     <p class="activity">{activity.activity}</p>
-    <p class="desc">Selecciona las asignaturas a las que quieres asignar la actividad.</p>
+    {#if courses.length !== 0}
+      <p class="desc">Selecciona las asignaturas a las que quieres asignar la actividad.</p>
+    {/if}
   </div>
 
   {#if courses.length !== 0}
@@ -198,19 +200,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
             <div class="box-course">
               <div class="info-course"><p class="course">{row.course}</p></div>
               <div class="info-p">
-                <div>
-                  <button onclick={()=>handleViewSubject(i)} class="btn-view-subjects">
-                    <span class="svg-subject">
-                      {#if `subj-${i}` === subjId}
-                        {@html minus}
-                      {:else}
-                        {@html plus}
-                      {/if}
-                    </span> 
-                    Asignaturas: {row.subjects.length}</button>
-                </div>
-
-                <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
+                <div class="box-subjects">
                   {#each row.subjects as subject, id}
                     <div class="row-subject">
                       <button class="btn-subject" onclick={()=>handleSelectSubject(i, id)}>
@@ -243,11 +233,20 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
 
 {#if courses.length === 0}
   <div class="wr-none-data">
-    <NoneData>El tema aún no ha sido asignado</NoneData>
+    <NoneData>Para enviar la actividad debes primero asignar el tema</NoneData>
+    <div class="container-link-btn">
+      <LinkBtn href="/teacher/topic/assign?topicId={topic.topic_id}&activityId={activity.activity_id}&origin=send" --max-width-link-btn="230px">{@html plus} Asignar tema</LinkBtn>
+    </div>
   </div>
 {/if}
 
 <style>
+.container-link-btn {
+  margin: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .input-date {
   background: transparent;
   font-family: var(--font-normal);
@@ -267,6 +266,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   font-family: var(--font-normal);
   line-height: 23px;
   font-weight: 800;
+  color: brown;
 }
 .btn-subject {
   display: flex;
@@ -279,6 +279,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   font-size: 0.95em;
   font-family: var(--font-normal);
 }
+/*
 .topic {
   font-size: 1.1em;
   font-family: var(--font-normal);
@@ -286,6 +287,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   font-weight: 700;
   color: brown;
 }
+*/
 .row-subject {
   display: flex;
   align-items: start;
@@ -301,13 +303,6 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   justify-content: center;
   align-items: center;
 }
-.svg-subject {
-  display: flex;
-  padding: 3px 4px;
-  background: #df90f7;
-  border-radius: 3px;
-  box-shadow: #ad54c7 0px 3px 0px 0px;
-}
 :global {
   .btn-check > svg {
     width: 14px;
@@ -319,28 +314,14 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
     stroke-width: 3px;
   }
 }
-.btn-view-subjects {
-  font-size: 1em;
-  cursor: pointer;
-  background: transparent;
-  font-family: var(--font-normal);
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  transition: var(--transition);
-  color: #6b6b6b;
-}
 .box-subjects {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 1em;
-  padding: 1em 1em 0.5em 0.1em;
+  padding: 0 1em 0.5em 0.1em;
   color: brown;
   font-weight: 600;
   font-size: 0.95em;
-}
-.box-subjects.view-subjects {
-  display: flex;
 }
 .box-course {
   padding: 1em 0;
@@ -457,7 +438,7 @@ async function handleChangeDate(e: Event, _indexCourse: number, _indexSubject: n
   }
   .box-subjects {
     font-size: 1em;
-    padding: 0.8em 1em 0.5em 1px;
+    padding: 0 1em 0.5em 1px;
   }
   .container-teachers-registrations {
     display: grid;

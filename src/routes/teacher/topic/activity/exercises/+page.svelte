@@ -1,12 +1,11 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
-let visible = $state(false);
 //import { FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
 import { page } from '$app/state';
 import { 
   HeaderExercise, 
   EditExercise, 
-  LinkBack, 
+  //LinkBack, 
   SelectEdit, 
   CharacterEdit, 
   MorphosyntaxEdit, 
@@ -19,6 +18,7 @@ import {
 import { extractParams } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 import { onDestroy } from 'svelte';
+import { goto } from '$app/navigation';
 
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
@@ -66,9 +66,11 @@ let items = data.items;
 let type = $state('info');
 
 const root = extractParams(page.url.href, ['topicId', 'origin']);
+let visible = $state(false);
 let indexExercise = $state(-1);
 let containerBody = $state() as HTMLDivElement;
 let intro = $state(true);
+let editExercise = $state<EditExercise>();
 
 // ======================================================================
 //  Main
@@ -132,20 +134,31 @@ let viewBtnSheet = $state(true);
 function handlePropag(sw: boolean) {
   viewBtnSheet = sw;
 }
+
+function handleGoActivities(back: string) {
+  editExercise?.save();
+  if (back === "content") {
+    goto(`/teacher/topic/content?topicId=${root.topicId}`);
+  } else if (back === "activity") {
+    goto(`/teacher/topic/activity?topicId=${root.topicId}`);
+  }
+}
 </script>
 
 <HeaderExercise>
   {#if root.origin === "content"}
-    <LinkBack href="/teacher/topic/content?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack>
+    <!--LinkBack href="/teacher/topic/content?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack-->
+    <button class="btn-back" onclick={()=>handleGoActivities("content")}>Atrás</button>
   {:else if root.origin === "activity"}
-    <LinkBack href="/teacher/topic/activity?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack>
+    <!--LinkBack href="/teacher/topic/activity?topicId={root.topicId}" --color-link="#fff">Actividades</LinkBack-->
+    <button class="btn-back" onclick={()=>handleGoActivities("activity")}>Atrás</button>
   {/if}
   <EditExercise 
     params={{activityId: data.activityId, topicId: data.topicId}} 
     topic={data.topic} 
     activity={data.activity} 
     items={items} 
-    {handleActivity} {handlePropag} />
+    {handleActivity} {handlePropag} APIKey={data.APIKey} bind:this={editExercise} />
 </HeaderExercise>
 
 <!--Toast bind:this={toast} /-->
@@ -154,7 +167,7 @@ function handlePropag(sw: boolean) {
 {#if type === 'info'}
 
   <div class="container-info">
-    <h1 class="topic">{data.topic}</h1>
+    <h1 class="topic">Construye la actividad</h1> <!-- {data.topic} -->
     <h2 class="activity">{data.activity}</h2>
   </div>
 
@@ -204,6 +217,17 @@ function handlePropag(sw: boolean) {
 {/if}
 
 <style>
+.btn-back {
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
 .container-info {
   padding: 2em 0;
   top: 5em;

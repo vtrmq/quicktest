@@ -4,7 +4,7 @@ type Props = {
   checked: boolean;
   onchange: (e: boolean)=>void;
 }
-let { name, checked, onchange }: Props = $props();
+let { name = 'a', checked = false, onchange }: Props = $props();
 </script>
 
 <label class="container-checkbox">

@@ -62,6 +62,10 @@ body {
   overflow-y: scroll;
 }
 
+.italic {
+  font-style: italic;
+}
+
 audio {
   border-radius: 50px;
   box-shadow: rgb(100 100 111 / 33%) 0px 2px 10px 0px;
@@ -128,7 +132,7 @@ ol {
   color: #005ea9;
 }
 .purple {
-  color: purple;
+  color: #d700d7;
 }
 
 .container-circle {

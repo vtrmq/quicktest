@@ -1,4 +1,9 @@
 <script lang="ts">
+import { streamText } from 'ai';
+import { createGroq } from '@ai-sdk/groq';
+
+//import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, FOLDER_FILES, quitarExtension } from '$lib/utils';
 import menu from '$lib/assets/svg/menu.svg?raw';
 import colocarPalabra from '$lib/assets/images/colocar-palabra.png';
@@ -51,18 +56,19 @@ type Option = {
   option: string;
 };
 
-let { params, items, handleActivity, topic, activity, handlePropag = ()=>{} } = $props();
+let { params, items, handleActivity, activity, handlePropag = ()=>{}, APIKey='' } = $props(); // , topic
 //const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
-let viewBox = $state(false); // false
+let viewBox = $state(true); // false
 let sheet = $state('ejercises'); // type
 let selectType = $state('');
 let toast = $state<Toast>();
 
 //console.log(items)
+console.log(APIKey)
 
 let album = $state<Album | null>(null);
 let audio = $state<Audios | null>(null);
@@ -105,6 +111,10 @@ let questionTestFS: questionsTestFS = $state( { text: '', image: '', audio: '', 
 const chars = ['A', 'B', 'C', 'D', 'E'];
 
 //console.log(items)
+
+export function save() {
+  handleSaveActivities()
+}
 
 function reset() {
   timeLecture = 60;
@@ -826,6 +836,7 @@ function handleDone() {
   //console.log($state.snapshot(items));
   sheet = 'ejercises';
   reset();
+  handleSaveActivities();
 }
 
 function handleAddPoint() {
@@ -843,6 +854,7 @@ function handleDonePoint() {
   }
   //console.log($state.snapshot(arrayQuestionsTest))
   sheet = 'test';
+  handleSaveActivities();
 }
 
 function handleUpload() {
@@ -1077,6 +1089,7 @@ function handleDonePointFS() {
     arrayQuestionsTestFS[posItemPoint] = questionTestFS;
   }
   sheet = 'test-fs';
+  handleSaveActivities();
 }
 
 function handleEditTestPointFS(point: number) {
@@ -1128,7 +1141,7 @@ async function handleSaveActivities() {
   formData.append('items', JSON.stringify(items));
   formData.append('topicId', params.topicId);
   formData.append('activityId', params.activityId);
-
+  
   swSave = !swSave;
   const response = await fetch('/api/teacher/save-activity', {
     method: 'POST',
@@ -1201,6 +1214,113 @@ $effect(()=>{
 });
 */
 
+/*
+async function handleGenerateActivity(e: Event) {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const formData = new FormData(form);
+  const prompt = String(formData.get("prompt"));
+  
+  // Aquí obtienes la clave del docente (de tu estado de Svelte o BD)
+  const userApiKey = APIKey; 
+
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, userApiKey })
+  });
+
+  const data = await response.json();
+  if (data.actividad) {
+    console.log("Actividad:", data.actividad);
+  } else {
+    console.error("Error:", data.error);
+  }
+}
+*/
+
+
+
+async function handleGenerateActivity(e: Event) {
+
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const formData = new FormData(form);
+  const prompt = String(formData.get("prompt"));
+  // Crea una instancia de Groq con la API Key del usuario
+  /*
+  const genAI = new GoogleGenerativeAI(groqAPI);
+  // Configuramos el modelo con la herramienta de búsqueda
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    tools: [{ googleSearchRetrieval: {} }] 
+  });
+
+  const pr = `Genera una actividad escolar sobre ${prompt}. Usa fuentes reales de internet.`;
+  const result = await model.generateContent(pr);
+  console.log(({ actividad: result.response.text() }))
+
+  const context = `Quiero que me generes un objeto con la siguiente estructura: 
+{
+  description: "",
+  activity: ""
+}
+El texto de la actividad debe contener: ${prompt}
+Solo entregame el objeto en la forma que te lo solicite sin json al inicio ni comillas inclinadas al final. Es importante que el contenido del cada clave del objeto sea exacto, la clave activity debe tener el texto de la actividad, la clave description debe tener el texto para que el estudiante comprenda lo que va ha realizar, no debe tener ejemplo, ni sugerencias, ni definiciones ni nada parecido solo un texto claro y simple.
+`;
+
+----------------------------------------------
+
+Quiero para mis estudiantes el siguiente ejercicio. Un texto en el que los estudiantes pueda seleccionar solo sustantivos que encuentren. Generame la respuesta en un json con las siguientes claves, activity: "texto de la actividad", description: "descripción de la actividad para el estudiante comprenda lo que tiene que hacer", answers: "las respuestas de la actividad". Ejemplo:
+{
+  description: "",
+  activity: "",
+  answers: ""
+}
+Solo entregame el objeto en la forma que te lo solicite sin ```json al inicio ni ``` al final. Es importante que el contenido del cada clave del objeto sea exacto, la clave activity debe tener el texto de la actividad, la clave description debe tener el texto para que el estudiante comprenda lo que va ha realizar, no debe tener ejemplo, ni sugerencias, ni definiciones ni nada parecido solo un texto claro y simple y la clave answers debe tener las respuestas de la actividad. 
+
+--------------------------------------------------
+
+Actúa como un generador estricto de contenido educativo. Tu única función es crear un ejercicio de identificación de sustantivos y entregarlo en formato JSON.
+
+REGLAS ABSOLUTAS DE REDACCIÓN:
+
+La clave "description" debe contener SOLO una orden directa. Máximo 30 palabras. Sin definiciones, sin ejemplos.
+Si escribes algo como "Los sustantivos son palabras que...", estás fallando.
+La clave "activity" debe ser un ÚNICO párrafo coherente que cuente una breve historia o describa una escena con sentido completo. PROHIBIDO usar oraciones sueltas, desconectadas o repetitivas (ejemplo prohibido: "La casa es azul. La casa tiene puertas. El perro juega.").
+La clave "answers" debe contener ABSOLUTAMENTE TODOS los sustantivos presentes en la clave "activity", separados por comas. No omitas ninguno.
+REGLAS ESTRICTAS DE FORMATO JSON:
+
+El JSON DEBE estar en una sola línea (minificado). NO uses saltos de línea, NO uses enters.
+Usa ÚNICAMENTE comillas dobles "".
+NO pongas una coma después del último elemento de ninguna clave.
+No escribas NADA antes del JSON ni NADA después. Sin bloques de código.
+Estructura exacta en una sola línea:
+{"description": "[Orden directa]", "activity": "[Párrafo coherente con historia]", "answers": "[Sustantivos]"}
+
+*/
+
+  const groq = createGroq({
+    apiKey: APIKey
+  });
+
+  const result = streamText({
+    model: groq('llama-3.3-70b-versatile'),
+    prompt: `${prompt}`
+  });
+  let fullResponse = '';
+  for await (const delta of result.fullStream) {
+    if (delta.type === "text-delta") {
+      fullResponse += delta.text;
+    }
+  }
+  console.log(JSON.parse(fullResponse))
+  const respuesta = JSON.parse(fullResponse);
+  question = respuesta.description;
+  content = respuesta.activity;
+  //console.log(fullResponse)
+}
+
 </script>
 
 <Toast bind:this={toast} />
@@ -1209,19 +1329,21 @@ $effect(()=>{
 <Audios bind:this={audio} onSelectAudio={handleAudioSelect} />
 <Dialog bind:this={dialog} action={handleActionDelete} />
 
-<button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
+<div class="container-btn-save">
+  <button class="btn-save-exercise" onclick={handleSaveActivities}>
+    {#if !swSave}
+      Guardar
+    {:else}
+      {@html refresh}
+    {/if}
+  </button>
+  <button class="btn-view-close" onclick={handleViewBoxExercise}>{@html menu}</button>
+</div>
 
 <div class="container-edit-exercise" class:view-box={viewBox}>
   <div class="header-box-exercise">
     {#if sheet === 'ejercises'}
       <div class="wr-btns-actions">
-        <button class="btn-save-exercise" onclick={handleSaveActivities}>
-          {#if !swSave}
-            Guardar
-          {:else}
-            {@html refresh}
-          {/if}
-        </button>
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
       </div>
     {:else if sheet === 'type'}
@@ -1320,7 +1442,8 @@ $effect(()=>{
       <!-- ================================================== -->
 
       <div class="container-info">
-        <h1 class="topic">{topic}</h1>
+        <!--h1 class="topic">{topic}</h1-->
+        <p class="label-activity">Actividad</p>
         <h2 class="activity">{activity}</h2>
       </div>
       <div class="row-items">
@@ -1445,6 +1568,12 @@ $effect(()=>{
       </div>
       <div class="wr-btn-add">
         <Button onclick={handlePlusOption}>Adicionar palabra</Button>
+      </div>
+      <div>
+        <form onsubmit={handleGenerateActivity}>
+          <div><textarea name="prompt"></textarea></div>
+          <div><button type="submit">Generar</button></div>
+        </form>
       </div>
 
     {:else if sheet === 'point-out'}
@@ -1852,6 +1981,18 @@ $effect(()=>{
 </div>
 
 <style>
+.label-activity {
+  font-family: var(--font-normal);
+  font-weight: 600;
+  font-size: 0.9em;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+.container-btn-save {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
 :global {
   .span-baseline > svg {
     width: 120px;
@@ -1876,7 +2017,7 @@ $effect(()=>{
   }
   .btn-save-exercise > svg {
     width: 18px;
-    color: #414141;
+    color: #ffffff;
     stroke-width: 3px;
     animation: girar 1.5s linear infinite;
   }
@@ -2183,11 +2324,13 @@ to {
 .container-info {
   padding: 0 0 1em;
 }
+/*
 .topic {
   font-size: 1.4em;
   font-family: var(--font-bold);
   margin-bottom: 0.3em;
 }
+*/
 .activity {
   font-family: var(--font-normal);
   font-size: 1em;
@@ -2474,7 +2617,8 @@ to {
   padding: 0.4em;
   border-radius: 4px;
   cursor: pointer;
-  background: bisque;
+  background: #4CAF50;
+  color: #fff;
   font-size: 1em;
   transition: var(--transition);
   display: flex;
@@ -2482,18 +2626,18 @@ to {
   align-items: center;
   width: 64px;
   height: 32px;
-  box-shadow: #c37400 0px 4px 0px 0px;
+  box-shadow: #367b38 0px 4px 0px 0px;
 }
 .btn-new {
   font-family: var(--font-normal);
   border-radius: 4px;
   cursor: pointer;
-  background: bisque;
+  background: #fff;
   font-size: 1em;
   transition: var(--transition);
   height: 32px;
   padding: 0.4em;
-  box-shadow: #c37400 0px 4px 0px 0px;
+  box-shadow: #dbdbdb 0px 4px 0px 0px;
 }
 .sheet-type {
   margin: 2em 0;
@@ -2561,7 +2705,13 @@ to {
   .btn-new, .btn-save-exercise, .add-point-test {
     font-size: 0.85em;
   }
-  .btn-new:hover, .add-point-test:hover, .btn-save-exercise:hover {
+  .btn-new:hover {
+    background: #e0ffee;
+  }
+  .btn-save-exercise:hover {
+    background: #40b945;
+  }
+  .add-point-test:hover {
     background: #f9d6ad;
   }
 }

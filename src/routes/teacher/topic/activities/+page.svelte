@@ -1,7 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import { page } from '$app/state';
-import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
 import { 
   Title, 
   NoneData, 
@@ -88,6 +87,7 @@ onMount(() => {
       <p class="subject">{subject.subject}</p>
       <p class="teacher">{teacher.name} {teacher.surnames}</p>
       <p class="topic">{topic.topic}</p>
+      <p class="desc">Selecciona la actividad para observar los resultados.</p>
     </div>
   </div>
 
@@ -122,7 +122,7 @@ onMount(() => {
                     <span class="purple">Total:&nbsp;{Number(nota.percentage.toFixed(1))}%&nbsp;{nota.scale}</span>
                   </div>
                 </div>
-                <a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{@html sendHorizontal}</a>
+                <!--a class="box-link-subject" href="/teacher/topic/student?topicId={row.topic_id}&courseId={url.courseId}&subjectId={url.subjectId}&activityId={row.activity_id}&origin={url.origin}">{@html sendHorizontal}</a-->
               </div>
             </div>
           </div>
@@ -132,8 +132,7 @@ onMount(() => {
 
         <div
             class="container-circle"
-            class:visible={activities.length !== 0 && notaTotal !== 0}
-        >
+            class:visible={activities.length !== 0 && notaTotal !== 0}>
             <div style="position: relative; display: flex;">
                 <svg class="chart-circle" bind:this={chart}></svg>
                 <div class="value-display" bind:this={valueDisplay}></div>
@@ -165,16 +164,16 @@ onMount(() => {
 {/if}
 
 <style>
+.desc {
+  font-size: 1.1em;
+  font-family: var(--font-normal);
+  line-height: 23px;
+}
 .teacher {
   font-size: 1.1em;
   font-family: var(--font-normal);
   line-height: 23px;
   font-style: italic;
-}
-.box-link-subject {
-  display: flex;
-  justify-content: center;
-  align-items: start;
 }
 :global {
   .box-link-subject > svg {
@@ -189,6 +188,7 @@ onMount(() => {
   line-height: 23px;
   font-weight: 700;
   color: brown;
+  margin-bottom: 0.5em;
 }
 :global {
   .btn-check > svg {
@@ -322,8 +322,8 @@ onMount(() => {
   box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
 @media(min-width: 800px) {
-  .box-link-subject {
-    align-items: center;
+  .desc {
+    font-size: 1em;
   }
   .activity {
     font-size: 1.1em;

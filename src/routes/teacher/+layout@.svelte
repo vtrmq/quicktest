@@ -5,7 +5,7 @@
 	import inbox from '$lib/assets/svg/inbox.svg?raw';
 	import activity from '$lib/assets/svg/folder-pen.svg?raw';
 	import course from '$lib/assets/svg/folder-tree.svg?raw';
-  import { Header, Main, UserMenu } from '$lib/components';
+  import { Header, Main, UserMenu, Generate } from '$lib/components';
   import { onMount } from 'svelte';
   import type { LayoutData  } from './$types';
   import type { MenuOption, DataProfile } from '$lib/types';
@@ -63,6 +63,8 @@
     </div>
   </Main>
 {/if}
+
+<Generate />
 
 <style>
 .section {

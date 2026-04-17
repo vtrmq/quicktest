@@ -16,6 +16,7 @@
 		"@sveltejs/kit": "^2.48.4",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@types/node": "^24.10.0",
+		"@types/turndown": "^5.0.6",
 		"@types/youtube": "^0.1.2",
 		"svelte": "^5.43.6",
 		"svelte-check": "^4.3.3",
@@ -24,8 +25,12 @@
 		"wrangler": "^4.50.0"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.934.0",
+		"@ai-sdk/groq": "^3.0.35",
+		"@aws-sdk/client-s3": "^3.1030.0",
+		"@google/generative-ai": "^0.24.1",
+		"ai": "^6.0.152",
 		"bcryptjs": "^3.0.3",
-		"marked": "^17.0.1"
+		"marked": "^17.0.6",
+		"turndown": "^7.2.4"
 	}
 }

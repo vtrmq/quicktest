@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     }
 
     const [activity, topic, courses] = await db.batch([
-      db.prepare('SELECT activity_id, activity FROM activities WHERE activity_id = ? AND teacher_id = ? AND topic_id = ?')
+      db.prepare('SELECT activity_id, activity, items FROM activities WHERE activity_id = ? AND teacher_id = ? AND topic_id = ?')
       .bind(activityId, teacherId, topicId),
 
       db.prepare('SELECT topic_id, topic FROM topics WHERE topic_id = ? AND teacher_id = ?')
@@ -80,6 +80,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
     const resultCourses = Array.from(coursesMap.values());
     return {
       activity: activity.results[0],
+      items: JSON.parse(activity.results[0].items),
       courses: resultCourses,
       topic: topic.results[0]
     }

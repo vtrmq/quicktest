@@ -3,7 +3,6 @@ import { goto } from '$app/navigation';
 import { deserialize } from '$app/forms';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import plus from '$lib/assets/svg/plus.svg?raw';
-import fileText from '$lib/assets/svg/file-text.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog, LinkBack } from '$lib/components';
 import { typeActivity } from '$lib/utils';
@@ -12,8 +11,6 @@ let { data } = $props();
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let posActivity: number = 0;
-
-//console.log(data)
 
 type Topic = {
   topic_id: number;
@@ -124,19 +121,23 @@ async function handleSend(index: number) {
                   </div>
 
                   {#if row.items !== null || row.file !== null}
-                    {#if row.has_inbox === 0}
-                      <button class="none-send unlerline" onclick={()=>handleSend(i)}>Enviar actividad</button>
-                    {:else}
-                      <button class="send unlerline" onclick={()=>handleSend(i)}>Asignaturas</button>
-                    {/if}
+                    <div class="container-subject-exer">
+                      <a class="send unlerline" href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}&origin=activity">Ejercicios</a>
+                      {#if row.has_inbox === 0}
+                        <button class="none-send unlerline" onclick={()=>handleSend(i)}>Enviar actividad</button>
+                      {:else}
+                        <button class="send unlerline" onclick={()=>handleSend(i)}>Asignaturas</button>
+                      {/if}
+                    </div>
                   {:else}
-                    <div class="red mt">La actividad no tiene ejercicios</div>
+                    <div class="red mt">
+                      <a class="send unlerline" href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}&origin=activity">Ejercicios</a>
+                    </div>
                   {/if}
 
                 </div>
                 <div class="box-select">
                   <OptionSelect>
-                    <a href="/teacher/topic/activity/exercises?topicId={topic.topic_id}&activityId={row.activity_id}&origin=activity">{@html fileText} <span>Ejercicios</span></a>
                     <a href="/teacher/topic/activity/edit?topicId={topic.topic_id}&activityId={row.activity_id}">{@html pencil} <span>Editar</span></a>
                     <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar</span></button>
                   </OptionSelect>
@@ -159,6 +160,10 @@ async function handleSend(index: number) {
 {/if}
 
 <style>
+.container-subject-exer {
+  display: flex;
+  gap: 1em;
+}
 .mt {
   margin-top: 5px;
 }
@@ -171,7 +176,7 @@ async function handleSend(index: number) {
   cursor: pointer;
   margin-top: 5px;
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 6px;
   text-decoration-thickness: 1px;
 }
 .none-send {

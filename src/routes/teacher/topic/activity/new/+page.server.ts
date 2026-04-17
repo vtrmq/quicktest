@@ -4,6 +4,10 @@ import type { Actions } from "@sveltejs/kit";
 import { dbPlatform, saveDB } from '$lib/server/db';
 import { getDateTime } from '$lib/utils';
 
+type Rs = {
+  last_row_id: number;
+};
+
 export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
   if (!locals.user) { throw redirect(303, '/'); }
@@ -41,7 +45,7 @@ export const actions: Actions = {
     const type_activity = data.get('type_activity')?.toString().trim();
     const time = data.get('time')?.toString().trim();
     const topicId = data.get('topicId')?.toString().trim();
-
+    let rs: Rs = {} as Rs;
     try {
 
       const db = dbPlatform(platform);
@@ -51,10 +55,12 @@ export const actions: Actions = {
       const created_at = getDateTime();
       if (time) {
         const query = `INSERT INTO activities (teacher_id, topic_id, activity, type_general, time, visible, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
-        await saveDB(db, query, teacher_id, topicId, activity, type_activity, time, 1, created_at);
+        rs = await saveDB(db, query, teacher_id, topicId, activity, type_activity, time, 1, created_at);
+        return {rs, topicId: Number(topicId)};
       } else {
         const query = `INSERT INTO activities (teacher_id, topic_id, activity, type_general, visible, created_at) VALUES (?, ?, ?, ?, ?, ?)`
-        await saveDB(db, query, teacher_id, topicId, activity, type_activity, 1, created_at);
+        rs = await saveDB(db, query, teacher_id, topicId, activity, type_activity, 1, created_at);
+        return {rs, topicId: Number(topicId)};
       }
 
     } catch (error) {
@@ -63,6 +69,7 @@ export const actions: Actions = {
         topic: null
       });
     }
-    throw redirect(303, `/teacher/topic/activity?topicId=${topicId}`);
+    //console.log('+page.server.ts', `/teacher/topic/activity/exercises?topicId=${topicId}&activityId=${rs.last_row_id}&origin=activity`)
+    //throw redirect(303, `/teacher/topic/activity/exercises?topicId=${topicId}&activityId=${rs.last_row_id}&origin=activity`);
   }
 };

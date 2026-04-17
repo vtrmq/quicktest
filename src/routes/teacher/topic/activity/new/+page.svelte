@@ -1,4 +1,5 @@
 <script lang="ts">
+import { goto } from '$app/navigation';
 import { page } from '$app/state';
 import type { SubmitFunction } from '@sveltejs/kit';
 import { enhance } from '$app/forms';
@@ -53,7 +54,12 @@ const handleForm: SubmitFunction = ({ formData, cancel }) => {
           message: result.data?.message,
           time: 3000
         });
-      } else {
+      } else if (result.type === "success") {
+        if (result.data) {
+          goto(`/teacher/topic/activity/exercises?topicId=${topicId}&activityId=${result.data.rs.last_row_id}&origin=activity`);
+          return;
+        }
+        btnSave?.load(false);
         await update();
       }
     };

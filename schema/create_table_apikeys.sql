@@ -1,0 +1,5 @@
+CREATE TABLE apikeys (
+  api_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER DEFAULT 0,
+  apikey TEXT NOT NULL
+);

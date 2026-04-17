@@ -1,4 +1,5 @@
 <script lang="ts">
+import { marked } from 'marked';
 import arrowUp from '$lib/assets/svg/arrow-up.svg?raw';
 import arrowDown from '$lib/assets/svg/arrow-down.svg?raw';
 import listOrdered from '$lib/assets/svg/list-ordered.svg?raw';
@@ -51,7 +52,7 @@ function handleDeleteItem(index: number) {
         {#each localText as text, index}
           <li class="li-item">
             <button class="n-item">{index < 9 ? '0' : ''}{index + 1}</button>
-            <div class="text-list">{text.item}</div>
+            <div class="text-list">{@html marked(text.item)}</div>
           </li>
         {/each}
       </ul>
@@ -155,6 +156,7 @@ function handleDeleteItem(index: number) {
 }
 .textarea {
   width: 100%;
+  height: 160px;
   resize: none;
   background: transparent;
   font-family: var(--font-normal);

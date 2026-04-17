@@ -33,7 +33,9 @@ function onInput(e: Event) {
 </script>
 
 <div class="container-input">
-  <div class="label">{label} <span class="requested">{requested ? '*' : ''}</span></div>
+  {#if label !== ""}
+    <div class="label">{label} <span class="requested">{requested ? '*' : ''}</span></div>
+  {/if}
   <div class="inputText">
     <div class="wr-input">
       <textarea 

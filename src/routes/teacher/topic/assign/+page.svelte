@@ -1,13 +1,12 @@
 <script lang="ts">
 import { deserialize } from '$app/forms';
+import { page } from '$app/state';
 import check from '$lib/assets/svg/check.svg?raw';
-import plus from '$lib/assets/svg/plus.svg?raw';
-import minus from '$lib/assets/svg/minus.svg?raw';
 import sendHorizontal from '$lib/assets/svg/send-horizontal.svg?raw';
+import { searchParam, filtrarParametros } from "$lib/utils";
 import { Title, NoneData, Toast, Dialog, LinkBack } from '$lib/components';
 
 let { data } = $props();
-let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let topicId = data.topicId
@@ -15,8 +14,12 @@ let courseId: number = 0;
 let subjectId: number = 0;
 let indexCourse: number = 0;
 let indexSubject: number = 0;
+let root = $state('');
 
-console.log(data)
+const origin = searchParam(page.url.search, 'origin');
+if (origin !== null) {
+  root = filtrarParametros(page.url.href, ['topicId', 'activityId']);
+}
 
 type Result = {
   type: string;
@@ -41,14 +44,6 @@ type Courses = {
 
 let courses: Courses[] = $state(data.courses);
 
-function handleViewSubject(i: number) {
-  if (subjId === '' || subjId !== `subj-${i}`) {
-    subjId = `subj-${i}`;
-  } else {
-    subjId = '';
-  }
-}
-
 async function handleActionDelete(e: string) {
   if (e === 'accept') {
 
@@ -70,7 +65,6 @@ async function handleActionDelete(e: string) {
     
   }
 }
-
 
 async function handleSelectSubject(_indexCourse: number, _indexSubject: number) {
   if (data.topic.content === null && data.activities === 0) {
@@ -129,7 +123,11 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
 <div class="container-teachers-registrations">
 
   <div class="wr-info-page">
-    <LinkBack href="/teacher/topic">Temas</LinkBack>
+    {#if origin === null}
+      <LinkBack href="/teacher/topic">Temas</LinkBack>
+    {:else if origin === "send"}
+      <LinkBack href="/teacher/topic/activity/send?{root}">Enviar actividad</LinkBack>
+    {/if}
     <Title>Asignar tema</Title>
     <p class="topic">{data.topic.topic}</p>
     <p class="desc">Selecciona las asignaturas a las que quieres asignar el tema.</p>
@@ -158,18 +156,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
               <div class="info-course"><p class="course">{row.course}</p></div>
               <div class="info-p">
                 <div>
-                  <div>
-                    <button onclick={()=>handleViewSubject(i)} class="btn-view-subjects">
-                      <span class="svg-subject">
-                        {#if `subj-${i}` === subjId}
-                          {@html minus}
-                        {:else}
-                          {@html plus}
-                        {/if}
-                      </span> 
-                      Asignaturas: {row.total_subjects}</button>
-                  </div>
-                  <div class="box-subjects" class:view-subjects={`subj-${i}` === subjId}>
+                  <div class="box-subjects"> <!--  class:view-subjects={`subj-${i}` === subjId} -->
                     {#each row.subjects as subject, id}
                       <div class="row-subject">
                         <button class="btn-subject" onclick={()=>handleSelectSubject(i, id)}>
@@ -252,13 +239,6 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   justify-content: center;
   align-items: center;
 }
-.svg-subject {
-  display: flex;
-  padding: 3px 4px;
-  background: #df90f7;
-  border-radius: 3px;
-  box-shadow: #ad54c7 0px 3px 0px 0px;
-}
 :global {
   .btn-check > svg {
     width: 14px;
@@ -270,28 +250,14 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
     stroke-width: 3px;
   }
 }
-.btn-view-subjects {
-  font-size: 1em;
-  cursor: pointer;
-  background: transparent;
-  font-family: var(--font-normal);
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  transition: var(--transition);
-  color: #6b6b6b;
-}
 .box-subjects {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 1em;
-  padding: 1em 1em 0.5em 0.1em;
+  padding: 0 1em 0.5em 0.1em;
   color: brown;
   font-weight: 600;
   font-size: 0.95em;
-}
-.box-subjects.view-subjects {
-  display: flex;
 }
 .box-course {
   padding: 1em 0;
@@ -405,7 +371,7 @@ async function handleSelectSubject(_indexCourse: number, _indexSubject: number) 
   }
   .box-subjects {
     font-size: 1em;
-    padding: 1.5em 1em 0.5em 1px;
+    padding: 0.2em 1em 0.5em 1px;
   }
   .container-teachers-registrations {
     display: grid;

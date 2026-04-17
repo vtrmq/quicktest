@@ -3,11 +3,14 @@ import { marked } from 'marked';
 import arrowUp from '$lib/assets/svg/arrow-up.svg?raw';
 import arrowDown from '$lib/assets/svg/arrow-down.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
+import clipboard from '$lib/assets/svg/clipboard.svg?raw';
 import { EditBtn, Toast } from '$lib/components';
+import { pasteFromClipboard } from '$lib/utils';
+
 let { data, handleEvent = ()=>{}, id, onEvent = ()=>{} } = $props();
 let textarea = $state<HTMLTextAreaElement>();
-let heightMin = 60;
-let heightMax = 150;
+let heightMin = 200;
+let heightMax = 270;
 let localText = $derived(data.text);
 let isEdit = $derived(data.isEdit);
 let toast = $state<Toast | null>(null);
@@ -69,6 +72,36 @@ function handle(action: string) {
   handleEvent({data: info, action, id});
 }
 
+async function handleCopy() {
+  const content = await pasteFromClipboard();
+  //console.log(content)
+  // 1. Obtenemos los puntos de selección
+  if (textarea) {
+    const start = textarea.selectionStart || 0;
+    const end = textarea.selectionEnd || 0;
+
+    // 2. Obtenemos el valor actual del textarea
+    const currentValue = textarea.value;
+
+    // 3. Construimos el nuevo valor:
+    // [Texto antes del cursor] + [Texto pegado] + [Texto después del cursor]
+    const newValue = 
+      currentValue.substring(0, start) + 
+        content + 
+        currentValue.substring(end);
+
+    // 4. Actualizamos el valor del elemento
+    textarea.value = newValue;
+    // 5. Opcional: Reposicionamos el cursor justo después del texto pegado
+    const newCursorPosition = start + content.length;
+    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    localText = textarea.value;
+
+    // 6. Devolvemos el foco al elemento
+    textarea.focus();
+  }
+}
+
 </script>
 
 <Toast bind:this={toast} />
@@ -87,7 +120,7 @@ function handle(action: string) {
     {/if}
   {:else}
     <div>
-      <div>
+      <div class="container-areatext">
         <textarea 
           spellcheck="false"
           oninput={(e)=>handleTextAreaInput(e)} 
@@ -105,12 +138,31 @@ function handle(action: string) {
         <EditBtn onclick={()=>handle('delete')}>{@html trash}</EditBtn>
         <EditBtn onclick={()=>handle('up')}>{@html arrowUp}</EditBtn>
         <EditBtn onclick={()=>handle('down')}>{@html arrowDown}</EditBtn>
+        <EditBtn onclick={handleCopy}>{@html clipboard}</EditBtn>
       </div>
     </div>
   {/if}
 </div>
 
 <style>
+.container-areatext {
+  border: 1px solid #ccc;
+  padding: 0.2em 0 0.2em 1em;
+  border-radius: 10px;
+  margin-bottom: 0.5em;
+  overflow: hidden;
+}
+:global .container-paragraph {
+  h3, h4 {
+    padding-bottom: 0.6em;
+  }
+  p {
+    margin: 0.6em 0;
+  }
+  ul {
+    margin: 0 0 0 1em;
+  }
+}
 .paragraph {
   font-family: var(--font-normal);
   font-size: 1.1em;
@@ -123,7 +175,7 @@ function handle(action: string) {
   padding: 2em 0 1em;
 }
 .container-paragraph {
-  padding: 0.8em 0;
+  padding-bottom: 0.8em;
 }
 .wr-btns {
   display: flex;

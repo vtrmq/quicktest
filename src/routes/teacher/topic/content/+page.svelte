@@ -1,13 +1,16 @@
 <script lang="ts">
 import { FOLDER_AUDIOS, R2_DOMAIN } from '$lib/utils';
-import { EditText, LinkBack, Toolbar, ImageContent, VideoContent, Vignette, Toast, Audios, Dialog } from "$lib/components";
+import { EditText, Toolbar, ImageContent, VideoContent, Vignette, Toast, Audios, Dialog, Confirm } from "$lib/components";
 import { typeActivity, quitarExtension } from "$lib/utils";
 import { deserialize } from '$app/forms';
 import trash from '$lib/assets/svg/trash.svg?raw'
 import fileSpreadsheet from '$lib/assets/svg/file-spreadsheet.svg?raw';
+import { goto } from '$app/navigation';
+import { beforeNavigate } from '$app/navigation';
 
 let { data } = $props();
 let dialog = $state<Dialog | null>(null);
+let confirm = $state<Confirm | null>(null);
 let content = $state(JSON.parse(data.topic.content) ?? []);
 let posLine = $state(-1);
 let indexContent = $state(-1);
@@ -18,6 +21,8 @@ let isLoad = $state(false);
 let topicId = data.topic.topic_id;
 let audio = $state<Audios | null>(null);
 const root = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
+
+//console.log(data)
 
 type Extra = {
   type_activity: string;
@@ -219,15 +224,116 @@ function handleActionShowWin(index: number, item: number) {
   });
 }
 
+function handleGoTopics() {
+  //handleActionSave();
+  goto("/teacher/topic");
+}
+
+/*
+onNavigate((navigation) => {
+  // navigation.type puede ser 'link', 'goto', o 'popstate' (atrás/adelante)
+  if (navigation.type === 'popstate') {
+    if (!confirm('¿Seguro que quieres salir?')) cancel();
+  }
+});
+*/
+
+/*
+beforeNavigate(({ type, cancel }) => {
+  // El tipo 'popstate' indica que se usó el botón atrás/adelante del navegador
+  if (type === 'popstate') {
+    // Opcional: puedes cancelar la navegación si es necesario
+    //if (!confirm('¿Guardaste los cambios?')) 
+      cancel();
+  }
+});
+*/
+
+let destino: string | null = null;
+let navegacionConfirmada = false;
+
+beforeNavigate(({ cancel, to, type }) => {
+  // Si ya confirmamos, dejamos que pase
+  if (navegacionConfirmada) return;
+
+  // Si es una navegación que queremos interceptar (atrás o links)
+  if (to && type !== 'link') {
+    cancel(); // Cancelamos la navegación instantáneamente
+    destino = to.url.href; // Guardamos a dónde iba el usuario
+    confirm?.show("Guardar antes de salir");
+  }
+});
+
+/*
+async function handleGenerateActivity(e: Event) {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const formData = new FormData(form);
+  const prompt = String(formData.get("prompt"));
+
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
+  });
+
+  console.log(response)
+}
+*/
+
+/*
+async function handleGenerateIA() {
+  let prompt = `Dame un texto para que los estudiante seleccione todos los sustantivos que encuentre.
+  Entregamelo como un objeto que tenga dos claves una description y content, en la clave description escribe lo que el estudiante debe hacer en la actividad y 
+en la clave content el texto que te pedí. Pero solo entregame el objeto con estas dos claves nada mas. 
+
+REGLAS ESTRICTAS DE FORMATO JSON:
+
+El JSON DEBE estar en una sola línea (minificado). NO uses saltos de línea, NO uses enters.
+Usa ÚNICAMENTE comillas dobles "".
+NO pongas una coma después del último elemento de ninguna clave.
+No escribas NADA antes del JSON ni NADA después. Sin bloques de código.
+Estructura exacta en una sola línea:
+`;
+  */
+
+  // Añadimos el mensaje del usuario al historial
+  //const userMessage = { role: 'user', content: prompt };
+  //messages = [...messages, userMessage];
+
+  // Preparamos la variable para la respuesta
+
+  // API KEY DE BRAVE: BSAobwVHUcB5sMFmi8x3sbLoB9KhDN7
+
+  /*
+  let prompt = "Dame ejercicios para estudiantes para evaluar el uso de la letra B";
+  console.log(prompt)
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
+  });
+  console.log(await response.json())
+}
+*/
+
+function handleSave() {
+  handleActionSave();
+  navegacionConfirmada = true;
+  if (destino) goto(destino);
+}
+
 </script>
 
 <Toast bind:this={toast} />
 <Audios bind:this={audio} onSelectAudio={handleAudioSelect} />
 <Dialog bind:this={dialog} action={handleActionRemoveExtra} />
+<Confirm bind:this={confirm} handleSave={handleSave} />
 
 <div class="content">
   <div class="header-content">
-    <LinkBack href="/teacher/topic">Temas</LinkBack>
+    <!--LinkBack href="/teacher/topic">Temas</LinkBack-->
+    <button class="btn-back" onclick={handleGoTopics}>Temas</button>
   </div>
   {#each content as section, index}
     {#if section.type === 'title'}
@@ -298,9 +404,20 @@ function handleActionShowWin(index: number, item: number) {
   {handleEyeLine} 
   {handleActionSave} 
   {noneSpace} 
-  {handleBtnToolbar} {handleShowAudio} />
+  {handleBtnToolbar} {handleShowAudio} apiKeys={data.apiKeys} />
 
 <style>
+.btn-back {
+  background: transparent;
+  color: #000;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
 :global {
   .link-subject > svg {
     width: 24px;

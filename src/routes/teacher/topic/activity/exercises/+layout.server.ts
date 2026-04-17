@@ -24,6 +24,6 @@ export const load: LayoutServerLoad = async ({ locals, url, platform }) => {
 
   return { 
     topic: topic.results[0] || null,
-    activity: activity.results[0] || null
+    activity: activity.results[0] || null,
   };
 };

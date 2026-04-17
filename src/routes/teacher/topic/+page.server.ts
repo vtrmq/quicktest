@@ -84,7 +84,7 @@ FROM (
     SELECT topic_id, teacher_id, topic, file, shadow_file, content, order_by, visible, created_at
     FROM topics
     WHERE teacher_id = ?
-    ORDER BY order_by ASC
+    ORDER BY order_by DESC  
     LIMIT ?
     OFFSET ?
 ) AS T

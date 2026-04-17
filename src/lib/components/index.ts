@@ -15,10 +15,14 @@ export { default as VideoContent } from './layout/edit/Video.svelte';
 export { default as Vignette } from './layout/edit/Vignette.svelte';
 export { default as WinTestEdit } from './layout/edit/WinTestEdit.svelte';
 
+export { default as Generate } from './generate/Generate.svelte';
+export { generate } from "./generate/generate.svelte";
 
 // COMPONENTS UI
 // =============
 
+//export { default as Generate } from './ui/Generate.svelte';
+export { default as Confirm } from './ui/Confirm.svelte';
 export { default as Button } from './ui/Button.svelte';
 export { default as BtnTheme } from './ui/BtnTheme.svelte';
 export { default as DataFrame } from './ui/DataFrame.svelte';

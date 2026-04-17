@@ -67,7 +67,7 @@
     height: 0;
     display: flex;
     justify-content: center;
-    z-index: 70;
+    z-index: 20000;
     left: 0;
   }
   .toast {

@@ -48,6 +48,9 @@ export function disabled(_isDisabled: boolean) {
 </button>
 
 <style>
+:global .button > svg {
+  width: 25px;
+}
 .center {
   margin: 0 auto;
 }
@@ -102,7 +105,7 @@ export function disabled(_isDisabled: boolean) {
   display: flex;
 }
 .svg-load {
-  width: 22px;
+  width: 24px;
   animation: girar 1.5s linear infinite;
 }
 @keyframes girar {

@@ -17,8 +17,10 @@ export const load: LayoutLoad = async ({ data }) => {
     const activityId = data.activity.activity_id;
     const topicId = data.topic.topic_id;
     const topic = data.topic.topic;
+    const APIKey = data.APIKey;
 
     return {
+      APIKey,
       activityId,
       activity,
       items,

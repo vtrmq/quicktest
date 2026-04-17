@@ -20,31 +20,34 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 
     //const topic = await queryFirstDB(db, 'SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ? AND visible = 1', topicId, teacherId);
     
-    const [topic, activities, extras] = await db.batch([
+    const [topic, activities, extras, apikeys] = await db.batch([
       db.prepare('SELECT * FROM topics WHERE topic_id = ? AND teacher_id = ? AND visible = 1')
       .bind(topicId, teacherId),
       db.prepare('SELECT activity_id, topic_id, activity, type_general, time, file, items FROM activities WHERE teacher_id = ? AND topic_id = ? AND visible = 1')
       .bind(teacherId, topicId),
       db.prepare('SELECT items FROM activities_extra WHERE teacher_id = ? AND topic_id = ?')
       .bind(teacherId, topicId),
+      db.prepare('SELECT apikey FROM apikeys WHERE user_id = ?')
+      .bind(teacherId),
     ]);
 
+    //console.log(apikeys.results[0].apikey)
+
     const _activitiesAll = activities.results || [];
+    const apiKeys = apikeys.results[0] || [];
     let _activities: any = [];
     for (let i = 0; i < _activitiesAll.length; i++) {
       _activitiesAll[i].items = _activitiesAll[i].items !== null ? JSON.parse(_activitiesAll[i].items) : null;
       _activities.push(_activitiesAll[i]);
     }
 
-    //console.log("====================")
-    //console.log(extras.results.length)
-
     return { 
       type: 'success',
       topic: topic.results[0] || null,
       activities: _activities,
       message: '',
-      extras: extras.results.length === 0 ? [] : JSON.parse(extras.results[0].items)
+      extras: extras.results.length === 0 ? [] : JSON.parse(extras.results[0].items),
+      apiKeys: Object.entries(apiKeys).length !== 0 ? JSON.parse(apiKeys.apikey) : null,
     };
 
   } catch (err) {

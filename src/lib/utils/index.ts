@@ -8,3 +8,5 @@ export * from './constants';
 export * from './profile';
 export * from './formatDateHour';
 export * from './fn';
+export * from './historyDataIA';
+export * from './injectCopyButtons';

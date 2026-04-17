@@ -2,16 +2,13 @@
 import { deserialize } from '$app/forms';
 import plus from '$lib/assets/svg/plus.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
-import minus from '$lib/assets/svg/minus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw'
 import shieldCheck from '$lib/assets/svg/shield-check.svg?raw'
 import shieldX from '$lib/assets/svg/shield-x.svg?raw'
-import smile from '$lib/assets/svg/smile.svg?raw'
 import { generateCryptographicKey } from '$lib/utils';
 import { Title, NoneData, LinkBtn, OptionSelect, Toast, Dialog } from '$lib/components';
 
 let { data } = $props();
-let subjId: string = $state('');
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let posCourse: number = 0;
@@ -30,14 +27,6 @@ type Courses = {
 };
 
 let courses: Courses[] = $state(data.courses);
-
-function handleViewSubject(i: number) {
-  if (subjId === '' || subjId !== `subj-${i}`) {
-    subjId = `subj-${i}`;
-  } else {
-    subjId = '';
-  }
-}
 
 function handleActionShowWin(index: number) {
   const course = courses[index].course;
@@ -167,42 +156,35 @@ async function handleActionDelete(e: string) {
               </div>
             </div>
             <div class="box-course">
-              <div class="info-course"><p class="course">{row.course}</p><span class="code">{row.code}</span></div>
-              <div class="info-pay">
-                <div>
-                  <div>
-                    <button class="btn-view-subjects"> <!-- onclick={()=>handleViewSubject(i)}  -->
-                      <span class="svg-subject">
-                        {#if `subj-${i}` === subjId}
-                          {@html minus}
-                        {:else}
-                          {@html plus}
-                        {/if}
-                      </span> 
-                      Asignaturas: {row.total_subjects}</button>
-                  </div>
-                  <div class="box-subjects"> <!--  class:view-subjects={`subj-${i}` === subjId} -->
-                    {#each row.subjects as subject, id}
-                      <div>{id + 1}. {subject.subject}</div>
-                    {/each}
-                  </div>
+              <div class="info-course">
+                <div class="container-course-code">
+                  <p class="course">{row.course}</p><span class="code">{row.code}</span>
+                </div>
+                <div class="box-select">
+                  <OptionSelect>
+                    <button onclick={()=>handleCode(i)}>
+                      {#if row.code.length === 0}
+                        {@html shieldCheck} 
+                        <span>Generar código</span>
+                      {:else}
+                        {@html shieldX} 
+                        <span>Eliminar código</span>
+                      {/if}
+                    </button>
+                    <a href="/teacher/course/edit?courseId={row.course_id}">{@html pencil} <span>Editar</span></a>
+                    <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar curso</span></button>
+                  </OptionSelect>
                 </div>
               </div>
-              <div class="box-select">
-                <OptionSelect>
-                  <a href="/teacher/student?courseId={row.course_id}">{@html smile} <span>Estudiantes del curso</span></a>
-                  <button onclick={()=>handleCode(i)}>
-                    {#if row.code.length === 0}
-                      {@html shieldCheck} 
-                      <span>Generar código</span>
-                    {:else}
-                      {@html shieldX} 
-                      <span>Eliminar código</span>
-                    {/if}
-                  </button>
-                  <a href="/teacher/course/edit?courseId={row.course_id}">{@html pencil} <span>Editar</span></a>
-                  <button onclick={()=>handleActionShowWin(i)}>{@html trash} <span>Eliminar curso</span></button>
-                </OptionSelect>
+              <div class="container-links">
+                <a class="link-student" href="/teacher/student?courseId={row.course_id}">Estudiantes</a>
+              </div>
+              <div class="info-pay">
+                <div class="box-subjects"> <!--  class:view-subjects={`subj-${i}` === subjId} -->
+                  {#each row.subjects as subject, id}
+                    <div>{id + 1}. {subject.subject}</div>
+                  {/each}
+                </div>
               </div>
             </div>
           </div>
@@ -221,18 +203,33 @@ async function handleActionDelete(e: string) {
 {/if}
 
 <style>
+.link-student {
+  font-family: var(--font-normal);
+  text-decoration: none;
+  color: #004f8d;
+  font-size: 1em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.container-links {
+  display: flex;
+  gap: 0.4em;
+  width: 100%;
+  padding: 5px 0;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+.container-course-code {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
 .box-select {
   display: inline-flex;
   position: absolute;
   top: 10px;
   right: 10px;
-}
-.svg-subject {
-  display: flex;
-  padding: 3px 4px;
-  background: #df90f7;
-  border-radius: 3px;
-  box-shadow: #ad54c7 0px 3px 0px 0px;
 }
 :global {
   .svg-subject > svg {
@@ -241,32 +238,15 @@ async function handleActionDelete(e: string) {
     stroke-width: 3px;
   }
 }
-.btn-view-subjects {
-  font-size: 1em;
-  cursor: pointer;
-  background: transparent;
-  font-family: var(--font-normal);
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  transition: var(--transition);
-  color: #6b6b6b;
-}
 .box-subjects {
-  /*display: none;*/
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  padding: 1em 1em 0.5em 0.3em;
+  padding: 0 1em 0.5em 0;
   color: brown;
   font-weight: 600;
   font-size: 0.95em;
 }
-/*
-.box-subjects.view-subjects {
-  display: flex;
-}
-*/
 .box-course {
   padding: 1em 0;
   position: relative;
@@ -377,9 +357,12 @@ async function handleActionDelete(e: string) {
   box-shadow: 0px 4px 16px rgb(155 155 155 / 25%);
 }
 @media(min-width: 800px) {
+  .link-student {
+    font-size: 0.9em;
+  }
   .box-subjects {
     font-size: 1em;
-    padding: 1em 1em 0.5em 0.5em;
+    padding: 0 1em 0.5em 0;
   }
   .container-teachers-registrations {
     display: grid;
