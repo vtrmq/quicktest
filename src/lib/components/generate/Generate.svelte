@@ -5,7 +5,7 @@ import { marked } from 'marked';
 import { page } from '$app/state';
 import { fade } from 'svelte/transition';
 import { generate } from './generate.svelte';
-import { TextArea, Button, Input, CheckBox, Toast } from "$lib/components";
+import { TextArea, Button, Input, CheckBox, Toast, TipBox } from "$lib/components";
 import search from '$lib/assets/svg/search.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
 import { HistorialStorage, injectCopyButtons } from "$lib/utils";
@@ -260,6 +260,7 @@ function handleViewText() {
 
 <!--svelte:window onkeydown={generate.close} /-->
 <Toast bind:this={toast} />
+<TipBox />
 
 {#if generate.show.visible}
   <div transition:fade={{ duration: 200 }} class="container-generate">

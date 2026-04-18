@@ -1,6 +1,6 @@
 <script lang="ts">
-import { streamText } from 'ai';
-import { createGroq } from '@ai-sdk/groq';
+//import { streamText } from 'ai';
+//import { createGroq } from '@ai-sdk/groq';
 
 //import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -56,7 +56,7 @@ type Option = {
   option: string;
 };
 
-let { params, items, handleActivity, activity, handlePropag = ()=>{}, APIKey='' } = $props(); // , topic
+let { params, items, handleActivity, activity, handlePropag = ()=>{} } = $props(); // , topic
 //const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
@@ -68,7 +68,6 @@ let selectType = $state('');
 let toast = $state<Toast>();
 
 //console.log(items)
-console.log(APIKey)
 
 let album = $state<Album | null>(null);
 let audio = $state<Audios | null>(null);
@@ -572,6 +571,192 @@ function splitWordsCharacter() {
   return act;
 }
 
+// ===============================================================
+function arrOptions() {
+
+  let sw = false;
+  let pr = true;
+  let pivote = 0;
+  for (let i = 0; i < content.length; i++) {
+    if ((content[i] === "[" || content[i] === "]") && pr === true) {
+      if (content[i] === "[") {
+        pr = false;
+        sw = false;
+        pivote++;
+      } else {
+        sw = false;
+        break;
+      }
+    } else if ((content[i] === "[" || content[i] === "]") && pr === false) {
+      if (content[i] === "]") {
+        pr = true;
+        sw = true;
+        pivote++;
+      } else {
+        sw = false;
+        break;
+      }
+    } else if (content[i] === " " && pr === false) {
+      sw = false;
+      break;
+    }
+  }
+
+  return { sw, pivote }
+
+}
+
+function splitWordsCharacterPart() {
+  let options: any = [];
+  //let chars = [",", ".", ";", ":", "?", "¿", "¡", "!"];
+  let chars = [",", ".", ";", ":", "?", "¿", "¡", "!", "(", ")"];
+  let arrWords = [];
+  let pa = content.split("\n");
+  for (let j = 0; j < pa.length; j++) {
+    let arrWord = pa[j].split(" ");
+    for (let i = 0; i < arrWord.length; i++) {
+      let char = arrWord[i].slice(-1);
+      const found = chars.find(c => c === char);
+      let type = "w";
+      if (found === undefined) {
+        let characters = [];
+        let word = arrWord[i];
+        let chars_w = "";
+        if (arrWord[i].indexOf("[") !== -1 && arrWord[i].indexOf("]") !== -1) {
+          type = "r";
+          let sw = false;
+          for (let i = 0; i < word.length; i++) {
+            if (word[i] === "[") {
+              sw = true;
+            } else if (sw && word[i] !== "]") {
+              chars_w += word[i];
+            } else if (sw && word[i] === "]") {
+              if (chars_w.length !== 0) {
+                const found = options.find((w: any) => w.toLowerCase() === chars_w.toLowerCase());
+                if (found === undefined) {
+                  options = [...options, chars_w.toLowerCase()]; 
+                }
+              }
+              characters.push({char: chars_w, br: true, show: false, errors: [], word: ''});
+              sw = false;
+            } else if (sw === false) {
+              if (chars_w.length !== 0) {
+                const found = options.find((w: any) => w.toLowerCase() === chars_w.toLowerCase());
+                if (found === undefined) {
+                  options = [...options, chars_w.toLowerCase()]; 
+                }
+              }
+              chars_w = "";
+              characters.push({char: word[i], br: false, show: false, errors: [], word: ''});
+            }
+          }
+        }
+        arrWords.push({
+          characters,
+          word, 
+          type, 
+          resp: false, 
+        });
+      } else {
+        let characters = [];
+        let word = arrWord[i].slice(0, -1);
+        let chars_w = "";
+
+        if (arrWord[i].indexOf("[") !== -1 && arrWord[i].indexOf("]") !== -1) {
+          type = "r";
+          let sw = false;
+          for (let i = 0; i < word.length; i++) {
+            if (word[i] === "[") {
+              sw = true;
+            } else if (sw && word[i] !== "]") {
+              chars_w += word[i];
+            } else if (sw && word[i] === "]") {
+              //console.log("2", chars_w)
+              if (chars_w.length !== 0) {
+                const found = options.find((w: any) => w.toLowerCase() === chars_w.toLowerCase());
+                if (found === undefined) {
+                  options = [...options, chars_w.toLowerCase()]; 
+                }
+              }
+              characters.push({char: chars_w, br: true, show: false, errors: [], word: ''});
+              sw = false;
+            } else if (sw === false) {
+              if (chars_w.length !== 0) {
+                const found = options.find((w: any) => w.toLowerCase() === chars_w.toLowerCase());
+                if (found === undefined) {
+                  options = [...options, chars_w.toLowerCase()]; 
+                }
+              }
+              chars_w = "";
+              characters.push({char: word[i], br: false, show: false, errors: [], word: ''});
+            }
+          }
+        }
+
+        arrWords.push({
+          characters,
+          word, 
+          type, 
+          resp: false, 
+        });
+        arrWords.push({
+          word: char, 
+          type: "s", 
+          resp: false, 
+        });
+      }
+    }
+    arrWords.push({word: "\n", type: "x"});
+  }
+
+  let words: any = arrWords;
+
+  let cant = options.length;
+  if (cant === 0) {
+    return {};
+  }
+
+  for (let i = 0; i < 500; i++) {
+    let pos1 = Math.floor(Math.random() * cant);
+    let pos2 = Math.floor(Math.random() * cant);
+    let ch1 = options[pos1];
+    let ch2 = options[pos2];
+    options[pos1] = ch2;
+    options[pos2] = ch1;
+  }
+
+  // ============================================================
+    let wCorrects = 0;
+    for (let i = 0; i < words.length; i++) {
+      if (words[i].type === "r") {
+        for (let j = 0; j < words[i].characters.length; j++) {
+          if (words[i].characters[j].br) {
+            wCorrects = wCorrects + 1;
+          }
+        }
+      } 
+    }
+  // ============================================================
+
+  const act = {
+    exercise: {
+      wordsErrors: [],
+      words: arrWords,
+      question,
+      content,
+      options,
+    },
+    value: 0,
+    type: "characterPart",
+    mode: typeExercise,
+    typeExercise,
+    visible: true,
+    time: 0
+  };
+  return act;
+
+}
+
 
 // ==================================================
 
@@ -810,6 +995,55 @@ function handleDone() {
       items[indexExercise].exercise = exercise.exercise;
     }
 
+  // CHARACTERPART
+  // ==================================================
+  } else if (sheet === 'characterPart') {
+
+    if (question.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe la descripción',
+        time: 3000
+      });
+      return;
+    }
+
+    if (content.trim().length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Escribe el texto de la actividad',
+        time: 3000
+      });
+      return;
+    }
+
+    const rs = arrOptions();
+    if (rs.sw === false && rs.pivote !== 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'Falta uno de estos dos corchetes [ ]',
+        time: 3000
+      });
+      return false;
+    }
+
+    const exercise = splitWordsCharacterPart();
+    if (Object.entries(exercise).length === 0) {
+      toast?.view({
+        type: 'fail',
+        message: 'No hay palabras o letras encerradas entre corchetes []',
+        time: 4000
+      });
+      return;
+    }
+    //console.log(exercise)
+
+    if (stateExercise === 'new') {
+      items.push(exercise); 
+    } else if (stateExercise === 'update') {
+      items[indexExercise].exercise = exercise;
+    }
+
   // MORPHOSYNTAX
   // ==================================================
   } else if (sheet === 'morphosyntax') {
@@ -976,6 +1210,14 @@ function handleEditActivity(index: number) {
     typeExercise = items[index].typeExercise;
     timeLecture = items[index].time;
     sheet = 'character';
+  } else if (type === 'characterPart') {
+
+    question = items[index].exercise.question;
+    content = items[index].exercise.content;
+    typeExercise = items[index].typeExercise;
+    timeLecture = 0;
+    sheet = 'characterPart';
+
   } else if (type === 'test') {
     question = items[index].exercise.question;
     content = items[index].exercise.content;
@@ -1241,86 +1483,6 @@ async function handleGenerateActivity(e: Event) {
 
 
 
-async function handleGenerateActivity(e: Event) {
-
-  e.preventDefault();
-  const form = e.target as HTMLFormElement;
-  const formData = new FormData(form);
-  const prompt = String(formData.get("prompt"));
-  // Crea una instancia de Groq con la API Key del usuario
-  /*
-  const genAI = new GoogleGenerativeAI(groqAPI);
-  // Configuramos el modelo con la herramienta de búsqueda
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    tools: [{ googleSearchRetrieval: {} }] 
-  });
-
-  const pr = `Genera una actividad escolar sobre ${prompt}. Usa fuentes reales de internet.`;
-  const result = await model.generateContent(pr);
-  console.log(({ actividad: result.response.text() }))
-
-  const context = `Quiero que me generes un objeto con la siguiente estructura: 
-{
-  description: "",
-  activity: ""
-}
-El texto de la actividad debe contener: ${prompt}
-Solo entregame el objeto en la forma que te lo solicite sin json al inicio ni comillas inclinadas al final. Es importante que el contenido del cada clave del objeto sea exacto, la clave activity debe tener el texto de la actividad, la clave description debe tener el texto para que el estudiante comprenda lo que va ha realizar, no debe tener ejemplo, ni sugerencias, ni definiciones ni nada parecido solo un texto claro y simple.
-`;
-
-----------------------------------------------
-
-Quiero para mis estudiantes el siguiente ejercicio. Un texto en el que los estudiantes pueda seleccionar solo sustantivos que encuentren. Generame la respuesta en un json con las siguientes claves, activity: "texto de la actividad", description: "descripción de la actividad para el estudiante comprenda lo que tiene que hacer", answers: "las respuestas de la actividad". Ejemplo:
-{
-  description: "",
-  activity: "",
-  answers: ""
-}
-Solo entregame el objeto en la forma que te lo solicite sin ```json al inicio ni ``` al final. Es importante que el contenido del cada clave del objeto sea exacto, la clave activity debe tener el texto de la actividad, la clave description debe tener el texto para que el estudiante comprenda lo que va ha realizar, no debe tener ejemplo, ni sugerencias, ni definiciones ni nada parecido solo un texto claro y simple y la clave answers debe tener las respuestas de la actividad. 
-
---------------------------------------------------
-
-Actúa como un generador estricto de contenido educativo. Tu única función es crear un ejercicio de identificación de sustantivos y entregarlo en formato JSON.
-
-REGLAS ABSOLUTAS DE REDACCIÓN:
-
-La clave "description" debe contener SOLO una orden directa. Máximo 30 palabras. Sin definiciones, sin ejemplos.
-Si escribes algo como "Los sustantivos son palabras que...", estás fallando.
-La clave "activity" debe ser un ÚNICO párrafo coherente que cuente una breve historia o describa una escena con sentido completo. PROHIBIDO usar oraciones sueltas, desconectadas o repetitivas (ejemplo prohibido: "La casa es azul. La casa tiene puertas. El perro juega.").
-La clave "answers" debe contener ABSOLUTAMENTE TODOS los sustantivos presentes en la clave "activity", separados por comas. No omitas ninguno.
-REGLAS ESTRICTAS DE FORMATO JSON:
-
-El JSON DEBE estar en una sola línea (minificado). NO uses saltos de línea, NO uses enters.
-Usa ÚNICAMENTE comillas dobles "".
-NO pongas una coma después del último elemento de ninguna clave.
-No escribas NADA antes del JSON ni NADA después. Sin bloques de código.
-Estructura exacta en una sola línea:
-{"description": "[Orden directa]", "activity": "[Párrafo coherente con historia]", "answers": "[Sustantivos]"}
-
-*/
-
-  const groq = createGroq({
-    apiKey: APIKey
-  });
-
-  const result = streamText({
-    model: groq('llama-3.3-70b-versatile'),
-    prompt: `${prompt}`
-  });
-  let fullResponse = '';
-  for await (const delta of result.fullStream) {
-    if (delta.type === "text-delta") {
-      fullResponse += delta.text;
-    }
-  }
-  console.log(JSON.parse(fullResponse))
-  const respuesta = JSON.parse(fullResponse);
-  question = respuesta.description;
-  content = respuesta.activity;
-  //console.log(fullResponse)
-}
-
 </script>
 
 <Toast bind:this={toast} />
@@ -1357,7 +1519,7 @@ Estructura exacta en una sola línea:
           {/if}
         </button>
       </div>
-    {:else if  sheet === 'select' || sheet === 'character' || sheet === 'match'}
+    {:else if  sheet === 'select' || sheet === 'character' || sheet === 'characterPart' || sheet === 'match'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
@@ -1473,6 +1635,7 @@ Estructura exacta en una sola línea:
       <div class="sheet-type">
 
         {#if typeExercise === 'normal'}
+
           <div class="wr-figure">
             <div class="wr-w-figure">
               <span class="span-baseline"><img src={seleccionarPalabra} alt="" /></span>
@@ -1480,14 +1643,23 @@ Estructura exacta en una sola línea:
             <div class="label-figure">Seleccionar palabras</div>
             <button class="btn-create" onclick={()=>handleIntro("select")}>Crear</button>
           </div>
+
         {/if}
 
         <div class="wr-figure">
           <div class="wr-w-figure">
             <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
           </div>
-          <div class="label-figure">Completar espacios</div>
+          <div class="label-figure">Colocar palabras</div>
           <button class="btn-create" onclick={()=>handleIntro("character")}>Crear</button>
+        </div>
+
+        <div class="wr-figure">
+          <div class="wr-w-figure">
+            <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
+          </div>
+          <div class="label-figure">Completar palabras</div>
+          <button class="btn-create" onclick={()=>handleIntro("characterPart")}>Crear</button>
         </div>
 
         <div class="wr-figure">
@@ -1499,6 +1671,7 @@ Estructura exacta en una sola línea:
         </div>
 
         {#if typeExercise === 'normal'}
+
           <div class="wr-figure">
             <div class="wr-w-figure">
               <span class="span-baseline"><img src={colocarPartes} alt="" /></span>
@@ -1569,12 +1742,6 @@ Estructura exacta en una sola línea:
       <div class="wr-btn-add">
         <Button onclick={handlePlusOption}>Adicionar palabra</Button>
       </div>
-      <div>
-        <form onsubmit={handleGenerateActivity}>
-          <div><textarea name="prompt"></textarea></div>
-          <div><button type="submit">Generar</button></div>
-        </form>
-      </div>
 
     {:else if sheet === 'point-out'}
 
@@ -1628,6 +1795,19 @@ Estructura exacta en una sola línea:
             <Input type="number" name="abc" label="Tiempo de lectura (En segundos)" bind:value={timeLecture} />
           </div>
         {/if}
+      </div>
+
+    {:else if sheet === 'characterPart'}
+
+      <p class="label-type">
+        Completar palabras
+      </p>
+      <div class="wr-space">
+        <TextArea 
+          name="def" 
+          label='Descripción' 
+          bind:value={question} --height-text-area='80px' isError={false} />
+        <TextArea name="ghi" label='Texto de la actividad' bind:value={content} --height-text-area="150px" isError={false} />
       </div>
 
     {:else if sheet === 'match'}

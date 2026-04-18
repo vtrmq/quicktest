@@ -1,5 +1,6 @@
 import TurndownService from 'turndown';
 import copy from '$lib/assets/svg/copy.svg?raw';
+import { tipbox } from '$lib/components/tipbox/tipbox.svelte';
 
 // Configuración de Turndown
 const turndownService = new TurndownService({
@@ -73,6 +74,7 @@ export const injectCopyButtons = (): void => {
       // Aquí llamaremos a la Fase 2 (Turndown) próximamente
       //console.log(`Copiando unidad completa: ${tagName}`);
       copyToClipboardAsMarkdown(target);
+      tipbox.open("Copiado");
     };
   });
 };

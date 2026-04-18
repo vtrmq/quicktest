@@ -304,6 +304,7 @@ export function typeExerc(type: string) {
     case 'test': type = 'Test'; break;
     case 'test-pdf': type = 'Test PDF'; break;
     case 'test-fs': type = 'Test con audio'; break;
+    case 'characterPart': type = 'Completar palabras'; break;
   }
   return type;
 }
@@ -448,7 +449,7 @@ export function wordObjects(text: string) {
   }));
 }
 
-export const colors = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"];
+export const colors = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "a", "b", "c", "d", "e", "f", "g", "h", "i"];
 
 export function normalizeToDigit(n: number): number {
   return ((n % 10) + 10) % 10;

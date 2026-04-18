@@ -18,6 +18,9 @@ export { default as WinTestEdit } from './layout/edit/WinTestEdit.svelte';
 export { default as Generate } from './generate/Generate.svelte';
 export { generate } from "./generate/generate.svelte";
 
+export { default as TipBox } from './tipbox/TipBox.svelte';
+export { tipbox } from "./tipbox/tipbox.svelte";
+
 // COMPONENTS UI
 // =============
 
@@ -62,6 +65,7 @@ export { default as Video } from './ui/VideoContent.svelte';
 
 // Activities
 export { default as SelectEdit } from './ui/SelectEdit.svelte';
+export { default as CharacterPartEdit } from './ui/CharacterPartEdit.svelte';
 export { default as CharacterEdit } from './ui/CharacterEdit.svelte';
 export { default as MorphosyntaxEdit } from './ui/MorphosyntaxEdit.svelte';
 export { default as TestFsEdit } from './ui/TestFsEdit.svelte';

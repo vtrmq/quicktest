@@ -14,6 +14,7 @@ import {
   MatchEdit, 
   PointOutEdit, 
   TestPDFEdit,
+  CharacterPartEdit,
 } from '$lib/components';
 import { extractParams } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
@@ -95,6 +96,8 @@ function handleActivity(index: number, _items: Item[], _viewBtnSheet: boolean) {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'character') {
       activity = _items[index].exercise as Exercise;
+    } else if (type === 'characterPart') {
+      activity = _items[index].exercise as Exercise;
     } else if (type === 'match') {
       activity = _items[index].exercise as Exercise;
     } else if (type === 'test') {
@@ -105,6 +108,8 @@ function handleActivity(index: number, _items: Item[], _viewBtnSheet: boolean) {
       testPDF = _items[index].exercise;
     } else if (type === 'morphosyntax') {
       intro = true;
+      activity = _items[index].exercise as Exercise;
+    } else if (type === 'character') {
       activity = _items[index].exercise as Exercise;
     }
     setTimeout(() => {
@@ -154,11 +159,10 @@ function handleGoActivities(back: string) {
     <button class="btn-back" onclick={()=>handleGoActivities("activity")}>Atrás</button>
   {/if}
   <EditExercise 
-    params={{activityId: data.activityId, topicId: data.topicId}} 
-    topic={data.topic} 
+    params={{activityId: data.activityId, topicId: data.topicId}}  
     activity={data.activity} 
     items={items} 
-    {handleActivity} {handlePropag} APIKey={data.APIKey} bind:this={editExercise} />
+    {handleActivity} {handlePropag} bind:this={editExercise} /> <!-- topic={data.topic} -->
 </HeaderExercise>
 
 <!--Toast bind:this={toast} /-->
@@ -208,6 +212,10 @@ function handleGoActivities(back: string) {
           {:else if type === 'point-out'}
 
             <PointOutEdit {indexExercise} {activity} {intro} />
+
+          {:else if type === 'characterPart'}
+
+            <CharacterPartEdit {indexExercise} {activity} {infoData} />
 
           {/if}
         {/key}
