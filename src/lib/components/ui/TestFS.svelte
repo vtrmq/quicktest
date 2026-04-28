@@ -3,24 +3,7 @@ import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, corregirIEnFrase, ordenarPorCl
 import { activityLocalstore } from "$lib/store/activity_student";
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
-import { Dialog } from '$lib/components';
-
-/*
-type Words = {
-  id: number;
-  word: string;
-};
-type Point = {
-  words: Words[];
-  image: ''; 
-  answersFS: [{id: number, word: string;}];
-  audio: string;
-}
-type WordError = {
-  point: number;
-  errors: string[];
-};
-*/
+import { Toast, Dialog, BtnChangeResult } from '$lib/components';
 
 type WordItem = {
   id: number;
@@ -42,10 +25,22 @@ type WordErrorAudio = {
   errors: string[];
 }
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false,
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
+
 let wordsErrors: WordErrorAudio[] = [];
 let points: QuestionAudio[] = $state([]);
 let dialog = $state<Dialog | null>(null);
+let toast = $state<Toast>();
 
 points = infoData.exercise.points;
 wordsErrors = infoData.exercise.wordsErrors;
@@ -78,7 +73,14 @@ function handleSelectWordFS(point: number, index: number, word: WordItem) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
 
   points[point].answersFS.push(points[point].words[index]);
   const answers = points[point].answersFS;
@@ -115,7 +117,14 @@ function handleSelectWordFSRemove(point: number, index: number) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
   points[point].answersFS.splice(index, 1);
   //console.log($state.snapshot(points))
   //console.log($state.snapshot(points[point]))
@@ -124,10 +133,17 @@ function handleSelectWordFSRemove(point: number, index: number) {
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
+<Toast bind:this={toast} />
 
 <div class="container-activity-fs">
 
   <h1 class="title-fs">{infoData.exercise.content}</h1>
+
+  {#if typeGeneral === 'R'}
+    <div class="wr-btn-change-result">
+      <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+    </div>
+  {/if}
 
   {#each points as qs, point}
     <div class="container-question-fs">
@@ -172,3 +188,12 @@ function handleSelectWordFSRemove(point: number, index: number) {
     </div>
   {/each}
 </div>
+
+<style>
+.wr-btn-change-result {
+  position: absolute;
+  display: flex;
+  justify-content: right;
+  width: 100%;
+}
+</style>

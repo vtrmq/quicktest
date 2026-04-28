@@ -27,11 +27,11 @@ $effect(() => {
 </script>
 
 <div class="rf-character">
-    <div class="center-exercise-character">
-      <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
+  <div class="center-exercise-character">
+    <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
 
-        <div class="box1-select">
-          <h1 class="title-select">{question}</h1>
+      <div class="box1-select">
+        <h1 class="title-select">{question}</h1>
         <div class="container-words-character">
 
           <div class="container-words-part">
@@ -76,20 +76,20 @@ $effect(() => {
           </div>
 
         </div>
-        </div>
-        
-        {#if options.length}
-          <div class="box2-select">
-            <div class="bx-select">
-              {#each options as opt, index}
-                <button class="w-opt-select {colors[index]}">{opt !== 'i' ? opt : 'I'}</button>
-              {/each}
-            </div>
-          </div>
-        {/if}
-
       </div>
+
+      {#if options.length}
+        <div class="box2-select">
+          <div class="bx-select">
+            {#each options as opt, index}
+              <button class="w-opt-select {colors[index]}">{opt !== 'i' ? opt : 'I'}</button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
     </div>
+  </div>
 </div>
 
 <style>
@@ -99,6 +99,7 @@ $effect(() => {
 }
 .sign-part {
   padding-right: 4px;
+  padding-top: 8px;
 }
 .raya-character-part {
     border-bottom: 2px solid #333;
@@ -123,7 +124,7 @@ $effect(() => {
   text-align: center;
 }
 .chrf {
-  padding: 0.2em 0 0.2em 0.2em;
+  padding: 0.5em 0 0.2em 0.2em;
 }
 .last-word-character {
   padding: 0.2em 0 0.2em 0.2em;

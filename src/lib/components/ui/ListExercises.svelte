@@ -44,7 +44,7 @@ function handleSelectActivity(index: number) {
   handleActivity(index, _items, viewResult, viewBox);
 }
 
-function handleViewResultX() {
+export function handleViewResultX() {
 
   //viewResult = option === 'result' ? 1 : 2;
   viewResultNota = !viewResultNota;
@@ -138,6 +138,7 @@ function handleSendTest() {
 </script>
 
 <button class="btn-view-close-exerc" onclick={handleViewBoxExercise}>{@html menu}</button>
+
 <div class="container-edit-exercise" class:view-box-exerc={viewBox}>
   <div class="header-box-exercise">
     <div class="in-header-exerc">

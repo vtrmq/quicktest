@@ -64,6 +64,7 @@ export { default as TestDialog } from './ui/TestDialog.svelte';
 export { default as Video } from './ui/VideoContent.svelte';
 
 // Activities
+export { default as BtnChangeResult } from './ui/BtnChangeResult.svelte';
 export { default as SelectEdit } from './ui/SelectEdit.svelte';
 export { default as CharacterPartEdit } from './ui/CharacterPartEdit.svelte';
 export { default as CharacterEdit } from './ui/CharacterEdit.svelte';
@@ -82,6 +83,7 @@ export { default as Match } from './ui/Match.svelte';
 export { default as PointOut } from './ui/PointOut.svelte';
 export { default as SelectWord } from './ui/SelectWord.svelte';
 export { default as Character } from './ui/Character.svelte';
+export { default as CharacterPart } from './ui/CharacterPart.svelte';
 export { default as Test } from './ui/Test.svelte';
 export { default as TestPDF } from './ui/TestPDF.svelte';
 export { default as TestFS } from './ui/TestFS.svelte';

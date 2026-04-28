@@ -1,4 +1,5 @@
 <script lang="ts">
+import { marked } from 'marked';
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
 import { ALFABETO, R2_DOMAIN, FOLDER_IMAGES } from '$lib/utils';
@@ -82,7 +83,7 @@ function startProgress() {
         {#each points as qs, point}
           <div class="container-question-test">
             <div class="wr-point-number-test"><div class="point-number-test">{point + 1}</div></div>
-            <div class="question-test">{qs.question}</div>
+            <div class="question-test">{@html marked(qs.question)}</div>
 
             {#if qs.images.length !== 0}
               <div class="container-images-question-test">
@@ -109,7 +110,7 @@ function startProgress() {
                     </div>
                   {/if}
                   <div class="wr-input-item-test">
-                    <div class="answer-item-test">{answer.resp}</div>
+                    <div class="answer-item-test">{@html marked(answer.resp)}</div>
                   </div>
                 </div>
               {/each}

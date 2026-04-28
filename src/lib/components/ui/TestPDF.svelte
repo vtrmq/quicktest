@@ -2,7 +2,7 @@
 import { fade } from 'svelte/transition';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { ordenarPorClave, ordenarNumeros, addCountTest, R2_DOMAIN, FOLDER_FILES } from '$lib/utils';
-import { Dialog } from "$lib/components";
+import { Toast, Dialog } from "$lib/components";
 
 /*
 type Point = {
@@ -35,6 +35,7 @@ type WordError = {
 }
 
 let dialog = $state<Dialog | null>(null);
+let toast = $state<Toast>();
 let modeSheet = $state(false);
 const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 
@@ -78,7 +79,14 @@ function handleSelectPoint(point: number, item: number) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
   points[point].points[item].rss = !points[point].points[item].rss;
 
   if (points[point].points[item].rss && points[point].points[item].success === false) {
@@ -116,6 +124,7 @@ function handleValidated() {
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
+<Toast bind:this={toast} />
 
 <iframe title="" class="iframe-test" src="{root_file}/{infoData.exercise.file}" frameborder="0"></iframe>
 

@@ -60,7 +60,7 @@ function onInput(e: Event) {
 
 </script>
 <div class="container-input">
-  <div class="label">{label} <span class="requested">{requested ? '*' : ''}</span></div>
+  <div class="label">{@html label} <span class="requested">{requested ? '*' : ''}</span></div>
   <div class="inputText">
     <div class="wr-input">
       {#if icon.length}

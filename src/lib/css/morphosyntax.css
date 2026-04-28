@@ -201,6 +201,7 @@
   cursor: pointer;
   overflow: hidden;
   font-family: var(--font-normal);
+  transition: var(--transition);
 }
 .border-morpho {
   outline: 1px dashed var(--border-box-synt);

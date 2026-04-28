@@ -240,6 +240,20 @@ export const activityLocalstore = {
     }
   },
 
+  characterPart: (indexExercise: number, data: any, wordsErrors: string, totalPoints: number, sumPoints: number, scales: { scale: string; min_value: number; max_value: number }[]) => {
+    const activities = localStorage.getItem(act);
+    if (activities) {
+      const exercises = JSON.parse(activities);
+      const _data = JSON.parse(data);
+
+      const result = handleResultNota(totalPoints, sumPoints, scales);
+      exercises[indexExercise].exercise.wordsErrors = JSON.parse(wordsErrors);
+      exercises[indexExercise].exercise.words = _data;
+      exercises[indexExercise].value = result.nota < 0 ? 0 : result.nota;
+      localStorage.setItem(act, JSON.stringify(exercises));
+    }
+  },
+
   test: (indexExercise: number, data: any, wordsErrors: any, scales: { scale: string; min_value: number; max_value: number }[]) => {
     const activities = localStorage.getItem(act);
     if (activities) {

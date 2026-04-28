@@ -1,8 +1,18 @@
 <script lang="ts">
 import { activityLocalstore } from "$lib/store/activity_student";
 import { colorSynt, bgColorSynt, wordObjects, shuffleArray } from '$lib/utils';
-import { Select, Dialog } from "$lib/components";
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+import { Toast, Select, Dialog, BtnChangeResult } from "$lib/components";
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false,
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
 
 type ArrWord = {
   type: string;
@@ -32,6 +42,7 @@ type SelectMorphosyntax = {
 }
 
 let dialog = $state<Dialog | null>(null);
+let toast = $state<Toast>();
 let arrWords: ArrWord[] = $state([]);
 let arrWordsBox: ArrWordBox[][] = $state([]);
 let numRow = -1;
@@ -73,7 +84,15 @@ function selectSynt(e: any, row: number, column: number) {
     }
   }
 
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
+
   numRow = row;
   numColumn = column;
   arrWordsBox[numRow][numColumn];
@@ -190,6 +209,7 @@ loadSintax();
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
+<Toast bind:this={toast} />
 
 {#if showWinInput}
   <div class="bg-morphosyntax">
@@ -218,6 +238,11 @@ loadSintax();
 <div class="board-morpho-bx">
   <!-- --------------------------- -->
   <div class="wrapper-board-morpho-bx">
+      {#if typeGeneral === 'R'}
+        <div class="wr-btn-change-result">
+          <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+        </div>
+      {/if}
     <div class="container-board-morpho">
 
       <div class="rr-morpho">
@@ -247,9 +272,9 @@ loadSintax();
                     width: {rs.width}; 
                     border-top: 2px solid {colorSynt(index)}; 
                     background: {rs.label.morphosyntax.length !== 0 ? bgColorSynt(index) : ''}; 
-                    background: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#e35353' : ''}; 
-                    color: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '#fff' : ''}; 
-                    border-top: {rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase() && viewResult === 1 ? '2px solid #bf0000' : ''};
+                    background: {rs.response.morphosyntax.length !== 0 && (rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase()) && viewResult === 1 ? '#e45c5c' : ''}; 
+                    color: {rs.response.morphosyntax.length !== 0 && (rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase()) && viewResult === 1 ? '#fff' : ''}; 
+                    border-top: {rs.response.morphosyntax.length !== 0 && (rs.response.morphosyntax.toLowerCase() !== rs.label.morphosyntax.toLowerCase()) && viewResult === 1 ? '2px solid #871e1e' : ''};
                     font-size: {rs.size}px;" 
                   onclick={(e)=>selectSynt(e, index, bx)} role="button" tabindex="0" onkeyup={()=>{}}>
                   {rs.response.morphosyntax}
@@ -268,6 +293,14 @@ loadSintax();
 </div>
 
 <style>
+.wr-btn-change-result {
+  position: absolute;
+  display: flex;
+  justify-content: right;
+  width: 99%;
+  top: 6px;
+  left: 0;
+}
 .board-morpho-bx {
   position: relative;
   display: flex;

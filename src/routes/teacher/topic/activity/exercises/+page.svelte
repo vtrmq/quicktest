@@ -1,4 +1,5 @@
 <script lang="ts">
+import { beforeNavigate } from '$app/navigation';
 import { fade } from 'svelte/transition';
 //import { FOLDER_AUDIOS, R2_DOMAIN, ALFABETO } from '$lib/utils';
 import { page } from '$app/state';
@@ -14,13 +15,16 @@ import {
   MatchEdit, 
   PointOutEdit, 
   TestPDFEdit,
-  CharacterPartEdit,
+  CharacterPartEdit, Confirm
 } from '$lib/components';
 import { extractParams } from '$lib/utils';
 import { activityLocalstore } from '$lib/store/activity';
 import { onDestroy } from 'svelte';
 import { goto } from '$app/navigation';
 
+let confirm = $state<Confirm | null>(null);
+let navegacionConfirmada = false;
+let destino: string | null = null;
 type ArrWordBox = {
   label: {"morphosyntax": string, "description": string};
   response: {"morphosyntax": string, "value": boolean};
@@ -65,6 +69,8 @@ type Exercise = {
 let { data } = $props();
 let items = data.items;
 let type = $state('info');
+
+//console.log(data)
 
 const root = extractParams(page.url.href, ['topicId', 'origin']);
 let visible = $state(false);
@@ -141,14 +147,37 @@ function handlePropag(sw: boolean) {
 }
 
 function handleGoActivities(back: string) {
-  editExercise?.save();
+  //editExercise?.save();
   if (back === "content") {
     goto(`/teacher/topic/content?topicId=${root.topicId}`);
   } else if (back === "activity") {
     goto(`/teacher/topic/activity?topicId=${root.topicId}`);
   }
 }
+
+beforeNavigate(({ cancel, to, type }) => {
+  // Si ya confirmamos, dejamos que pase
+  if (navegacionConfirmada) return;
+
+  // Si es una navegación que queremos interceptar (atrás o links)
+  if (to && type !== 'link') {
+    cancel(); // Cancelamos la navegación instantáneamente
+    destino = to.url.href; // Guardamos a dónde iba el usuario
+    confirm?.show("Guardar antes de salir");
+  }
+});
+
+async function handleSave() {
+  //handleActionSave();
+  await editExercise?.save();
+  navegacionConfirmada = true;
+  if (destino) goto(destino);
+}
+
 </script>
+
+
+<Confirm bind:this={confirm} handleSave={handleSave} />
 
 <HeaderExercise>
   {#if root.origin === "content"}
@@ -162,7 +191,7 @@ function handleGoActivities(back: string) {
     params={{activityId: data.activityId, topicId: data.topicId}}  
     activity={data.activity} 
     items={items} 
-    {handleActivity} {handlePropag} bind:this={editExercise} /> <!-- topic={data.topic} -->
+    {handleActivity} {handlePropag} bind:this={editExercise} apiKeys={data.apiKeys} /> <!-- topic={data.topic} -->
 </HeaderExercise>
 
 <!--Toast bind:this={toast} /-->
@@ -215,7 +244,7 @@ function handleGoActivities(back: string) {
 
           {:else if type === 'characterPart'}
 
-            <CharacterPartEdit {indexExercise} {activity} {infoData} />
+            <CharacterPartEdit {activity} />
 
           {/if}
         {/key}

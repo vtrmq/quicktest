@@ -300,7 +300,7 @@ export function typeExerc(type: string) {
     case 'point-out': type = 'Señalar partes'; break;
     case 'morphosyntax': type = 'Morfosintaxis'; break;
     case 'match': type = 'Unir conceptos'; break;
-    case 'character': type = 'Completar espacios'; break;
+    case 'character': type = 'Colocar palabras'; break;
     case 'test': type = 'Test'; break;
     case 'test-pdf': type = 'Test PDF'; break;
     case 'test-fs': type = 'Test con audio'; break;

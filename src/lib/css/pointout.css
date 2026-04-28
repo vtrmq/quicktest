@@ -39,6 +39,7 @@
   height: 50px;
   font-family: var(--font-normal);
   text-align: center;
+  position: relative;
 }
 .designer-point-out {
   width: 100%;
@@ -97,11 +98,12 @@
   min-width: 50px;
   height: 30px;
   box-shadow: #4f4f4f 0px 4px 0px 0px;
+  transition: var(--transition);
 }
 .placed-point-out.item-bad-point-out {
   background: #c70101;
   color: #fff;
-  border: 1px solid #9d0303;
+  border: 2px solid #9d0303;
   box-shadow: #7f2408 0px 4px 0px 0px;
 }
 

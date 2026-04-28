@@ -1,3 +1,7 @@
+.break {
+  height: 4px;
+  width: 100%;
+}
 .bool-errors-selected {
   position: absolute;
   font-size: 1.1em;
@@ -36,6 +40,7 @@
   background: transparent;
   font-size: 1em;
   height: 25.38px;
+  transition: var(--transition);
 }
 
 /* ================================= */
@@ -383,8 +388,10 @@
   display: flex;
 }
 .sign-select {
-  padding: 0.22em 0 0 0;
+  padding: 0.1em 0 0 0;
   margin: 0;
+  position: relative;
+  top: 3px;
 }
 .grid-select {
   flex-direction: column;
@@ -394,6 +401,7 @@
   overflow-y: auto;
   width: 100%;
   padding: 1em;
+  position: relative;
 }
 
 .box1-select::-webkit-scrollbar {

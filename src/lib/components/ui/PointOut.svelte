@@ -3,10 +3,20 @@ import { FOLDER_IMAGES, R2_DOMAIN, markOptionErrors } from '$lib/utils';
 import { reemplazarEspacios } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
 import { onMount } from 'svelte';
-import { Toast, Dialog } from '$lib/components';
+import { Toast, Dialog, BtnChangeResult } from '$lib/components';
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false,
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
 
 //type Option = { id: string; option: string; origin: string };
 
@@ -123,7 +133,14 @@ function handlePlaceWord(index: number, origin: string) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
   if (selectedOption === null) {
     toast?.view({
       type: '',
@@ -150,6 +167,14 @@ function paint() {
 };
 
 function handleSelectOption(opt: Opt) {
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
   if (isWordsErrors) {
     if (opt.error) {
       dialog?.show({
@@ -184,6 +209,9 @@ function handleSelectOption(opt: Opt) {
   <!-- Toolbar -->
   <div class="header-point-out">
     {infoData.exercise.question}
+    {#if typeGeneral === 'R'}
+      <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+    {/if}
   </div>
 
   <!-- Contenedor imagen -->
@@ -197,7 +225,7 @@ function handleSelectOption(opt: Opt) {
         <button
           class="placed-point-out"
           style="left:{item.x * 100}%; top:{item.y * 100}%" onclick={()=>handlePlaceWord(index, item.origin)} 
-          class:item-bad-point-out={item.value === false && viewResult === 1}>
+          class:item-bad-point-out={item.resp.length !== 0 && item.value === false && viewResult === 1}>
           <span>{item.resp}</span>
         </button>
       {/each}

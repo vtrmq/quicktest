@@ -151,16 +151,28 @@ async function handleCopy() {
   border-radius: 10px;
   margin-bottom: 0.5em;
   overflow: hidden;
+  background: #fff;
 }
 :global .container-paragraph {
   h3, h4 {
     padding-bottom: 0.6em;
+    font-family: var(--font-normal);
   }
   p {
     margin: 0.6em 0;
+    font-family: var(--font-normal);
+  }
+  p > p {
+    margin: 0.6em 0 1em;
+    font-family: var(--font-normal);
+  }
+  p > ul {
+    margin: 0 0 2em 1em;
+    font-family: var(--font-normal);
   }
   ul {
-    margin: 0 0 0 1em;
+    margin: 0;
+    font-family: var(--font-normal);
   }
 }
 .paragraph {

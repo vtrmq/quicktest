@@ -13,14 +13,15 @@ export const load: LayoutLoad = async ({ data }) => {
       activityLocalstore.set(JSON.parse(data.activity.items));
     }
 
+    //console.log(data)
     const activity = data.activity.activity;
     const activityId = data.activity.activity_id;
     const topicId = data.topic.topic_id;
     const topic = data.topic.topic;
-    const APIKey = data.APIKey;
+    const apiKeys = data.apiKeys;
 
     return {
-      APIKey,
+      apiKeys,
       activityId,
       activity,
       items,

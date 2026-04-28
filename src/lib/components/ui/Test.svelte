@@ -1,8 +1,9 @@
 <script lang="ts">
+import { marked } from 'marked';
 import { fade } from 'svelte/transition';
 import reading from '$lib/assets/images/reading.png';
 import { ALFABETO, ordenarPorClave, ordenarNumeros, addCountTestSimple, R2_DOMAIN, FOLDER_IMAGES } from '$lib/utils';
-import { Dialog } from "$lib/components";
+import { Toast, Dialog, BtnChangeResult } from "$lib/components";
 import { activityLocalstore } from "$lib/store/activity_student";
 
 type Point = {
@@ -20,11 +21,22 @@ type WordError = {
 };
 
 let dialog = $state<Dialog | null>(null);
+let toast = $state<Toast>();
 let wordsErrors: WordError[] = [];
 let points: Point[] = $state([]);
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false,
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
 
 wordsErrors = infoData.exercise.wordsErrors;
 if (isWordsErrors) {
@@ -117,6 +129,11 @@ function handleSelectItem(point: number, index: number) {
   }
   //console.log(viewResult)
   if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
     return;
   }
 
@@ -152,19 +169,24 @@ function handleSelectItem(point: number, index: number) {
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
+<Toast bind:this={toast} />
 
 <div class="rf-test">
   {#if mode === 'normal'}
 
     <div class="center-exercise-test">
 
-
       <div class="container-activity-test">
         <h1 class="question-test-test">{infoData.exercise.question}</h1>
+        {#if typeGeneral === 'R'}
+          <div class="wr-btn-change-result">
+            <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+          </div>
+        {/if}
         {#each points as qs, point}
           <div class="container-question-test">
             <div class="wr-point-number-test"><div class="point-number-test">{point + 1}</div></div>
-            <div class="question-test">{qs.question}</div>
+            <div class="question-test">{@html marked(qs.question)}</div>
 
             {#if qs.images.length !== 0}
               <div class="container-images-question-test">
@@ -204,7 +226,7 @@ function handleSelectItem(point: number, index: number) {
                   {/if}
                   <div class="wr-input-item-test">
                     <div class="answer-item-test">
-                      {answer.resp}
+                      {@html marked(answer.resp)}
                       {#if isWordsErrors && answer.error}
                         <span class="bool-errors">👆</span>
                       {/if}
@@ -240,3 +262,12 @@ function handleSelectItem(point: number, index: number) {
 
   {/if}
 </div>
+
+<style>
+.wr-btn-change-result {
+  position: absolute;
+  display: flex;
+  justify-content: right;
+  width: 100%;
+}
+</style>

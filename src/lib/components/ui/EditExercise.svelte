@@ -4,9 +4,11 @@
 
 //import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, FOLDER_FILES, quitarExtension } from '$lib/utils';
+import { marked } from 'marked';
+import { FOLDER_IMAGES, FOLDER_AUDIOS, R2_DOMAIN, ALFABETO, corregirIEnFrase, quitarExtension } from '$lib/utils'; // , FOLDER_FILES
 import menu from '$lib/assets/svg/menu.svg?raw';
 import colocarPalabra from '$lib/assets/images/colocar-palabra.png';
+import completarPalabra from '$lib/assets/images/completar-palabra.png';
 import colocarPartes from '$lib/assets/images/colocar-partes.png';
 import audioText from '$lib/assets/images/audio-text.png';
 import morfosintaxis from '$lib/assets/images/morfosintaxis.png';
@@ -18,11 +20,13 @@ import refresh from '$lib/assets/svg/refresh-cw.svg?raw';
 import pencil from '$lib/assets/svg/pencil.svg?raw';
 import image from '$lib/assets/svg/image.svg?raw';
 import circleX from '$lib/assets/svg/circle-x.svg?raw';
+import plus from '$lib/assets/svg/plus.svg?raw';
 import trash from '$lib/assets/svg/trash.svg?raw';
 import { Button, Toast, TextArea, Input, Album, Audios, OptionSelect, Dialog, AudioRecorder, FilesPDF } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity';
 import { barajarArray, typeExerc } from '$lib/utils/';
 import { goto } from '$app/navigation';
+import { generate } from '$lib/components';
 
 type AnswersTest = {
   resp: string;
@@ -56,10 +60,12 @@ type Option = {
   option: string;
 };
 
-let { params, items, handleActivity, activity, handlePropag = ()=>{} } = $props(); // , topic
+let { params, items, handleActivity, activity, handlePropag = ()=>{}, apiKeys, } = $props(); // , topic
 //const root = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
+
+//console.log(apiKeys)
 const root_image = `${R2_DOMAIN}/${FOLDER_IMAGES}`;
-const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
+//const root_file = `${R2_DOMAIN}/${FOLDER_FILES}`;
 const root_audio = `${R2_DOMAIN}/${FOLDER_AUDIOS}`;
 let dialog = $state<Dialog | null>(null);
 let viewBox = $state(true); // false
@@ -111,8 +117,8 @@ const chars = ['A', 'B', 'C', 'D', 'E'];
 
 //console.log(items)
 
-export function save() {
-  handleSaveActivities()
+export async function save() {
+  await handleSaveActivities()
 }
 
 function reset() {
@@ -1115,9 +1121,10 @@ async function handleImageSelect(image: string) {
 // ======================================================
 
 async function handleFileSelect(file_name: string, file_pdf: string) {
-  console.log(file_name)
-  console.log(file_pdf)
-  console.log(root_file)
+  //console.log(file_name)
+  //console.log(file_pdf)
+  //console.log(root_file)
+
   fileName = file_name;
   fileExam = file_pdf;
   //fileExam = `${root_file}/${file_pdf}`;
@@ -1481,7 +1488,11 @@ async function handleGenerateActivity(e: Event) {
 }
 */
 
+function handleGenerate() {
+  generate.visible();
+}
 
+generate.setApiKeys(apiKeys);
 
 </script>
 
@@ -1507,6 +1518,13 @@ async function handleGenerateActivity(e: Event) {
     {#if sheet === 'ejercises'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleNewExercise}>Nuevo ejercicio</button>
+        <button class="btn-save-exercise" onclick={handleSaveActivities}>
+          {#if !swSave}
+            Guardar
+          {:else}
+            {@html refresh}
+          {/if}
+        </button>
       </div>
     {:else if sheet === 'type'}
       <div class="wr-btns-actions">
@@ -1524,6 +1542,7 @@ async function handleGenerateActivity(e: Event) {
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
+          <button class="btn-new" onclick={handleGenerate} type="button">Generador</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1533,6 +1552,7 @@ async function handleGenerateActivity(e: Event) {
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
+          <button class="btn-new" onclick={handleGenerate} type="button">Generador</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1542,16 +1562,18 @@ async function handleGenerateActivity(e: Event) {
         <button class="btn-new" onclick={handleDone}>Listo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
+          <button class="btn-new" onclick={handleGenerate} type="button">Generador</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
       </div>
     {:else if sheet === 'test'}
       <div class="wr-btns-actions">
-        <button class="btn-new" onclick={handleAddPoint}>Punto</button>
         <button class="btn-new" onclick={handleDone}>Listo</button>
+        <button class="btn-new" onclick={handleAddPoint}>Adicionar punto</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
+          <button class="btn-new" onclick={handleGenerate} type="button">Generador</button>
         {:else if stateExercise === 'update'}
           <button class="btn-new" onclick={handleCancelUpdate}>Ejercicios</button>
         {/if}
@@ -1559,8 +1581,7 @@ async function handleGenerateActivity(e: Event) {
     {:else if sheet === 'test-pdf'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleDone}>Listo</button>
-        <button class="add-point-test" onclick={handleAddPointTestPDF}>Punto</button>
-        <button class="add-point-test" onclick={handleUploadFilePDF}>Archivo</button>
+        <button class="btn-new" onclick={handleUploadFilePDF}>Archivo</button>
         {#if stateExercise === 'new'}
           <button class="btn-new" onclick={handleCancelUpdate}>Cancelar</button>
         {:else if stateExercise === 'update'}
@@ -1580,8 +1601,8 @@ async function handleGenerateActivity(e: Event) {
     {:else if sheet === 'new-point'}
       <div class="wr-btns-actions">
         <button class="btn-new" onclick={handleBackTest}>Volver</button>
-        <button class="btn-new" onclick={handleAddItem}>Adicionar respuesta</button>
         <button class="btn-new" onclick={handleDonePoint}>Listo</button>
+        <button class="btn-new" onclick={handleGenerate} type="button">Generador</button>
       </div>
     {:else if sheet === 'new-point-fs'}
       <div class="wr-btns-actions">
@@ -1637,87 +1658,78 @@ async function handleGenerateActivity(e: Event) {
         {#if typeExercise === 'normal'}
 
           <div class="wr-figure">
-            <div class="wr-w-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("select")}>
               <span class="span-baseline"><img src={seleccionarPalabra} alt="" /></span>
-            </div>
-            <div class="label-figure">Seleccionar palabras</div>
-            <button class="btn-create" onclick={()=>handleIntro("select")}>Crear</button>
+              <div class="label-figure">Seleccionar palabras</div>
+            </button>
+          </div>
+
+          <div class="wr-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("characterPart")}>
+              <span class="span-baseline"><img src={completarPalabra} alt="" /></span>
+              <div class="label-figure">Completar palabras</div>
+            </button>
           </div>
 
         {/if}
 
         <div class="wr-figure">
-          <div class="wr-w-figure">
+          <button class="wr-w-figure" onclick={()=>handleIntro("character")}>
             <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
-          </div>
-          <div class="label-figure">Colocar palabras</div>
-          <button class="btn-create" onclick={()=>handleIntro("character")}>Crear</button>
+            <div class="label-figure">Colocar palabras</div>
+          </button>
         </div>
 
         <div class="wr-figure">
-          <div class="wr-w-figure">
-            <span class="span-baseline"><img src={colocarPalabra} alt="" /></span>
-          </div>
-          <div class="label-figure">Completar palabras</div>
-          <button class="btn-create" onclick={()=>handleIntro("characterPart")}>Crear</button>
-        </div>
-
-        <div class="wr-figure">
-          <div class="wr-w-figure">
+          <button class="wr-w-figure" onclick={()=>handleIntro("match")}>
             <span class="span-baseline"><img src={relacionar} alt="" /></span>
-          </div>
-          <div class="label-figure">Relacionar conceptos</div>
-          <button class="btn-create" onclick={()=>handleIntro("match")}>Crear</button>
+            <div class="label-figure">Relacionar conceptos</div>
+          </button>
         </div>
 
         {#if typeExercise === 'normal'}
 
           <div class="wr-figure">
-            <div class="wr-w-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("point-out")}>
               <span class="span-baseline"><img src={colocarPartes} alt="" /></span>
-            </div>
-            <div class="label-figure">Señalar partes</div>
-            <button class="btn-create" onclick={()=>handleIntro("point-out")}>Crear</button>
+              <div class="label-figure">Señalar partes</div>
+            </button>
           </div>
         {/if}
         
         <div class="wr-figure">
-          <div class="wr-w-figure">
+          <button class="wr-w-figure" onclick={()=>handleIntro("test")}>
             <span class="span-baseline"><img src={list} alt="" /></span>
-          </div>
-          <div class="label-figure">
-            {#if typeExercise === 'normal'}
-              Examen
-            {:else}
-              Preguntas
-            {/if}
-          </div>
-          <button class="btn-create" onclick={()=>handleIntro("test")}>Crear</button>
+            <div class="label-figure">
+              {#if typeExercise === 'normal'}
+                Examen
+              {:else}
+                Preguntas
+              {/if}
+            </div>
+          </button>
         </div>
 
         {#if typeExercise === 'normal'}
           <div class="wr-figure">
-            <div class="wr-w-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("test-pdf")}>
               <span class="span-baseline"><img src={checklist} alt="" /></span>
-            </div>
-            <div class="label-figure">Examen PDF</div>
-            <button class="btn-create" onclick={()=>handleIntro("test-pdf")}>Crear</button>
+              <div class="label-figure">Examen PDF</div>
+            </button>
           </div>
 
           <div class="wr-figure">
-            <div class="wr-w-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("test-fs")}>
               <span class="span-baseline"><img src={audioText} alt="" /></span>
-            </div>
-            <div class="label-figure">Escuchar audio y formar frase</div>
-            <button class="btn-create" onclick={()=>handleIntro("test-fs")}>Crear</button>
+              <div class="label-figure">Escuchar audio y formar frase</div>
+            </button>
           </div>
 
           <div class="wr-figure">
-            <div class="wr-w-figure">
+            <button class="wr-w-figure" onclick={()=>handleIntro("morphosyntax")}>
               <span class="span-baseline"><img src={morfosintaxis} alt="" /></span>
-            </div>
-            <div class="label-figure">Morfosintaxis</div>
-            <button class="btn-create" onclick={()=>handleIntro("morphosyntax")}>Crear</button>
+              <div class="label-figure">Morfosintaxis</div>
+            </button>
           </div>
         {/if}
 
@@ -1839,23 +1851,27 @@ async function handleGenerateActivity(e: Event) {
       <div class="wr-words-match">
       <div class="header-match">
         <h1 class="title-wd">Palabras del lado izquierdo</h1>
-        <button class="add-word" onclick={()=>handlePlusMatchWords('left')}>Adicionar</button>
       </div>
-      <div class="wr-space">
-        {#each leftWords as ws}
-          <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
-        {/each}
+        <div class="wr-space">
+          {#each leftWords as ws}
+            <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
+          {/each}
+        </div>
+        <div class="w-btn-add">
+          <button class="add-word" onclick={()=>handlePlusMatchWords('left')}>{@html plus} Adicionar</button>
+        </div>
       </div>
-    </div>
       <div class="wr-words-match">
         <div class="header-match">
           <h1 class="title-wd">Palabras del lado derecho</h1>
-          <button class="add-word" onclick={()=>handlePlusMatchWords('right')}>Adicionar</button>
         </div>
         <div class="wr-space">
           {#each rightWords as ws}
             <Input type="text" label="Escribe una palabra o frase" bind:value={ws.word} isError={false} />
           {/each}
+        </div>
+        <div class="w-btn-add">
+          <button class="add-word" onclick={()=>handlePlusMatchWords('right')}>{@html plus} Adicionar</button>
         </div>
       </div>
 
@@ -1894,7 +1910,7 @@ async function handleGenerateActivity(e: Event) {
           </div>
 
           <div class="wr-value-point">Valor: {qs.value}</div>
-          <div class="question">{qs.question}</div>
+          <div class="question">{@html marked(qs.question)}</div>
 
           {#if qs.images.length !== 0}
             <div class="container-images-question">
@@ -1921,7 +1937,7 @@ async function handleGenerateActivity(e: Event) {
                   </div>
                 {/if}
                 <div class="wr-input-item">
-                  <div class="answer-item">{answer.resp}</div>
+                  <div class="answer-item">{@html marked(answer.resp)}</div>
                 </div>
               </div>
             {/each}
@@ -2008,6 +2024,9 @@ async function handleGenerateActivity(e: Event) {
             
           </div>
         {/each}
+        <div class="w-btn-resp">
+          <button class="btn-new-resp" onclick={handleAddItem}>{@html plus} Adicionar respuesta</button>
+        </div>
       </div>
 
       <!-- =========================================================== -->
@@ -2069,9 +2088,13 @@ async function handleGenerateActivity(e: Event) {
             </div>
           </div>
         {/each}
+
       </div>
 
       <div class="wr-value-total">Valor total: {totalValuesPoint}</div>
+      <div class="w-btn-resp">
+        <button class="btn-new-resp" onclick={handleAddPointTestPDF}>{@html plus} Adicionar punto</button>
+      </div>
 
     {:else if sheet === 'test-fs'}
 
@@ -2161,6 +2184,30 @@ async function handleGenerateActivity(e: Event) {
 </div>
 
 <style>
+.btn-new-resp {
+  font-family: var(--font-normal);
+  border-radius: 4px;
+  cursor: pointer;
+  background: #2196F3;
+  font-size: 1em;
+  transition: var(--transition);
+  height: 38px;
+  padding: 0.4em 1em;
+  box-shadow: #045fa7 0px 4px 0px 0px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.w-btn-resp {
+  display: flex;
+  justify-content: center;
+}
+.w-btn-add {
+  display: flex;
+  justify-content: center;
+  padding: 1em 0;
+}
 .label-activity {
   font-family: var(--font-normal);
   font-weight: 600;
@@ -2243,25 +2290,11 @@ async function handleGenerateActivity(e: Event) {
   padding: 0 10px;
   font-family: var(--font-normal);
   text-align: center;
-}
-.btn-create {
-  width: 100%;
-  height: 100%;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-normal);
-  background: #2196F3;
-  color: #fff;
-  font-weight: 800;
-  transition: var(--transition);
-}
-.btn-create:hover {
-  background: #0375cf;
+  font-size: 1.1em;
 }
 .span-baseline img {
-  width: 60%;
-  height: 85%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 .span-baseline {
@@ -2270,19 +2303,29 @@ async function handleGenerateActivity(e: Event) {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
 .wr-figure {
   height: 200px;
   width: 100%;
   display: grid;
-  grid-template-rows: 120px 45px 35px;
-  box-shadow: rgb(99 99 99 / 51%) 0px 2px 8px 0px;
   border-radius: 6px;
   overflow: hidden;
-  border: 2px solid #333;
+  padding: 10px;
+  background: #e1e8f1;
 }
 .wr-w-figure {
   position: relative;
+  background: #f8fafb;
+  display: grid;
+  grid-template-rows: 130px 50px;
+  height: 100%;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 6px;
+}
+.wr-w-figure:hover {
+  background: #f0fde9;
 }
 .wr-value-total {
   font-family: var(--font-normal);
@@ -2366,17 +2409,6 @@ async function handleGenerateActivity(e: Event) {
   justify-content: space-between;
   align-items: center;
 }
-.add-point-test {
-  font-family: var(--font-normal);
-  border-radius: 4px;
-  cursor: pointer;
-  background: bisque;
-  font-size: 1em;
-  transition: var(--transition);
-  height: 32px;
-  padding: 0.4em;
-  box-shadow: #c37400 0px 4px 0px 0px;
-}
 @keyframes girar {
 from {
   transform: rotate(0deg);
@@ -2387,7 +2419,7 @@ to {
 }
 .wr-btns-actions {
   display: flex;
-  gap: 1em;
+  gap: 0.6em;
 }
 .wr-btn-point-out {
   display: flex;
@@ -2764,9 +2796,19 @@ to {
 .add-word {
   font-family: var(--font-normal);
   font-size: 1em;
-  color: var(--color-label-input);
-  background: transparent;
+  color: #fff;
+  background: #2196F3;
   cursor: pointer;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  box-shadow: #056abb 0px 4px 0px 0px;
+  transition: var(--transition);
+}
+.add-word:hover {
+  background: #0b83e3;
 }
 .header-match {
   display: flex;
@@ -2804,7 +2846,7 @@ to {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 64px;
+  width: 72px;
   height: 32px;
   box-shadow: #367b38 0px 4px 0px 0px;
 }
@@ -2820,7 +2862,6 @@ to {
   box-shadow: #dbdbdb 0px 4px 0px 0px;
 }
 .sheet-type {
-  margin: 2em 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1em;
@@ -2882,17 +2923,16 @@ to {
   }
 }
 @media (min-width: 500px) {
-  .btn-new, .btn-save-exercise, .add-point-test {
-    font-size: 0.85em;
-  }
   .btn-new:hover {
     background: #e0ffee;
   }
   .btn-save-exercise:hover {
     background: #40b945;
   }
-  .add-point-test:hover {
-    background: #f9d6ad;
+}
+@media (min-width: 700px) {
+  .add-word, .btn-new-resp, .wr-select-value {
+    font-size: 0.9em;
   }
 }
 </style>

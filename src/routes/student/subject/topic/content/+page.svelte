@@ -1,4 +1,5 @@
 <script lang="ts">
+import { marked } from 'marked';
 import { FOLDER_AUDIOS, R2_DOMAIN } from '$lib/utils';
 import { page } from '$app/state';
 import { LinkBack, Video } from "$lib/components";
@@ -56,42 +57,44 @@ onMount(() => {
 
 <div class="content">
   <div class="content-body">
+
     <div class="header-content">
       <LinkBack href="/student/subject/topic?{search}">Temas</LinkBack>
     </div>
-    {#each content as section}
-      {#if section.type === 'title'}
-        <h1>{section.text}</h1>
-      {:else if section.type === 'subtitle'}
-        <h2>{section.text}</h2>
-      {:else if section.type === 'paragraph'}
-        <p>{section.text}</p>
-      {:else if section.type === 'image'}
-        <div class="container-image">
-          <div class="wr-img" style="width: {section.size}%">
-            <img class="image" src={section.text} alt=""/>
+    <div class="container-paragraph">
+      {#each content as section}
+        {#if section.type === 'title'}
+          <h1>{@html marked(section.text)}</h1>
+        {:else if section.type === 'subtitle'}
+          <h2>{@html marked(section.text)}</h2>
+        {:else if section.type === 'paragraph'}
+          <p class="paragraph">{@html marked(section.text)}</p>
+        {:else if section.type === 'image'}
+          <div class="container-image">
+            <div class="wr-img" style="width: {section.size}%">
+              <img class="image" src={section.text} alt=""/>
+            </div>
           </div>
-        </div>
-      {:else if section.type === 'video'}
-        <div class="container-iframe">
-          <Video data={section} />
-        </div>
-      {:else if section.type === 'vignette'}
-        <div class="wr-items">
-          <ul class="ul-items">
+        {:else if section.type === 'video'}
+          <div class="container-iframe">
+            <Video data={section} />
+          </div>
+        {:else if section.type === 'vignette'}
+          <div class="wr-items">
+            <ul class="ul-items">
 
-            {#each section.text as list, index}
-              <li class="li-item">
-                <div class="n-item">{index < 9 ? '0' : ''}{index + 1}</div>
-                <div class="text-list">{list.item}</div>
-              </li>
-            {/each}
+              {#each section.text as list, index}
+                <li class="li-item">
+                  <div class="n-item">{index < 9 ? '0' : ''}{index + 1}</div>
+                  <div class="text-list">{@html marked(list.item)}</div>
+                </li>
+              {/each}
 
-          </ul>
-        </div>
-      {/if}
-    {/each}
-
+            </ul>
+          </div>
+        {/if}
+      {/each}
+    </div>
 
   {#if activities.length !== 0}
     <div class="container-activities">
@@ -217,6 +220,42 @@ onMount(() => {
 
 <style>
 
+.wr-items {
+  display: flex;
+  width: 100%;
+  padding: 1em 0 2em;
+}
+.ul-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.text-list {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  line-height: 30px;
+}
+.li-item {
+  display: flex;
+  align-items: start;
+  gap: 1em;
+}
+.n-item {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  font-weight: 800;
+  color: #cb7900;
+  display: flex;
+  background: transparent;
+  line-height: 30px;
+  padding-top: 0.6em;
+}
+.paragraph {
+  font-family: var(--font-normal);
+  font-size: 1.1em;
+  line-height: 30px;
+}
 .wr-links {
   margin-top: 0.3em;
 }

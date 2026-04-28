@@ -122,6 +122,11 @@ async function handleSearch() {
     HistorialStorage.save(dataIA);
     btnSearch?.load(false);
     scrollToBottom();
+    prompt = '';
+
+    setTimeout(()=>{
+      injectCopyButtons();
+    }, 1000);
   } catch (e) {
     console.log(e)
   }
@@ -135,8 +140,8 @@ async function scrollToBottom() { // : Promise<boolean>
   if (scrollContainer) {
     scrollContainer.scroll({
       //top: scrollContainer.scrollHeight,
-      top: 0,
-      behavior: 'smooth' // 'smooth' para animado, 'instant' para salto inmediato
+      top: posScroll,
+      //behavior: 'smooth' // 'smooth' para animado, 'instant' para salto inmediato
     });
   }
 }
@@ -146,7 +151,7 @@ function autoScroll(node: HTMLElement) {
   const scroll = () => {
     node.scroll({
       top: posScroll, // O usa generate.show.posScrool si es un valor fijo
-      behavior: 'smooth'
+      //behavior: 'smooth'
     });
   };
 
@@ -298,19 +303,19 @@ function handleViewText() {
              <div>
                 <div class="wr-inputs">
                   <CheckBox name="b" onchange={(e)=>handleCheckBox(e, "gemini")} checked={isGemini} />
-                  <Input label="API Key Gemini" requested={false} bind:value={gemini} keypress={()=>handleKeyUp("gemini")} />
+                  <Input isError={false} label="API Key Gemini&nbsp;&nbsp;<a class='link-console' target='_blank' href='https://aistudio.google.com/'>Console</a>" requested={false} bind:value={gemini} keypress={()=>handleKeyUp("gemini")} />
                 </div>
                 <div class="wr-inputs">
-                  <CheckBox name="a" onchange={(e)=>handleCheckBox(e, "brave")} checked={isBrave} />
-                  <Input label="API Key Brave" requested={false} bind:value={brave} keypress={()=>handleKeyUp("brave")} />
+                    <CheckBox name="a" onchange={(e)=>handleCheckBox(e, "brave")} checked={isBrave} />
+                    <Input label="API Key Brave&nbsp;&nbsp;<a class='link-console' target='_blank' href='https://api-dashboard.search.brave.com/login'>Console</a>" requested={false} bind:value={brave} keypress={()=>handleKeyUp("brave")} />
                 </div>
                 <div class="wr-inputs">
                   <CheckBox name="c" onchange={(e)=>handleCheckBox(e, "groq")} checked={isGroq} />
-                  <Input label="API Key Groq" requested={false} bind:value={groq} keypress={()=>handleKeyUp("groq")} />
+                  <Input label="API Key Groq&nbsp;&nbsp;<a class='link-console' target='_blank' href='https://console.groq.com/home'>Console</a>" requested={false} bind:value={groq} keypress={()=>handleKeyUp("groq")} />
                 </div>
                 <div class="wr-inputs">
                   <CheckBox name="d" onchange={(e)=>handleCheckBox(e, "mistral")} checked={isMistral} />
-                  <Input label="API Key Mistral" requested={false} bind:value={mistral} keypress={()=>handleKeyUp("mistral")} />
+                  <Input label="API Key Mistral&nbsp;&nbsp;<a class='link-console' target='_blank' href='https://v2.auth.mistral.ai/login'>Console</a>" requested={false} bind:value={mistral} keypress={()=>handleKeyUp("mistral")} />
                 </div>
                 <div><Button onclick={handleSaveAPIKey} bind:this={btnSave}>Guardar</Button></div>
               </div> 
@@ -320,6 +325,7 @@ function handleViewText() {
               <div class="wr-link">
                 <h3>Chatbots</h3>
                 <div>
+                  <a href="https://search.brave.com/ask" target="_blank">https://search.brave.com/ask</a>
                   <a href="https://gemini.google.com/app" target="_blank">https://gemini.google.com/app</a>
                   <a href="https://copilot.microsoft.com/" target="_blank">https://copilot.microsoft.com</a>
                   <a href="https://chat.mistral.ai/" target="_blank">https://chat.mistral.ai</a>
@@ -352,8 +358,10 @@ function handleViewText() {
 {/if}
 
 <style>
-
 :global {
+  .link-console {
+    color: #0f78cb;
+  }
   .btn-copy-parent {
     position: absolute;
     top: 0;
@@ -389,6 +397,7 @@ function handleViewText() {
   background: #c4e0ed;
   height: 7px;
   margin-top: 1em;
+  margin-bottom: 2em;
 }
 .container-data {
   padding: 2em 0;
@@ -409,8 +418,8 @@ function handleViewText() {
 }
 .wr-inputs {
   display: flex;
+  margin-bottom: 1em;
   gap: 1em;
-  align-items: center;
 }
 .container-dt {
   padding: 2em 0;
@@ -434,6 +443,7 @@ function handleViewText() {
 }
 .wr-link > div > a {
   color: #006fc7;
+  width: min-content;
 }
 .wr-header {
   display: flex;
@@ -492,7 +502,7 @@ function handleViewText() {
   position: fixed;
   background: #fff;
   top: 0;
-  z-index: 11000;
+  z-index: 18000 !important;
   left: 0;
   width: 100%;
   height: 100%;

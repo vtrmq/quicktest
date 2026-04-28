@@ -1,6 +1,6 @@
 <script lang="ts">
 import { fade } from 'svelte/transition';
-import { Toast, Dialog } from '$lib/components';
+import { Toast, Dialog, BtnChangeResult } from '$lib/components';
 import reading from '$lib/assets/images/reading.png';
 import { colors, normalizeToDigit, addCountCharacter } from '$lib/utils';
 import { activityLocalstore } from "$lib/store/activity_student";
@@ -20,7 +20,18 @@ type Word = {
   word: string;
 };
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false, 
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
+
 let dialog = $state<Dialog | null>(null);
 let toast = $state<Toast>();
 let question = $state('');
@@ -62,7 +73,14 @@ function handleSelectWord(index: number) {
     }
   }
 
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
 
   if (indexOptWord === -1 && words[index].selection_word === '') {
     toast?.view({
@@ -97,7 +115,6 @@ function handleSelectWord(index: number) {
     if (words[index].resp === false) {
       wordsErrors.push(words[index].selection_word);
     }
-
   } else {
     words[index].resp = false;
     words[index].selection_word = '';
@@ -130,7 +147,14 @@ function handleSelectOptWord(index: number) {
       return;
     }
   }
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
   indexOptWord = indexOptWord === -1 || indexOptWord !== index ? index : -1;
 }
 
@@ -185,6 +209,9 @@ function startProgress() {
       <div class="body-exercise-select user-select-none" class:grid-select={options.length}>
 
         <div class="box1-select">
+          {#if typeGeneral === 'R'}
+            <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+          {/if}
           <h1 class="title-select">{question}</h1>
           <div class="container-words-character">
             {#each words as w, index}
@@ -280,3 +307,17 @@ function startProgress() {
 
   {/if}
 </div>
+
+<style>
+.btn-change {
+  position: absolute;
+  right: 0;
+  top: -1px;
+  width: 21px;
+  height: 21px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+</style>

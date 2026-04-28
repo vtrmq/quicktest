@@ -7,6 +7,7 @@ import { fade } from 'svelte/transition';
 import { filtrarParametros, getDateTimeUTC } from "$lib/utils";
 import { Toast } from '$lib/components';
 import { activityLocalstore } from '$lib/store/activity_student';
+import { beforeNavigate } from '$app/navigation';
 
 import { 
   HeaderExercise, 
@@ -19,15 +20,18 @@ import {
   Test,
   TestPDF,
   TestFS,
-  LinkBack,
   Chonometer,
+  CharacterPart, 
 } from '$lib/components';
 
 let { data } = $props();
 let visible = $state(false);
 let isSend = $state(false);
 let toast = $state<Toast | null>(null);
+let listExercises = $state<ListExercises | null>(null);
 const search = filtrarParametros(page.url.href, ['teacherId', 'courseId', 'subjectId', 'topicId', 'activityId', 'origin']);
+
+console.log(data)
 
 //console.log(page)
 //console.log(data.info?.activity.type_general)
@@ -63,6 +67,7 @@ let indexExercise = $state(-1);
 
 let infoData = $state();
 let viewResult = $state(0);
+let typeGeneral = $state(data.info?.activity.type_general);
 
 onMount(()=>{
   visible = true;
@@ -137,6 +142,31 @@ function handlePropag(sw: boolean) {
   viewBtnSheet = sw;
 }
 
+let navegacionConfirmada = false;
+
+beforeNavigate(({ cancel, to, type }) => {
+  // Si ya confirmamos, dejamos que pase
+  if (navegacionConfirmada) return;
+
+  // Si es una navegación que queremos interceptar (atrás o links)
+  if (to && type !== 'link') {
+    cancel(); // Cancelamos la navegación instantáneamente
+    toast?.view({
+      type: '',
+      message: 'Debes enviar la acividad',
+      time: 3000
+    });
+  }
+});
+
+function handleGoActivityInfo() {
+  goto(`/student/subject/topic/activity/info?${search}`);
+}
+
+function handleChangeResultView() {
+  listExercises?.handleViewResultX();
+}
+
 </script>
 
 <Toast bind:this={toast} />
@@ -147,9 +177,10 @@ function handlePropag(sw: boolean) {
     {#if type_activity === 'V'}
       <div><Chonometer /></div>
     {:else if type_activity === 'R'}
-      <LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack>
+      <!--LinkBack href="/student/subject/topic/activity/info?{search}" --color-link="#fff">Volver</LinkBack-->
+      <button class="btn-back" onclick={handleGoActivityInfo}>Atrás</button>
     {/if}
-    <ListExercises {info} items={items} {handleActivity} {handleViewResult} {handleSendActivity} {isSend} {handlePropag} />
+    <ListExercises bind:this={listExercises} {info} items={items} {handleActivity} {handleViewResult} {handleSendActivity} {isSend} {handlePropag} />
   </HeaderExercise>
 
   <div class="container-body" bind:this={containerBody} transition:fade>
@@ -166,27 +197,31 @@ function handlePropag(sw: boolean) {
       {#key indexExercise}
         {#if type === 'match'}
 
-          <Match {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <Match {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'morphosyntax'}
 
-          <Morphosyntax {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <Morphosyntax {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'point-out'}
 
-          <PointOut {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <PointOut {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'select'}
 
-          <SelectWord {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <SelectWord {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'character'}
 
-          <Character {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <Character {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
+
+        {:else if type === 'characterPart'}
+
+          <CharacterPart {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'test'}
 
-          <Test {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <Test {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {:else if type === 'test-pdf'}
 
@@ -194,7 +229,7 @@ function handlePropag(sw: boolean) {
 
         {:else if type === 'test-fs'}
 
-          <TestFS {type_activity} {viewResult} {scales} {indexExercise} {infoData} />
+          <TestFS {type_activity} {viewResult} {scales} {indexExercise} {infoData} {typeGeneral} {handleChangeResultView} />
 
         {/if}
       {/key}
@@ -204,6 +239,17 @@ function handlePropag(sw: boolean) {
 {/if}
 
 <style>
+.btn-back {
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-normal);
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
 .container-info {
   padding: 2em 0;
 }

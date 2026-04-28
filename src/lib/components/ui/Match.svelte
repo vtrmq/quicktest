@@ -4,9 +4,10 @@ import { activityLocalstore } from "$lib/store/activity_student";
 import reading from '$lib/assets/images/reading.png';
 import { colorSynt } from '$lib/utils';
 import { onMount } from 'svelte';
-import { Dialog } from "$lib/components";
+import { Toast, Dialog, BtnChangeResult } from "$lib/components";
 
 let dialog = $state<Dialog | null>(null);
+let toast = $state<Toast>();
 type Side = 'left' | 'right';
 type Words = { word: string; };
 type Connection = {
@@ -18,7 +19,17 @@ type SelectedWord = {
   side: Side;
 }
 
-let { viewResult = 0, infoData, indexExercise = -1, scales, type_activity, isActionStudent = true, isWordsErrors = false } = $props();
+let { 
+  viewResult = 0, 
+  infoData, 
+  indexExercise = -1, 
+  scales, 
+  type_activity, 
+  isActionStudent = true, 
+  isWordsErrors = false,
+  typeGeneral, 
+  handleChangeResultView,
+} = $props();
 let selectedWord: SelectedWord | null = null;
 let canvasMatch = $state() as HTMLCanvasElement;
 let leftColumn = $state() as HTMLDivElement;
@@ -125,7 +136,14 @@ function selectWordMatch(wordElement: Event, side: Side, index: number) {
     }
   }
 
-  if (viewResult === 1) return;
+  if (viewResult === 1) {
+    toast?.view({
+      type: '',
+      message: 'Estás en modo resultados',
+      time: 3000
+    });
+    return;
+  }
 
   const element  = wordElement.target as HTMLButtonElement;
 
@@ -311,6 +329,7 @@ function startProgress() {
 </script>
 
 <Dialog bind:this={dialog} action={()=>{}} />
+<Toast bind:this={toast} />
 
 <div class="rf-match">
   {#if infoData.mode === 'normal'}
@@ -319,6 +338,9 @@ function startProgress() {
       <div class="body-exercise-match" bind:this={containerMatch}>
         <div class="mg-center">
           <div class="pd1">
+            {#if typeGeneral === 'R'}
+              <BtnChangeResult onclick={()=>handleChangeResultView()} {viewResult} />
+            {/if}
             <h1 class="question-match">{infoData.exercise.question}</h1>
             <div class="container-columns" bind:this={columnsContainer}>
               <div class="column" bind:this={leftColumn}>
